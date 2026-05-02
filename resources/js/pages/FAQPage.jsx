@@ -10,7 +10,7 @@ const faqs = [
 ];
 
 export default function FAQPage() {
-    const [openIdx, setOpenIdx] = useState(null);
+    const [openIdx, setOpenIdx] = useState(0);
 
     return (
         <section className="faq-section">
