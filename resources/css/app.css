@@ -689,6 +689,9 @@
         padding: 150px 0;
         background: #1c2145;
     }
+    .callback--blue {
+        background: #1980DF;
+    }
     .callback__form { display: flex; gap: 80px; }
     .callback .form__title { color: #fff; }
     .callback .form__desc {
@@ -818,6 +821,7 @@
         .form__desc, .callback .form__desc { font-size: 16px; line-height: 20px; }
         .form__submit { padding: 14px; }
         .callback { padding: 100px 0 101px 0; }
+        .callback--blue { padding: 100px 0 101px 0; }
         .footer { padding: 38px 0 30px 0; }
         .footer__inner { padding-bottom: 40px; }
         .footer__menu a { font-size: 16px; line-height: 20px; }

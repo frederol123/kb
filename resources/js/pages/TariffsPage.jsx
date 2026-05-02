@@ -85,7 +85,7 @@ export default function TariffsPage() {
                 </div>
             </section>
 
-            <section className="callback">
+            <section className="callback callback--blue">
                 <div className="container">
                     <div className="callback__form">
                         <div className="form__column">
