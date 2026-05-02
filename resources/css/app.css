@@ -529,8 +529,38 @@
         font-weight: 700;
         text-decoration: none;
     }
-    .header__login { padding: 10px 28px; font-size: 16px; }
-    .header__mobile { display: flex; align-items: center; gap: 25px; }
+    .header__login { padding: 10px 31px 10px 30px; }
+    .header__mobile { display: flex; align-items: center; gap: 40px; }
+
+    /* Hide mobile elements on desktop, show on tablet */
+    .header__close-overlay,
+    .header__phone-mobile,
+    .header__user-mobile { display: none; }
+
+    .contact-link {
+        text-decoration: none;
+        color: var(--color-brand-500);
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 22px;
+        transition: opacity 0.2s;
+        white-space: nowrap;
+    }
+    .contact-link:hover { opacity: 0.8; }
+    .header__phone-mobile {
+        font-size: 18px;
+        line-height: 20px;
+        letter-spacing: 0.09px;
+    }
+    .header__right {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+    }
+    .header__left {
+        flex-shrink: 0;
+    }
+    .header__user { display: flex; align-items: center; }
 
     /* Container */
     .container {
@@ -563,12 +593,16 @@
         .logo { width: 181px; height: 79px; }
         .header__menu ul { gap: 17px; }
         .header__menu a { font-size: 16px; }
+        .contact-link { font-size: 16px; }
     }
 
     @media (max-width: 1439px) {
         .container { width: 100%; padding: 0 34px; }
         .header { position: fixed; top: 0; left: 0; width: 100%; background: #fff; z-index: 15; box-shadow: 0px 0px 5px 0px rgb(224 224 224); }
         .header__mobile { display: none; }
+        .header__phone-mobile,
+        .header__user-mobile { display: block; }
+        .header__right { gap: 33px; }
         .hero-inner { flex-direction: column; text-align: center; }
         .hero-content { max-width: 100%; }
         .hero-preview { margin-top: 30px; }
@@ -594,5 +628,20 @@
         .callback__form { gap: 30px; }
         .footer__menu ul { flex-direction: column; gap: 12px; }
         .footer__copyright { flex-direction: column; gap: 8px; }
+        .header__phone { display: none; }
+        .header__login { padding: 8px 21px 8px 23px; }
+        .header__right { gap: 26px; }
+        .header__phone-mobile { font-size: 22px; line-height: 26px; }
+    }
+
+    @media (max-width: 479px) {
+        .header__login { padding: 6px 10px 5px 10px; font-size: 14px; }
+        .header__right { gap: 28px; }
+        .header__phone-mobile { font-size: 20px; line-height: 24px; }
+        .logo { width: 114px; height: 42px; }
+    }
+
+    @media (max-width: 270px) {
+        .header__user { display: none; }
     }
 }
