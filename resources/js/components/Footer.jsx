@@ -21,7 +21,7 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="footer__copyright">
-                    <span>help@кодбессмертия.рф</span>
+                    <span className="footer__copyright-wide">help@кодбессмертия.рф</span>
                     <span>г. Ижевск, ул 50 лет пионерии, 20. ТЦ Бета</span>
                     <span>ИП Столбов Н.С. ИНН 183116121807</span>
                     <span>ОГРНИП 321183200020509</span>
