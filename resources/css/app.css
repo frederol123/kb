@@ -396,6 +396,14 @@
     .number-card__body a { text-decoration: none; color: #1980DF; }
     .number-card__body a:hover { text-decoration: underline; }
 
+    /* ======== SINGLE CONTENT (tariff page) ======== */
+    .single-content { padding-top: 51px; }
+    .single-content__title {
+        font-size: 50px;
+        line-height: 54px;
+        letter-spacing: 0.25px;
+    }
+
     /* ======== PLAN PRICES ======== */
     .plan-prices { padding-top: 104px; padding-bottom: 65px; }
     .prices-cards {
@@ -828,6 +836,7 @@
         .number-card__num { font-size: 24px; line-height: 28px; padding: 10px 12px; min-width: 49px; }
         .number-card__heading { font-size: 28px; line-height: 32px; }
         .number-card__body { font-size: 16px; line-height: 20px; }
+        .single-content__title { font-size: 42px; line-height: 48px; }
     }
 
     @media (max-width: 1439px) {
