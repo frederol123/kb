@@ -1,14 +1,12 @@
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 
 export default function NewsPage() {
     const { slug } = useParams();
-
     return (
-        <div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-6">Новость</h1>
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-                <p className="text-gray-600">Страница новости: {slug}</p>
+        <div className="py-10 lg:py-20">
+            <div className="max-w-[1433px] mx-auto px-4 lg:px-[34px]">
+                <h1 className="section-title mb-8">Новость</h1>
+                <p className="text-[#6c6d7e]">Страница: {slug}</p>
             </div>
         </div>
     );

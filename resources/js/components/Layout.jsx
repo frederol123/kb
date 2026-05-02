@@ -1,17 +1,21 @@
 import { Outlet } from 'react-router-dom';
-import Navbar from './Navbar';
-import AuthModal from './AuthModal';
 import { useState } from 'react';
+import Header from './Header';
+import Footer from './Footer';
+import AuthModal from './AuthModal';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Layout() {
+    const { user, logout, login, register } = useAuth();
     const [authOpen, setAuthOpen] = useState(false);
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Navbar onAuthOpen={() => setAuthOpen(true)} />
-            <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex flex-col min-h-screen pt-[82px] lg:pt-[112px]">
+            <Header user={user} onAuthOpen={() => setAuthOpen(true)} onLogout={logout} />
+            <main className="flex-1">
                 <Outlet />
             </main>
+            <Footer />
             <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
         </div>
     );

@@ -26,55 +26,89 @@ export default function AuthModal({ open, onClose }) {
             onClose();
             navigate('/lk');
         } catch (err) {
-            setError(err.response?.data?.message || 'Ошибка');
+            setError(err.response?.data?.errors?.email?.[0] || err.response?.data?.message || 'Произошла ошибка');
+        }
+    };
+
+    const renderForm = () => {
+        switch (mode) {
+            case 'register':
+                return (
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <h2 className="font-extrabold text-2xl text-[#1c2145]">Регистрация</h2>
+                        {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
+                        <div>
+                            <label className="block text-sm text-[#999] mb-1">Email</label>
+                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
+                                   className="text-input" placeholder="email@example.com" />
+                        </div>
+                        <div>
+                            <label className="block text-sm text-[#999] mb-1">Имя</label>
+                            <input type="text" value={name} onChange={e => setName(e.target.value)} required
+                                   className="text-input" placeholder="Ваше имя" />
+                        </div>
+                        <div>
+                            <label className="block text-sm text-[#999] mb-1">Пароль</label>
+                            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={8}
+                                   className="text-input" placeholder="Не менее 8 символов" />
+                        </div>
+                        <div>
+                            <label className="block text-sm text-[#999] mb-1">Подтверждение пароля</label>
+                            <input type="password" value={passwordConfirmation} onChange={e => setPasswordConfirmation(e.target.value)} required
+                                   className="text-input" placeholder="Повторите пароль" />
+                        </div>
+                        <button type="submit" className="btn-filled w-full">Зарегистрироваться</button>
+                        <p className="text-center text-sm text-[#999]">
+                            Уже есть аккаунт?{' '}
+                            <button type="button" onClick={() => { setMode('login'); setError(''); }} className="text-[#3476f5] font-bold hover:underline">Войти</button>
+                        </p>
+                    </form>
+                );
+            case 'forgot':
+                return (
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <h2 className="font-extrabold text-2xl text-[#1c2145]">Восстановление пароля</h2>
+                        {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
+                        <div>
+                            <label className="block text-sm text-[#999] mb-1">Email при регистрации</label>
+                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
+                                   className="text-input" placeholder="email@example.com" />
+                        </div>
+                        <button type="submit" className="btn-filled w-full">Отправить</button>
+                        <p className="text-center text-sm text-[#999]">
+                            <button type="button" onClick={() => { setMode('login'); setError(''); }} className="text-[#3476f5] font-bold hover:underline">Вернуться ко входу</button>
+                        </p>
+                    </form>
+                );
+            default:
+                return (
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <h2 className="font-extrabold text-2xl text-[#1c2145]">Авторизация</h2>
+                        {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
+                        <div>
+                            <label className="block text-sm text-[#999] mb-1">Email</label>
+                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
+                                   className="text-input" placeholder="email@example.com" />
+                        </div>
+                        <div>
+                            <label className="block text-sm text-[#999] mb-1">Пароль</label>
+                            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
+                                   className="text-input" placeholder="Ваш пароль" />
+                        </div>
+                        <button type="submit" className="btn-filled w-full">Войти</button>
+                        <div className="flex justify-between text-sm">
+                            <button type="button" onClick={() => { setMode('register'); setError(''); }} className="text-[#3476f5] font-bold hover:underline">Создать аккаунт</button>
+                            <button type="button" onClick={() => { setMode('forgot'); setError(''); }} className="text-[#3476f5] font-bold hover:underline">Забыли пароль?</button>
+                        </div>
+                    </form>
+                );
         }
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
-            <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
-                <h2 className="text-xl font-semibold mb-4">
-                    {mode === 'login' ? 'Вход' : 'Регистрация'}
-                </h2>
-                {error && (
-                    <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm mb-4">{error}</div>
-                )}
-                <form onSubmit={handleSubmit} className="space-y-3">
-                    {mode === 'register' && (
-                        <input
-                            type="text" placeholder="Имя" value={name}
-                            onChange={(e) => setName(e.target.value)} required
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                        />
-                    )}
-                    <input
-                        type="email" placeholder="Email" value={email}
-                        onChange={(e) => setEmail(e.target.value)} required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                    />
-                    <input
-                        type="password" placeholder="Пароль" value={password}
-                        onChange={(e) => setPassword(e.target.value)} required minLength={8}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                    />
-                    {mode === 'register' && (
-                        <input
-                            type="password" placeholder="Подтверждение пароля" value={passwordConfirmation}
-                            onChange={(e) => setPasswordConfirmation(e.target.value)} required
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                        />
-                    )}
-                    <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 text-sm font-medium">
-                        {mode === 'login' ? 'Войти' : 'Зарегистрироваться'}
-                    </button>
-                </form>
-                <p className="text-center text-sm text-gray-500 mt-4">
-                    {mode === 'login' ? 'Нет аккаунта? ' : 'Есть аккаунт? '}
-                    <button onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}
-                            className="text-blue-600 hover:underline">
-                        {mode === 'login' ? 'Регистрация' : 'Войти'}
-                    </button>
-                </p>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4" onClick={onClose}>
+            <div className="bg-white rounded-2xl p-6 lg:p-8 w-full max-w-[440px] shadow-2xl" onClick={e => e.stopPropagation()}>
+                {renderForm()}
             </div>
         </div>
     );

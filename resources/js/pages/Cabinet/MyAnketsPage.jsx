@@ -9,48 +9,84 @@ export default function MyAnketsPage() {
         queryFn: () => api.get('/ankets').then(r => r.data),
     });
 
-    const deleteMutation = useMutation({
+    const deleteMut = useMutation({
         mutationFn: (id) => api.delete(`/ankets/${id}`),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['my-ankets'] }),
     });
 
-    if (isLoading) return <p className="text-gray-500">Загрузка...</p>;
-
     const ankets = data?.data || [];
+
+    const statusText = {
+        published: 'Опубликовано',
+        draft: 'Черновик',
+        private: 'Приватный',
+    };
 
     return (
         <div>
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Мои анкеты</h1>
-                <Link to="/lk/ankets/new/edit" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
-                    Создать анкету
-                </Link>
+                <h1 className="font-extrabold text-2xl lg:text-3xl text-[#1c2145]">
+                    Мои анкеты ({ankets.length})
+                </h1>
+                <div className="flex gap-3">
+                    <Link to="/tariffs" className="btn-outline text-sm">Добавить анкеты</Link>
+                    <Link to="/lk/ankets/new/edit" className="btn-filled text-sm">Создать анкету</Link>
+                </div>
             </div>
-            {ankets.length === 0 ? (
-                <p className="text-gray-500">У вас пока нет анкет</p>
+
+            {isLoading ? (
+                <p className="text-[#6c6d7e]">Загрузка...</p>
+            ) : ankets.length === 0 ? (
+                <div className="bg-white rounded-2xl p-10 text-center shadow-sm">
+                    <p className="text-[#6c6d7e] mb-4">У вас пока нет анкет</p>
+                    <Link to="/tariffs" className="btn-filled text-sm inline-flex">Выбрать тариф</Link>
+                </div>
             ) : (
-                <div className="space-y-3">
-                    {ankets.map((a) => (
-                        <div key={a.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex items-center justify-between">
-                            <div>
-                                <Link to={`/m/${a.slug}`} target="_blank" className="text-blue-600 hover:underline font-medium">
-                                    {a.info?.last_name} {a.info?.first_name} {a.info?.middle_name || ''}
-                                </Link>
-                                <span className={`ml-3 text-xs px-2 py-0.5 rounded-full ${a.status === 'published' ? 'bg-green-100 text-green-700' : a.status === 'private' ? 'bg-gray-100 text-gray-600' : 'bg-yellow-100 text-yellow-700'}`}>
-                                    {a.status}
-                                </span>
-                            </div>
-                            <div className="flex gap-2">
-                                <Link to={`/lk/ankets/${a.id}/edit`} className="text-sm text-gray-500 hover:text-gray-700">
-                                    Редактировать
-                                </Link>
-                                <button onClick={() => deleteMutation.mutate(a.id)}
-                                        className="text-sm text-red-500 hover:text-red-700">
-                                    Удалить
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+                    <table className="w-full" cellSpacing="0">
+                        <thead>
+                            <tr className="border-b border-gray-100">
+                                <th className="px-6 py-4 text-left text-sm font-extrabold text-[#1c2145]">№</th>
+                                <th className="px-6 py-4 text-left text-sm font-extrabold text-[#1c2145]">ФИО</th>
+                                <th className="px-6 py-4 text-left text-sm font-extrabold text-[#1c2145] hidden md:table-cell">Дата рождения</th>
+                                <th className="px-6 py-4 text-left text-sm font-extrabold text-[#1c2145]">Статус</th>
+                                <th className="px-6 py-4"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {ankets.map((a, i) => {
+                                const info = a.info || {};
+                                return (
+                                    <tr key={a.id} className="border-b border-gray-50 hover:bg-gray-50">
+                                        <td className="px-6 py-4 text-sm text-[#6c6d7e]">{i + 1}</td>
+                                        <td className="px-6 py-4">
+                                            <Link to={`/lk/ankets/${a.id}/edit`} className="text-[#3476f5] font-bold text-sm hover:underline">
+                                                {[info.last_name, info.first_name, info.middle_name].filter(Boolean).join(' ') || 'Без имени'}
+                                            </Link>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-[#6c6d7e] hidden md:table-cell">
+                                            {info.birth_date || '—'}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                                                a.status === 'published' ? 'memorial-status-published' :
+                                                a.status === 'private' ? 'bg-gray-100 text-gray-600' :
+                                                'memorial-status-draft'
+                                            }`}>
+                                                {statusText[a.status] || a.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button onClick={() => deleteMut.mutate(a.id)}
+                                                    className="text-red-500 text-sm hover:underline">
+                                                Удалить
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 </div>
             )}
         </div>
