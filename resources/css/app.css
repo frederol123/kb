@@ -555,7 +555,7 @@
         background: #e9f0ff;
         padding: 51px 0 160px 0;
     }
-    .faq__title { text-align: center; margin-bottom: 49px; }
+    .faq__title { text-align: left; margin-bottom: 49px; }
     .faq__items { display: flex; flex-direction: column; }
     .faq__item {
         border-radius: 24px;
