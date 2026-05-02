@@ -21,5 +21,12 @@ class AppServiceProvider extends ServiceProvider
                 'rounds' => config('hashing.bcrypt.rounds', 12),
             ]));
         });
+
+        if (class_exists(\Laravel\Horizon\Horizon::class)) {
+            \Laravel\Horizon\Horizon::auth(function ($request) {
+                return app()->environment('local')
+                    || $request->user()?->email === 'admin@example.com';
+            });
+        }
     }
 }
