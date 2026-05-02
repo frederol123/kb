@@ -692,7 +692,7 @@
     .callback--blue {
         background: #1980DF;
     }
-    .callback__form { display: flex; gap: 80px; }
+    .callback__form { display: flex; gap: 80px; max-width: 1000px; margin: 0 auto; }
     .callback .form__title { color: #fff; }
     .callback .form__desc {
         color: #e9f0ff;
