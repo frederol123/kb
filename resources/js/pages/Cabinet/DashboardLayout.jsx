@@ -8,7 +8,7 @@ export default function DashboardLayout() {
     if (!user) return <Navigate to="/" replace />;
 
     const links = [
-        { to: '/lk', icon: '/images/icons/profile-anket.svg', label: 'Мои анкеты', end: true },
+        { to: '/lk', icon: '/images/icons/profile-anket.svg', label: 'Мои карточки', end: true },
         { to: '/lk/drev', icon: '/images/icons/profile-tree.svg', label: 'Генеалогическое дерево' },
         { to: '/lk/history', icon: '/images/icons/profile-history.svg', label: 'История покупок' },
         { to: '/lk/settings', icon: '/images/icons/profile-settings.svg', label: 'Настройки' },

@@ -17,13 +17,26 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
 
-    Route::get('/ankets', [AnketController::class, 'index']);
-    Route::post('/ankets', [AnketController::class, 'store']);
-    Route::get('/ankets/{anket}', [AnketController::class, 'show'])->withoutMiddleware('auth:sanctum');
-    Route::put('/ankets/{anket}', [AnketController::class, 'updateInfo']);
-    Route::put('/ankets/{anket}/content', [AnketController::class, 'updateContent']);
-    Route::delete('/ankets/{anket}', [AnketController::class, 'destroy']);
-    Route::get('/ankets/{anket}/qr', [QrController::class, 'download']);
+    Route::prefix('ankets')->group(function () {
+        Route::get('/', [AnketController::class, 'index']);
+        Route::post('/', [AnketController::class, 'store']);
+        Route::get('/{anket}', [AnketController::class, 'show'])->withoutMiddleware('auth:sanctum');
+        Route::put('/{anket}', [AnketController::class, 'updateInfo']);
+        Route::put('/{anket}/content', [AnketController::class, 'updateContent']);
+        Route::delete('/{anket}', [AnketController::class, 'destroy']);
+        Route::get('/{anket}/qr', [QrController::class, 'download']);
+        Route::post('/{anket}/upload', function (Request $request, \App\Models\Anket $anket) {
+            if ($anket->user_id !== $request->user()->id) abort(403);
+
+            $request->validate([
+                'file' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp,ico', 'max:10240'],
+            ]);
+
+            $path = $request->file('file')->store('uploads', 'public');
+
+            return response()->json(['url' => asset('storage/' . $path)], 201);
+        });
+    });
 });
 
 Route::post('/condolences', function (Request $request) {

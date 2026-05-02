@@ -6,8 +6,8 @@ import HomePage from './pages/HomePage';
 import MemorialPage from './pages/MemorialPage';
 import TariffsPage from './pages/TariffsPage';
 import DashboardLayout from './pages/Cabinet/DashboardLayout';
-import MyAnketsPage from './pages/Cabinet/MyAnketsPage';
-import AnketEditorPage from './pages/Cabinet/AnketEditorPage';
+import MyCardsPage from './pages/Cabinet/MyAnketsPage';
+import CardEditorPage from './pages/Cabinet/AnketEditorPage';
 
 const queryClient = new QueryClient({
     defaultOptions: { queries: { staleTime: 1000 * 60, retry: 1 } },
@@ -37,11 +37,11 @@ export default function App() {
                             <Route path="/family_tree" element={<EmptyPage title="Генеалогическое древо" />} />
                             <Route path="/news" element={<EmptyPage title="Новости" />} />
                             <Route path="/lk" element={<DashboardLayout />}>
-                                <Route index element={<MyAnketsPage />} />
+                                <Route index element={<MyCardsPage />} />
                                 <Route path="drev" element={<EmptyPage title="Генеалогическое дерево" />} />
                                 <Route path="history" element={<EmptyPage title="История покупок" />} />
                                 <Route path="settings" element={<EmptyPage title="Настройки" />} />
-                                <Route path="ankets/:id/edit" element={<AnketEditorPage />} />
+                                <Route path="cards/:id/edit" element={<CardEditorPage />} />
                             </Route>
                         </Route>
                     </Routes>
