@@ -199,9 +199,12 @@
         justify-content: center;
     }
     .logo__image { max-width: 100%; max-height: 100%; }
+    .flex-1{
+        padding-top: 35px;
+    }
 
     /* ======== HERO ======== */
-    .hero { padding-bottom: 2px; }
+    .hero { padding-bottom: 2px;padding-top: 75px;}
     .hero__inner {
         display: grid;
         grid-template-columns: minmax(0, 50fr) minmax(0, 50fr);
@@ -295,7 +298,7 @@
     .tree-introduce-card__desc { color: #6c6d7e; font-size: 14px; }
 
     /* ======== SECONDARY HERO ======== */
-    .secondary-hero { padding-bottom: 48px; }
+    .secondary-hero { padding-bottom: 48px;margin-top: 55px; }
     .secondary-hero__inner {
         display: grid;
         grid-template-columns: minmax(0, 50fr) minmax(0, 50fr);
@@ -498,6 +501,7 @@
     /* ======== ORDER STEPS ======== */
     .order-steps {
         padding: 150px 0;
+        margin-top: 35px;
         background-color: #dce5f5;
         background-image: url('/images/order-steps-bg.svg');
         background-repeat: no-repeat;
@@ -691,8 +695,14 @@
     }
     .callback--blue {
         background: #1980DF;
+        max-width: 1500px;
+        border-radius: 20px;
+        display: flex;
+        justify-self: center;
+        margin-top: 100px;
+        margin-bottom: 100px;
     }
-    .callback__form { display: flex; gap: 80px; max-width: 1000px; margin: 0 auto; }
+    .callback__form { display: flex; gap: 80px;margin: 0 auto; }
     .callback .form__title { color: #fff; }
     .callback .form__desc {
         color: #e9f0ff;
