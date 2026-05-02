@@ -5,14 +5,11 @@ export default function HomePage() {
     return (
         <>
             <HeroSection />
-            <ServicesSection />
-            <HowWorksSection />
-            <OrderStepsSection />
             <TreeIntroduceSection />
             <PricesSection />
-            <FAQSection />
             <HaveQuestionsSection />
-            <LatestNewsSection />
+            <OrderStepsSection />
+            <FAQSection />
             <CallbackSection />
         </>
     );
@@ -21,109 +18,19 @@ export default function HomePage() {
 function HeroSection() {
     return (
         <section className="hero-section">
-            <div className="max-w-[1433px] mx-auto px-4 lg:px-[34px]">
-                <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-                    <div className="flex-1">
-                        <h1 className="hero-title">
-                            Цифровой мемориал для сохранения памяти о близких
-                        </h1>
-                        <p className="hero-desc mb-8">
-                            Создайте страницу памяти с биографией, фотографиями и видео. QR-код на памятнике позволит каждому посетителю узнать историю жизни вашего близкого.
-                        </p>
-                        <Link to="/tariffs" className="btn-filled text-lg px-10 py-4">Выбрать тариф</Link>
+            <div className="container hero-inner">
+                <div className="hero-content">
+                    <h1 className="hero-title">
+                        Сохраните свою историю жизни и историю близких на долгие годы
+                    </h1>
+                    <div className="hero-desc">
+                        <p><strong>Код Бессмертия</strong> запомнит все ваши воспоминания и сохранит их для ваших потомков.</p>
+                        <p>Мы работаем с людьми всех возрастов и помогаем им запечатлеть важные моменты из жизни, такие как детство, семейные мероприятия, свадьбы и многое другое.</p>
                     </div>
-                    <div className="flex-1 flex justify-center">
-                        <img src="/images/hero.png" alt="Мемориал" className="max-w-full lg:max-w-[580px] rounded-2xl" />
-                    </div>
+                    <Link to="/tariffs" className="btn-filled hero__btn">Сохранить историю</Link>
                 </div>
-            </div>
-        </section>
-    );
-}
-
-function ServicesSection() {
-    const services = [
-        { title: 'Страница памяти', desc: 'Индивидуальная страница с биографией, фотографиями и видео', price: '500' },
-        { title: 'QR-код', desc: 'Персональный QR-код для размещения на памятнике', price: '500' },
-        { title: 'Генеалогическое древо', desc: 'Создание семейного древа с историей вашего рода', price: '1500' },
-    ];
-
-    return (
-        <section className="py-16 lg:py-24 bg-[#f8f8f8]">
-            <div className="max-w-[1433px] mx-auto px-4 lg:px-[34px]">
-                <h2 className="section-title text-center mb-3">Наши услуги</h2>
-                <p className="section-desc text-center mb-12 max-w-2xl mx-auto">
-                    Мы помогаем сохранить память о близких в цифровом формате
-                </p>
-                <div className="grid md:grid-cols-3 gap-6">
-                    {services.map((s, i) => (
-                        <div key={i} className="plan-card">
-                            <h3 className="plan-card-title">{s.title}</h3>
-                            <p className="text-[#6c6d7e] text-base leading-6">{s.desc}</p>
-                            <div className="mt-auto">
-                                <span className="plan-card-price">от {s.price} ₽</span>
-                                <Link to="/tariffs" className="btn-filled w-full mt-4 text-center block">Подробнее</Link>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
-}
-
-function HowWorksSection() {
-    const steps = [
-        { title: 'Выберите тариф', desc: 'Ознакомьтесь с тарифами и выберите подходящий вариант для вашей семьи' },
-        { title: 'Оплатите услугу', desc: 'Произведите оплату удобным способом через платёжную систему' },
-        { title: 'Заполните анкету', desc: 'Укажите информацию о человеке: ФИО, даты, биографию, фотографии' },
-        { title: 'Получите QR-код', desc: 'После публикации страницы скачайте QR-код для размещения на памятнике' },
-    ];
-
-    return (
-        <section className="py-16 lg:py-24">
-            <div className="max-w-[1433px] mx-auto px-4 lg:px-[34px]">
-                <h2 className="section-title text-center mb-3">Как это работает</h2>
-                <p className="section-desc text-center mb-12 max-w-2xl mx-auto">
-                    Простой процесс создания цифрового мемориала
-                </p>
-                <div className="grid md:grid-cols-4 gap-6">
-                    {steps.map((s, i) => (
-                        <div key={i} className="number-card flex flex-col items-center text-center gap-4">
-                            <div className="number-card-num">{i + 1}</div>
-                            <h3 className="font-extrabold text-lg text-[#1c2145]">{s.title}</h3>
-                            <p className="text-[#6c6d7e] text-sm leading-5">{s.desc}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
-}
-
-function OrderStepsSection() {
-    const steps = [
-        'Создайте аккаунт на сайте и авторизуйтесь в личном кабинете.',
-        'Выберите подходящий тариф и оплатите его через систему ЮKassa.',
-        'Заполните анкету: укажите ФИО, даты жизни, места рождения и ухода.',
-        'Добавьте биографию, фотографии и видео. Настройте отображение контента.',
-        'Опубликуйте страницу и скачайте персональный QR-код для размещения.',
-    ];
-
-    return (
-        <section className="py-16 lg:py-24 bg-[#f8f8f8]">
-            <div className="max-w-[1433px] mx-auto px-4 lg:px-[34px]">
-                <h2 className="section-title text-center mb-3">Как заказать</h2>
-                <p className="section-desc text-center mb-12 max-w-2xl mx-auto">
-                    Пошаговая инструкция по созданию мемориальной страницы
-                </p>
-                <div className="max-w-[700px] mx-auto">
-                    {steps.map((s, i) => (
-                        <div key={i} className="step-item">
-                            <span className="step-label">Шаг {i + 1}</span>
-                            <p className="text-[#6c6d7e] leading-6">{s}</p>
-                        </div>
-                    ))}
+                <div className="hero-preview">
+                    <img src="/uploads/2024/02/hero.svg" alt="" className="hero-image" />
                 </div>
             </div>
         </section>
@@ -132,23 +39,25 @@ function OrderStepsSection() {
 
 function TreeIntroduceSection() {
     return (
-        <section className="py-16 lg:py-24">
-            <div className="max-w-[1433px] mx-auto px-4 lg:px-[34px]">
-                <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-                    <div className="lg:w-[40%] flex justify-center">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 w-full max-w-[360px]">
-                            <img src="/images/tree-introduce.jpg" alt="Семейное древо" className="w-full h-48 object-cover rounded-xl mb-4" />
-                            <h3 className="font-extrabold text-lg text-[#1c2145] mb-1">Семья Ивановых</h3>
-                            <p className="text-[#6c6d7e] text-sm">3 поколения, 12 человек</p>
+        <section className="tree-introduce">
+            <div className="container tree-introduce__inner">
+                <div className="tree-introduce__preview">
+                    <div className="tree-introduce-card">
+                        <img src="/uploads/2023/12/tree-introduce.jpg" alt="" className="tree-introduce-card__image" />
+                        <div className="tree-introduce-card__content">
+                            <span className="tree-introduce-card__title">Пётр Ильич Чайковский</span>
+                            <span className="tree-introduce-card__desc">1840–1893</span>
                         </div>
                     </div>
-                    <div className="flex-1">
-                        <h2 className="section-title mb-4">Генеалогическое древо</h2>
-                        <p className="text-[#6c6d7e] text-lg leading-7 mb-8">
-                            Создайте генеалогическое древо вашей семьи. Свяжите страницы родственников между собой, чтобы сохранить историю вашего рода для будущих поколений.
-                        </p>
-                        <Link to="/tariffs" className="btn-filled text-lg px-10 py-4">Выбрать тариф</Link>
+                </div>
+                <div className="tree-introduce__content">
+                    <h2 className="section-title">Генеалогическое древо</h2>
+                    <div className="text-content tree-introduce__desc">
+                        <p>Сервис сохранения генеалогического древа — это превосходный способ сохранить историю своей семьи <strong>на долгие годы</strong>.</p>
+                        <p>Мы предоставляем услуги по сбору, обработке и сохранению вашей информации о родственниках, помогая найти и сохранить данные о предшественниках и поколениях вашей семьи. Наша команда работает с каждым клиентом индивидуально, учитывая их уникальные запросы и требования.</p>
+                        <p>Хранение генеалогического древа в нашей базе данных <strong>гарантирует сохранение информации в безопасности</strong> и доступность её в любое время.</p>
                     </div>
+                    <Link to="/tariffs" className="btn-filled">Подробнее</Link>
                 </div>
             </div>
         </section>
@@ -156,58 +65,153 @@ function TreeIntroduceSection() {
 }
 
 function PricesSection() {
-    const tariffs = [
-        {
-            name: 'Базовый',
-            desc: 'Для сохранения памяти об одном человеке',
-            price: '5 000',
-            highlighted: false,
-            features: ['1 страница памяти', 'QR-код для памятника', 'Хранение 1 год', 'Базовая поддержка'],
-        },
-        {
-            name: 'Стандарт',
-            desc: 'Для семейной истории',
-            price: '12 000',
-            highlighted: true,
-            features: ['5 страниц памяти', 'QR-коды для памятников', 'Хранение 5 лет', 'Генеалогическое древо', 'Приоритетная поддержка'],
-        },
-        {
-            name: 'Премиум',
-            desc: 'Для сохранения истории рода',
-            price: '25 000',
-            highlighted: false,
-            features: ['∞ страниц памяти', 'QR-коды для памятников', 'Вечное хранение', 'Генеалогическое древо', 'Видео-галерея', 'Персональный менеджер'],
-        },
-    ];
-
     return (
-        <section className="py-16 lg:py-24 bg-[#f8f8f8]">
-            <div className="max-w-[1433px] mx-auto px-4 lg:px-[34px]">
-                <h2 className="section-title text-center mb-3">Тарифы</h2>
-                <p className="section-desc text-center mb-12 max-w-2xl mx-auto">
-                    Выберите подходящий тариф для сохранения памяти
-                </p>
-                <div className="grid md:grid-cols-3 gap-6 max-w-[1100px] mx-auto">
-                    {tariffs.map((t, i) => (
-                        <div key={i} className={`plan-card ${t.highlighted ? 'plan-card-highlighted' : ''}`}>
-                            {t.highlighted && <span className="plan-card-label">Оптимальный выбор</span>}
-                            <h3 className="plan-card-title">{t.name}</h3>
-                            <p className="text-[#6c6d7e] text-sm leading-5">{t.desc}</p>
-                            <ul className="space-y-3 text-sm text-[#6c6d7e]">
-                                {t.features.map((f, j) => (
-                                    <li key={j} className="flex items-start gap-2">
-                                        <svg className="w-5 h-5 text-[#3476f5] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                                        {f}
-                                    </li>
-                                ))}
-                            </ul>
-                            <span className="plan-card-price">{t.price} ₽</span>
-                            <Link to={`/tariffs?plan=${i}`} className={`w-full text-center block py-3 rounded-xl font-bold text-base ${t.highlighted ? 'btn-filled' : 'btn-outline'}`}>
-                                Выбрать
-                            </Link>
-                            <p className="plan-card-under-note">Оплата через ЮKassa</p>
+        <section className="plan-prices" style={{ paddingTop: 104, paddingBottom: 65 }}>
+            <div className="container">
+                <h2 className="section-title" style={{ textAlign: 'center' }}>Цены и тарифы</h2>
+                <span className="section-desc" style={{ textAlign: 'center', margin: '0 auto 50px auto' }}>
+                    <p>Стоимость услуг может меняться в зависимости от партнёра и региона предоставления услуг.</p>
+                </span>
+                <div className="prices-cards">
+                    <PlanCard
+                        title="Базовая страница"
+                        price="6600"
+                        features={[
+                            { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
+                            { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
+                            { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
+                        ]}
+                    />
+                    <PlanCard
+                        title="Расширенная страница"
+                        price="16500"
+                        highlighted
+                        desc="Включает в себя все возможности базовой страницы, с учетом генерации 3 QR-кода. Возможность генерации QR-кода со скидкой 20% на следующие 3 анкеты."
+                        features={[
+                            { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
+                            { icon: 'icon-list-mount.svg', text: 'Установка за счёт компании' },
+                            { icon: 'icon-list-privacy.svg', text: 'Приватность' },
+                            { icon: 'icon-list-support.svg', text: 'Обслуживание страницы' },
+                        ]}
+                    />
+                    <PlanCard
+                        title="Особая страница"
+                        price="27500"
+                        badge="badge-special.svg"
+                        desc="Включает в себя все возможности расширенной страницы, с учетом генерации 5 QR-кода. Возможность генерации QR-кода со скидкой 20% на все следующие анкеты."
+                        features={[
+                            { icon: 'icon-list-tree.svg', text: 'Создание генеалогического древа в профиле пользователя.' },
+                        ]}
+                    />
+                    <PlanCard
+                        title="Страница питомца"
+                        price="4400"
+                        badge="badge-pet.svg"
+                        features={[
+                            { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
+                            { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
+                            { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
+                        ]}
+                    />
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function PlanCard({ title, price, desc, features, highlighted, badge }) {
+    return (
+        <div className={`plan-card${highlighted ? ' plan-card--highlighted' : ''}`}>
+            {badge && (
+                <div className="plan-card__badges">
+                    <img src={`/uploads/2024/02/${badge}`} alt="" className="plan-card__badge" />
+                </div>
+            )}
+            {highlighted && <span className="plan-card__label">Оптимальный выбор</span>}
+            <span className="plan-card__title">{title}</span>
+            {desc && <span className="plan-card__desc" dangerouslySetInnerHTML={{ __html: desc }} />}
+            <div className="plan-card__body">
+                <span className="plan-card__heading">Преимущества:</span>
+                <div className="icon-list plan-card__advantages">
+                    {features.map((f, i) => (
+                        <div key={i} className="icon-list__item">
+                            <img src={`/uploads/2024/02/${f.icon}`} alt="" className="icon-list__image" />
+                            <div className="icon-list__content">
+                                <p>{f.text}</p>
+                            </div>
                         </div>
                     ))}
+                </div>
+            </div>
+            <span className="plan-card__price">{price} ₽</span>
+            <Link to={`/tariffs`} className={`button plan-card__btn ${highlighted ? 'btn-filled' : 'btn-outline'}`}>
+                Подробнее
+            </Link>
+            <span className="plan-card__under-note">После оплаты анкеты сразу появятся в вашем Личном кабинете</span>
+        </div>
+    );
+}
+
+function HaveQuestionsSection() {
+    return (
+        <section className="have-questions">
+            <div className="container have-questions__inner">
+                <div className="have-questions__content">
+                    <span className="form__title--light">Есть вопросы?</span>
+                    <span className="form__desc--light">Оставьте свои контактные данные и мы вскоре свяжемся с Вами.</span>
+                    <div className="form__fields">
+                        <label className="form__field">
+                            <input type="text" className="text-input" placeholder="Ваше имя" />
+                        </label>
+                        <label className="form__field">
+                            <input type="text" className="text-input" placeholder="Телефон" />
+                        </label>
+                    </div>
+                    <div className="form__footer">
+                        <button type="submit" className="form__submit">Отправить</button>
+                        <div className="form__terms">
+                            Нажимая кнопку «Отправить» Вы соглашаетесь с условиями <a href="#">политики конфиденциальности</a>.
+                        </div>
+                    </div>
+                </div>
+                <div className="have-questions__preview">
+                    <img src="/uploads/2024/02/have-questions.svg" alt="" className="have-questions__image" />
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function OrderStepsSection() {
+    return (
+        <section className="order-steps">
+            <div className="container">
+                <h2 className="section-title" style={{ textAlign: 'center' }}>Как оформить заказ</h2>
+                <span className="section-desc" style={{ textAlign: 'center', margin: '0 auto 50px auto' }}>
+                    <p>Чтобы оформить заказ Вам необходимо:</p>
+                </span>
+                <div className="steps">
+                    <div className="steps__item">
+                        <span className="steps__label">Шаг 1</span>
+                        <div className="steps__body">
+                            <p>Перейти на страницу <a href="/tariffs">Тарифов</a> и внимательно ознакомиться с тарифами услуг, которые мы предоставляем.</p>
+                        </div>
+                    </div>
+                    <div className="steps__item">
+                        <span className="steps__label">Шаг 2</span>
+                        <div className="steps__body">
+                            <p>Зарегистрироваться на сайте и единоразового оплатить тариф, который Вы выбрали.</p>
+                        </div>
+                    </div>
+                    <div className="steps__item">
+                        <span className="steps__label">Шаг 3</span>
+                        <div className="steps__body">
+                            <p>После оплаты Вам будут предоставлены все функции в рамках Вашего тарифа в личном кабинете.</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="order-steps__note">
+                    <p>Либо Вы можете оставить <a href="#">заявку на сайте</a>. Наши специалисты свяжутся с Вами для уточнения всех данных и помогут вам в оформлении вашего заказа.</p>
                 </div>
             </div>
         </section>
@@ -216,29 +220,29 @@ function PricesSection() {
 
 function FAQSection() {
     const [openIdx, setOpenIdx] = useState(null);
+
     const faqs = [
-        { q: 'Как долго хранится страница памяти?', a: 'Срок хранения зависит от выбранного тарифа: от 1 года до вечного хранения. После окончания срока вы можете продлить тариф.' },
-        { q: 'Можно ли редактировать страницу после публикации?', a: 'Да, вы можете в любой момент вносить изменения в анкету через личный кабинет. Новые данные отображаются сразу после сохранения.' },
-        { q: 'Как получить QR-код для памятника?', a: 'После публикации страницы вы можете скачать QR-код в личном кабинете. Рекомендуем заказать гравировку QR-кода на памятнике у производителя.' },
-        { q: 'Что делать, если я забыл пароль?', a: 'Нажмите "Войти" в правом верхнем углу, затем "Восстановить пароль". На ваш email придёт ссылка для сброса пароля.' },
-        { q: 'Можно ли перенести данные с другого сайта?', a: 'Да, напишите в службу поддержки. Мы поможем перенести данные с аналогичных сервисов при наличии доступа.' },
+        { q: '«Код бессмертия» – что это?', a: '<p>Код бессмертия это всем нам известный по мировой пандемии QR-код, на металле. Металл выбран из-за своей долговечности, устойчивости к непогоде и сохранению формы даже при попытке деформации, что позволит не беспокоиться о сроке службы и качеству считывания кода.</p><p>Установка памятной таблички производится посредством крепления на двухсторонний скотч, со специальным клейким составом для фиксации на камне и металле, устойчивым к погодным условиям и низким температурам</p>' },
+        { q: 'Как мне создать страницу?', a: '<p>Код бессмертия это всем нам известный по мировой пандемии QR-код, на металле. Металл выбран из-за своей долговечности, устойчивости к непогоде и сохранению формы даже при попытке деформации, что позволит не беспокоится о сроке службы и качеству считывания кода.</p><p>Установка памятной таблички производится посредством крепления на двухсторонний скотч, со специальным клейким составом для фиксации на камне и металле, устойчивым к погодным условиям и низким температурам</p>' },
+        { q: 'Я могу нанести QR код непосредственно на памятник?', a: '<p>Код бессмертия это всем нам известный по мировой пандемии QR-код, на металле. Металл выбран из-за своей долговечности, устойчивости к непогоде и сохранению формы даже при попытке деформации, что позволит не беспокоится о сроке службы и качеству считывания кода.</p><p>Установка памятной таблички производится посредством крепления на двухсторонний скотч, со специальным клейким составом для фиксации на камне и металле, устойчивым к погодным условиям и низким температурам</p>' },
+        { q: 'Сколько будет хранится страница памяти?', a: '<p>Код бессмертия это всем нам известный по мировой пандемии QR-код, на металле. Металл выбран из-за своей долговечности, устойчивости к непогоде и сохранению формы даже при попытке деформации, что позволит не беспокоится о сроке службы и качеству считывания кода.</p><p>Установка памятной таблички производится посредством крепления на двухсторонний скотч, со специальным клейким составом для фиксации на камне и металле, устойчивым к погодным условиям и низким температурам</p>' },
     ];
 
     return (
-        <section className="py-16 lg:py-24">
-            <div className="max-w-[1433px] mx-auto px-4 lg:px-[34px]">
-                <h2 className="section-title text-center mb-12">Частые вопросы</h2>
-                <div className="max-w-[800px] mx-auto space-y-3">
+        <section className="faq-section">
+            <div className="container">
+                <h2 className="section-title" style={{ textAlign: 'center' }}>Частые вопросы</h2>
+                <div className="faq__items">
                     {faqs.map((f, i) => (
-                        <div key={i} className="expandable-card">
-                            <button className="expandable-card-btn" onClick={() => setOpenIdx(openIdx === i ? null : i)}>
+                        <div key={i} className="faq__item">
+                            <button className="faq__btn" onClick={() => setOpenIdx(openIdx === i ? null : i)}>
                                 {f.q}
-                                <svg className={`w-5 h-5 transition-transform ${openIdx === i ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                <svg className={`faq__btn-arrow ${openIdx === i ? 'faq__btn-arrow--open' : ''}`} viewBox="0 0 28 28" fill="none">
+                                    <path d="M7 10l7 7 7-7" stroke="#1c2145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
                             </button>
                             {openIdx === i && (
-                                <div className="expandable-card-content">{f.a}</div>
+                                <div className="faq__content" dangerouslySetInnerHTML={{ __html: f.a }} />
                             )}
                         </div>
                     ))}
@@ -248,93 +252,35 @@ function FAQSection() {
     );
 }
 
-function HaveQuestionsSection() {
-    return (
-        <section className="py-16 lg:py-24 bg-[#f8f8f8]">
-            <div className="max-w-[1433px] mx-auto px-4 lg:px-[34px]">
-                <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-                    <div className="flex-1">
-                        <h2 className="section-title mb-3">Остались вопросы?</h2>
-                        <p className="section-desc mb-6">
-                            Оставьте свои контактные данные, либо напишите нам в социальных сетях.
-                        </p>
-                        <div className="flex gap-3 flex-wrap">
-                            <a href="#" className="btn-outline text-sm">WhatsApp</a>
-                            <a href="#" className="btn-outline text-sm">Telegram</a>
-                            <a href="#" className="btn-outline text-sm">VK</a>
-                        </div>
-                    </div>
-                    <div className="flex-1 w-full max-w-[480px]">
-                        <form className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 space-y-4">
-                            <input type="text" placeholder="Ваше имя" className="text-input" />
-                            <input type="tel" placeholder="Телефон" className="text-input" />
-                            <textarea placeholder="Ваш вопрос" rows={3} className="text-input resize-none" />
-                            <button type="submit" className="btn-filled w-full">Отправить</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
-}
-
-function LatestNewsSection() {
-    const news = [
-        { title: 'Новые возможности личного кабинета', excerpt: 'Мы обновили интерфейс личного кабинета и добавили новые функции для управления анкетами.', img: '/images/news-1.jpg' },
-        { title: 'QR-коды нового поколения', excerpt: 'Теперь QR-коды поддерживают динамическое обновление информации без замены таблички.', img: '/images/news-2.jpg' },
-        { title: 'Партнёрская программа', excerpt: 'Приглашайте друзей и получайте скидки на продление тарифов.', img: '/images/single-news.jpg' },
-    ];
-
-    return (
-        <section className="py-16 lg:py-24">
-            <div className="max-w-[1433px] mx-auto px-4 lg:px-[34px]">
-                <div className="flex items-end justify-between mb-10">
-                    <div>
-                        <h2 className="section-title mb-2">Новости</h2>
-                        <p className="section-desc">Последние обновления и события</p>
-                    </div>
-                    <Link to="/news" className="btn-outline hidden lg:inline-flex">Все новости</Link>
-                </div>
-                <div className="grid md:grid-cols-3 gap-6">
-                    {news.map((n, i) => (
-                        <article key={i} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                            <img src={n.img} alt="" className="w-full h-48 object-cover" />
-                            <div className="p-5">
-                                <h3 className="font-extrabold text-lg text-[#1c2145] mb-2">{n.title}</h3>
-                                <p className="text-[#6c6d7e] text-sm leading-5">{n.excerpt}</p>
-                            </div>
-                        </article>
-                    ))}
-                </div>
-                <Link to="/news" className="btn-outline w-full mt-6 lg:hidden text-center block">Все новости</Link>
-            </div>
-        </section>
-    );
-}
-
 function CallbackSection() {
     return (
-        <section className="py-16 lg:py-24">
-            <div className="max-w-[1433px] mx-auto px-4 lg:px-[34px]">
-                <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
-                    <div className="flex-1">
-                        <h2 className="section-title mb-3">Остались вопросы?</h2>
-                        <p className="section-desc mb-6">
-                            Оставьте свои контактные данные, заполнив строки справа, либо напишите нам в соц-сетях.
-                        </p>
-                        <div className="flex gap-3 flex-wrap">
-                            <a href="#" className="btn-outline text-sm">WhatsApp</a>
-                            <a href="#" className="btn-outline text-sm">Telegram</a>
-                            <a href="#" className="btn-outline text-sm">VK</a>
+        <section className="callback">
+            <div className="container">
+                <div className="callback__form">
+                    <div className="form__column">
+                        <span className="form__title--dark">Остались вопросы?</span>
+                        <span className="form__desc--dark">Оставьте свои контактные данные, заполнив строки справа, либо напишите нам в соц-сетях.</span>
+                        <div className="link-buttons">
+                            <a className="link-buttons__item" href="https://t.me/Kod_bessmertiya" style={{ color: '#29A0DC' }}>Telegram</a>
+                            <a className="link-buttons__item" href="https://wa.me/79811269133" style={{ color: '#1A9F49' }}>WhatsApp</a>
+                            <a className="link-buttons__item" href="viber://chat?number=%2B79811269133" style={{ color: '#735FF1' }}>Viber</a>
                         </div>
                     </div>
-                    <div className="flex-1 w-full max-w-[480px]">
-                        <form className="space-y-4">
-                            <input type="text" placeholder="Ваше имя" className="text-input" />
-                            <input type="tel" placeholder="Телефон" className="text-input" />
-                            <textarea placeholder="Ваш вопрос" rows={3} className="text-input resize-none" />
-                            <button type="submit" className="btn-filled w-full">Отправить</button>
-                        </form>
+                    <div className="form__column">
+                        <div className="form__fields" style={{ flexDirection: 'column' }}>
+                            <label className="form__field">
+                                <input type="text" className="text-input" placeholder="Ваше имя" />
+                            </label>
+                            <label className="form__field">
+                                <input type="text" className="text-input" placeholder="Телефон" />
+                            </label>
+                        </div>
+                        <div className="form__footer">
+                            <button type="submit" className="form__submit" style={{ background: '#fff', color: '#1c2145' }}>Отправить</button>
+                            <div className="form__terms" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                                Нажимая кнопку «Отправить» Вы соглашаетесь с условиями <a href="#">политики конфиденциальности</a>.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

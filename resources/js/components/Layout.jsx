@@ -10,7 +10,7 @@ export default function Layout() {
     const [authOpen, setAuthOpen] = useState(false);
 
     return (
-        <div className="flex flex-col min-h-screen pt-[82px] lg:pt-[112px]">
+        <div className="flex flex-col min-h-screen" style={{ paddingTop: 80 }}>
             <Header user={user} onAuthOpen={() => setAuthOpen(true)} onLogout={logout} />
             <main className="flex-1">
                 <Outlet />
