@@ -294,6 +294,108 @@
     }
     .tree-introduce-card__desc { color: #6c6d7e; font-size: 14px; }
 
+    /* ======== SECONDARY HERO ======== */
+    .secondary-hero { padding-bottom: 48px; }
+    .secondary-hero__inner {
+        display: grid;
+        grid-template-columns: minmax(0, 50fr) minmax(0, 50fr);
+        gap: 50px;
+    }
+    .secondary-hero__body {
+        padding-top: 101px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .secondary-hero__title {
+        display: block;
+        margin: 0 0 40px 0;
+        color: #1c2145;
+        font-size: 50px;
+        font-weight: 700;
+        line-height: 54px;
+        letter-spacing: 0.25px;
+    }
+    .secondary-hero__desc { margin-bottom: 24px; }
+    .secondary-hero__desc p { margin: 0; }
+    .secondary-hero__note { margin-bottom: 50px; }
+    .secondary-hero__note p { margin: 0; }
+    .secondary-hero__preview {}
+    .secondary-hero__image { width: 100%; transform: translateY(-13px); }
+
+    .note {
+        display: block;
+        color: #1c2145;
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 22px;
+        letter-spacing: 0.09px;
+        padding: 16px 17px;
+        border-radius: 24px;
+        background: #e9f0ff;
+    }
+
+    /* ======== HOW WORKS ======== */
+    .how-works {
+        padding-top: 150px;
+        padding-bottom: 154px;
+        background-color: #e9f0ff;
+        background-image: url('/images/how-works-bg.svg');
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    .how-works__desc { margin-bottom: 50px; }
+    .number-cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 50px;
+    }
+    .number-card {
+        box-sizing: border-box;
+        height: 100%;
+        padding: 32px 33px 32px 33px;
+        border-radius: 24px;
+        background: #fff;
+    }
+    .number-card__header {
+        display: grid;
+        grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
+        gap: 24px;
+        margin-bottom: 24px;
+        align-items: center;
+    }
+    .number-card__num {
+        display: block;
+        padding: 9px 16px;
+        border-radius: 16px;
+        background: #1980DF;
+        color: #fff;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 36px;
+        letter-spacing: 0.16px;
+        min-width: 54px;
+        text-align: center;
+    }
+    .number-card__heading {
+        display: block;
+        color: #1c2145;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 36px;
+        letter-spacing: 0.16px;
+    }
+    .number-card__body {
+        color: #6c6d7e;
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 22px;
+        letter-spacing: 0.09px;
+    }
+    .number-card__body p { margin: 0; }
+    .number-card__body a { text-decoration: none; color: #1980DF; }
+    .number-card__body a:hover { text-decoration: underline; }
+
     /* ======== PLAN PRICES ======== */
     .plan-prices { padding-top: 104px; padding-bottom: 65px; }
     .prices-cards {
@@ -713,6 +815,19 @@
         .footer__menu a { font-size: 16px; line-height: 20px; }
         .footer__link { font-size: 16px; line-height: 20px; }
         .footer__copyright { font-size: 14px; line-height: 18px; }
+        .secondary-hero__inner { gap: 30px; }
+        .secondary-hero__body { padding-top: 62px; }
+        .secondary-hero__title { font-size: 42px; line-height: 48px; margin-bottom: 32px; }
+        .secondary-hero__desc { width: 529px; max-width: 100%; margin-bottom: 16px; }
+        .secondary-hero__note { margin-bottom: 40px; }
+        .how-works { padding-top: 101px; padding-bottom: 100px; }
+        .how-works__desc { margin-bottom: 51px; }
+        .number-cards { gap: 30px; }
+        .number-card { padding: 25px 25px 24px 25px; }
+        .number-card__header { gap: 16px; margin-bottom: 14px; }
+        .number-card__num { font-size: 24px; line-height: 28px; padding: 10px 12px; min-width: 49px; }
+        .number-card__heading { font-size: 28px; line-height: 32px; }
+        .number-card__body { font-size: 16px; line-height: 20px; }
     }
 
     @media (max-width: 1439px) {
@@ -731,6 +846,13 @@
         .prices-cards { gap: 24px; }
         .plan-card__label { left: auto; right: -15px; top: -9px; transform: rotate(3deg); }
         .callback__form { flex-direction: column; gap: 40px; }
+        .secondary-hero__body { padding-top: 46px; }
+        .secondary-hero__title { font-size: 36px; line-height: 40px; margin-bottom: 24px; }
+        .secondary-hero__image { transform: translateY(16px); }
+        .how-works__desc { margin-bottom: 39px; }
+        .number-cards { gap: 24px; }
+        .number-card__header { margin-bottom: 17px; }
+        .number-card__heading { font-size: 24px; line-height: 28px; }
     }
 
     @media (max-width: 1023px) {
@@ -759,6 +881,18 @@
         .form__footer { grid-template-columns: 1fr; gap: 9px; }
         .form__fields { gap: 22px; }
         .have-questions__inner { gap: 22px; }
+        .secondary-hero__inner { gap: 16px; }
+        .secondary-hero__body { padding-top: 21px; }
+        .secondary-hero__title { width: calc(100% + 114px); margin-bottom: 23px; }
+        .secondary-hero__desc { margin-bottom: 11px; }
+        .secondary-hero__note { padding-right: 47px; margin-bottom: 41px; }
+        .secondary-hero__preview { display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 98px; }
+        .how-works { padding-top: 90px; padding-bottom: 90px; }
+        .how-works__desc { margin-bottom: 31px; }
+        .number-cards { gap: 16px; }
+        .number-card { padding: 17px 18px 16px 15px; }
+        .number-card__num { padding: 7px 11px; min-width: 42px; }
+        .number-card__heading { font-size: 22px; line-height: 26px; }
         .footer__inner { padding-bottom: 32px; margin-bottom: 16px; }
         .footer__menu ul { row-gap: 23px; }
     }
@@ -796,6 +930,13 @@
         .footer__links { justify-self: flex-start; gap: 14px 32px; }
         .footer__menu a { font-size: 18px; line-height: 22px; }
         .footer__link { font-size: 18px; line-height: 22px; }
+        .secondary-hero__inner { grid-template-columns: 1fr; }
+        .secondary-hero__title { width: 100%; }
+        .secondary-hero__desc { margin-bottom: 33px; }
+        .secondary-hero__note { padding-right: 36px; margin-bottom: 41px; }
+        .secondary-hero__preview { padding-bottom: 0; }
+        .secondary-hero__image { transform: none; }
+        .number-cards { grid-template-columns: 1fr; gap: 23px; }
     }
 
     @media (max-width: 479px) {
@@ -811,6 +952,14 @@
         .faq__btn { font-size: 20px; line-height: 24px; }
         .faq__btn::before { height: 25px; }
         .faq__item[data-toggle-item="expanded"] { padding-bottom: 12px; }
+        .secondary-hero__body { padding-top: 8px; }
+        .secondary-hero__title { font-size: 29px; line-height: 32px; }
+        .secondary-hero__desc { margin-bottom: 13px; }
+        .secondary-hero__note { margin-bottom: 32px; }
+        .secondary-hero__preview { padding: 0 10px; }
+        .number-card__header { gap: 10px; }
+        .number-card__num { padding: 4px 10px; min-width: 37px; }
+        .number-card__heading { font-size: 20px; line-height: 24px; }
     }
 
     @media (max-width: 270px) {
