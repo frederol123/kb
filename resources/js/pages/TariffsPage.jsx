@@ -91,7 +91,7 @@ export default function TariffsPage() {
                         <div className="form__column">
                             <span className="form__title">Остались вопросы?</span>
                             <span className="form__desc">Оставьте свои контактные данные, заполнив строки справа, либо напишите нам в соц-сетях.</span>
-                            <div className="link-buttons">
+                            <div className="link-buttons link-buttons--white">
                                 <a className="link-buttons__item" href="https://t.me/Kod_bessmertiya" style={{ color: '#29A0DC' }}>Telegram</a>
                                 <a className="link-buttons__item" href="https://wa.me/79811269133" style={{ color: '#1A9F49' }}>WhatsApp</a>
                                 <a className="link-buttons__item" href="viber://chat?number=%2B79811269133" style={{ color: '#735FF1' }}>Viber</a>
