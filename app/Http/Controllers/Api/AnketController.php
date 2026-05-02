@@ -91,7 +91,7 @@ class AnketController extends Controller
         return response()->json($anket);
     }
 
-    public function destroy(Request $request, Anket $anket): JsonResponse
+    public function destroy(Request $request, Anket $anket): \Illuminate\Http\Response
     {
         if ($anket->user_id !== $request->user()->id) {
             abort(403);
