@@ -112,11 +112,11 @@ export default function CardEditorPage() {
 
             {!isNew && (
                 <div className="flex gap-3 mb-8 flex-wrap">
-                    <a href={`/m/${card?.slug}`} target="_blank" rel="noopener noreferrer" className="btn-outline text-sm">Просмотр</a>
-                    <a href={`/api/ankets/${id}/qr`} className="btn-outline text-sm" download>Скачать QR-код</a>
+                    <a href={`/m/${card?.slug}`} target="_blank" rel="noopener noreferrer" className="text-sm btn-download">Просмотр</a>
+                    <a href={`/api/ankets/${id}/qr`} className="text-sm btn-download" download>Скачать QR-код</a>
                 </div>
             )}
-
+            
             <div className="space-y-6">
                 {/* Info */}
                 <Section title="Информация о человеке">
@@ -155,7 +155,7 @@ export default function CardEditorPage() {
                         </select>
                     </div>
                     <button onClick={() => saveInfoMut.mutate()} disabled={saveInfoMut.isPending}
-                            className="btn-filled mt-6">
+                            className="btn-filled text-sm mt-4">
                         {saveInfoMut.isPending ? 'Сохранение...' : 'Сохранить'}
                     </button>
                 </Section>
@@ -207,7 +207,7 @@ export default function CardEditorPage() {
                                 </div>
                             ))}
                             <button onClick={() => saveInfoMut.mutate()} disabled={saveInfoMut.isPending}
-                                    className="btn-outline text-sm">
+                                    className="btn-filled text-sm mt-4">
                                 {saveInfoMut.isPending ? 'Сохранение...' : 'Сохранить родственников'}
                             </button>
                         </Section>
@@ -244,7 +244,7 @@ export default function CardEditorPage() {
                                 {uploading && <span className="text-sm text-[#999]">Загрузка...</span>}
                             </div>
                             <button onClick={() => saveContentMut.mutate()} disabled={saveContentMut.isPending}
-                                    className="btn-outline text-sm mt-4">
+                                    className="btn-filled text-sm mt-4">
                                 {saveContentMut.isPending ? 'Сохранение...' : 'Сохранить галерею'}
                             </button>
                         </Section>
@@ -266,7 +266,7 @@ export default function CardEditorPage() {
                                           className="text-input resize-none text-sm" />
                             </div>
                             <button onClick={() => saveContentMut.mutate()} disabled={saveContentMut.isPending}
-                                    className="btn-outline text-sm mt-4">
+                                    className="btn-filled text-sm mt-4">
                                 {saveContentMut.isPending ? 'Сохранение...' : 'Сохранить видео'}
                             </button>
                         </Section>

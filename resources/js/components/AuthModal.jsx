@@ -57,7 +57,7 @@ export default function AuthModal({ open, onClose }) {
                             <input type="password" value={passwordConfirmation} onChange={e => setPasswordConfirmation(e.target.value)} required
                                    className="text-input" placeholder="Повторите пароль" />
                         </div>
-                        <button type="submit" className="btn-filled w-full">Зарегистрироваться</button>
+                        <button type="submit" className="button button--filled w-full">Зарегистрироваться</button>
                         <p className="text-center text-sm text-[#999]">
                             Уже есть аккаунт?{' '}
                             <button type="button" onClick={() => { setMode('login'); setError(''); }} className="text-[#3476f5] font-bold hover:underline">Войти</button>
@@ -74,7 +74,7 @@ export default function AuthModal({ open, onClose }) {
                             <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
                                    className="text-input" placeholder="email@example.com" />
                         </div>
-                        <button type="submit" className="btn-filled w-full">Отправить</button>
+                        <button type="submit" className="button button--filled w-full">Отправить</button>
                         <p className="text-center text-sm text-[#999]">
                             <button type="button" onClick={() => { setMode('login'); setError(''); }} className="text-[#3476f5] font-bold hover:underline">Вернуться ко входу</button>
                         </p>
@@ -95,7 +95,7 @@ export default function AuthModal({ open, onClose }) {
                             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
                                    className="text-input" placeholder="Ваш пароль" />
                         </div>
-                        <button type="submit" className="btn-filled w-full">Войти</button>
+                        <button type="submit" className="button button--filled w-full">Войти</button>
                         <div className="flex justify-between text-sm">
                             <button type="button" onClick={() => { setMode('register'); setError(''); }} className="text-[#3476f5] font-bold hover:underline">Создать аккаунт</button>
                             <button type="button" onClick={() => { setMode('forgot'); setError(''); }} className="text-[#3476f5] font-bold hover:underline">Забыли пароль?</button>
