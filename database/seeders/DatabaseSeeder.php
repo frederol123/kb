@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use App\Models\Anket;
 use App\Models\Condolence;
 use App\Models\Drev;
-use App\Models\Novost;
+use App\Models\News;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -30,8 +30,8 @@ class DatabaseSeeder extends Seeder
 
         Drev::factory(5)->create();
 
-        Novost::factory(8)->create();
-        Novost::factory(2)->unpublished()->create();
+        News::factory(8)->create();
+        News::factory(2)->unpublished()->create();
 
         Transaction::factory(5)->succeeded()->create();
         Transaction::factory(2)->pending()->create();

@@ -17,6 +17,48 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
 
+    Route::get('/drevs', function (Request $request) {
+        return $request->user()->drevs()->latest()->get();
+    });
+
+    Route::post('/drevs', function (Request $request) {
+        $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'data' => ['nullable', 'array'],
+        ]);
+
+        return $request->user()->drevs()->create($request->only(['title', 'description', 'data']));
+    });
+
+    Route::get('/drevs/{drev}', function (\App\Models\Drev $drev, Request $request) {
+        if ($drev->user_id !== $request->user()->id) abort(403);
+        return $drev;
+    });
+
+    Route::put('/drevs/{drev}', function (\App\Models\Drev $drev, Request $request) {
+        if ($drev->user_id !== $request->user()->id) abort(403);
+
+        $request->validate([
+            'title' => ['sometimes', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'data' => ['nullable', 'array'],
+        ]);
+
+        $drev->update($request->only(['title', 'description', 'data']));
+        return $drev;
+    });
+
+    Route::delete('/drevs/{drev}', function (\App\Models\Drev $drev, Request $request) {
+        if ($drev->user_id !== $request->user()->id) abort(403);
+        $drev->delete();
+        return response()->noContent();
+    });
+
+    Route::get('/transactions', function (Request $request) {
+        return $request->user()->transactions()->latest()->get();
+    });
+
     Route::prefix('ankets')->group(function () {
         Route::get('/', [AnketController::class, 'index']);
         Route::post('/', [AnketController::class, 'store']);
@@ -57,7 +99,7 @@ Route::post('/condolences', function (Request $request) {
 })->middleware('throttle:30,1');
 
 Route::get('/m/news', function () {
-    $news = \App\Models\Novost::whereNotNull('published_at')
+    $news = \App\Models\News::whereNotNull('published_at')
         ->orderByDesc('published_at')
         ->paginate(10);
 
