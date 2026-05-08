@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 const tariffs = [
     {
@@ -43,7 +43,57 @@ const tariffs = [
     },
 ];
 
+function TariffCard({ tariff, index, detailed }) {
+    return (
+        <div className={`plan-card ${tariff.highlighted ? 'plan-card--highlighted' : ''}`}>
+            {tariff.badge && (
+                <div className="plan-card__badges">
+                    <img src={`/uploads/2024/02/${tariff.badge}`} alt="" className="plan-card__badge" />
+                </div>
+            )}
+            {tariff.highlighted && <span className="plan-card__label">Оптимальный выбор</span>}
+            <span className="plan-card__title">{tariff.title}</span>
+            {tariff.desc && <span className="plan-card__desc" dangerouslySetInnerHTML={{ __html: tariff.desc }} />}
+            <div className="plan-card__body">
+                <span className="plan-card__heading">Преимущества:</span>
+                <div className="icon-list plan-card__advantages">
+                    {tariff.features.map((f, j) => (
+                        <div key={j} className="icon-list__item">
+                            <img src={`/uploads/2024/02/${f.icon}`} alt="" className="icon-list__image" />
+                            <div className="icon-list__content"><p>{f.text}</p></div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <span className="plan-card__price">{tariff.price} ₽</span>
+            {detailed ? (
+                <Link to="/tariffs" className="button plan-card__btn">← Назад к тарифам</Link>
+            ) : (
+                <Link to={`/tarif?count=${index}`} className={`button plan-card__btn ${tariff.highlighted ? 'button--filled' : ''}`}>
+                    Подробнее
+                </Link>
+            )}
+            <span className="plan-card__under-note">После оплаты анкеты сразу появятся в вашем Личном кабинете</span>
+        </div>
+    );
+}
+
 export default function TariffsPage() {
+    const [searchParams] = useSearchParams();
+    const countParam = searchParams.get('count');
+    const selectedIndex = countParam !== null ? parseInt(countParam, 10) : null;
+    const tariff = selectedIndex !== null ? tariffs[selectedIndex] : null;
+
+    if (tariff) {
+        return (
+            <section className="single-content" style={{ paddingTop: 51, paddingBottom: 100 }}>
+                <div className="container" style={{ maxWidth: 620 }}>
+                    <TariffCard tariff={tariff} index={selectedIndex} detailed />
+                </div>
+            </section>
+        );
+    }
+
     return (
         <>
             <section className="single-content">
@@ -54,32 +104,7 @@ export default function TariffsPage() {
                     </span>
                     <div className="prices-cards">
                         {tariffs.map((t, i) => (
-                            <div key={i} className={`plan-card ${t.highlighted ? 'plan-card--highlighted' : ''}`}>
-                                {t.badge && (
-                                    <div className="plan-card__badges">
-                                        <img src={`/uploads/2024/02/${t.badge}`} alt="" className="plan-card__badge" />
-                                    </div>
-                                )}
-                                {t.highlighted && <span className="plan-card__label">Оптимальный выбор</span>}
-                                <span className="plan-card__title">{t.title}</span>
-                                {t.desc && <span className="plan-card__desc" dangerouslySetInnerHTML={{ __html: t.desc }} />}
-                                <div className="plan-card__body">
-                                    <span className="plan-card__heading">Преимущества:</span>
-                                    <div className="icon-list plan-card__advantages">
-                                        {t.features.map((f, j) => (
-                                            <div key={j} className="icon-list__item">
-                                                <img src={`/uploads/2024/02/${f.icon}`} alt="" className="icon-list__image" />
-                                                <div className="icon-list__content"><p>{f.text}</p></div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <span className="plan-card__price">{t.price} ₽</span>
-                                <Link to={`/tarif?count=${i}`} className={`button plan-card__btn ${t.highlighted ? 'button--filled' : ''}`}>
-                                    Подробнее
-                                </Link>
-                                <span className="plan-card__under-note">После оплаты анкеты сразу появятся в вашем Личном кабинете</span>
-                            </div>
+                            <TariffCard key={i} tariff={t} index={i} />
                         ))}
                     </div>
                 </div>

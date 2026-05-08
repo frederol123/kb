@@ -11,6 +11,10 @@ import FAQPage from './pages/FAQPage';
 import DashboardLayout from './pages/Cabinet/DashboardLayout';
 import MyCardsPage from './pages/Cabinet/MyAnketsPage';
 import CardEditorPage from './pages/Cabinet/AnketEditorPage';
+import MyDrevPage from './pages/Cabinet/MyDrevPage';
+import PurchaseHistoryPage from './pages/Cabinet/PurchaseHistoryPage';
+import SettingsPage from './pages/Cabinet/SettingsPage';
+import DrevEditorPage from './pages/Cabinet/DrevEditorPage';
 
 const queryClient = new QueryClient({
     defaultOptions: { queries: { staleTime: 1000 * 60, retry: 1 } },
@@ -35,15 +39,18 @@ export default function App() {
                             <Route path="/" element={<HomePage />} />
                             <Route path="/m/:slug" element={<MemorialPage />} />
                             <Route path="/tariffs" element={<TariffsPage />} />
+                            <Route path="/tarif" element={<TariffsPage />} />
                             <Route path="/faq" element={<FAQPage />} />
                             <Route path="/order-steps" element={<OrderStepsPage />} />
                             <Route path="/family_tree" element={<FamilyTreePage />} />
                             <Route path="/news" element={<EmptyPage title="Новости" />} />
                             <Route path="/lk" element={<DashboardLayout />}>
                                 <Route index element={<MyCardsPage />} />
-                                <Route path="drev" element={<EmptyPage title="Генеалогическое дерево" />} />
-                                <Route path="history" element={<EmptyPage title="История покупок" />} />
-                                <Route path="settings" element={<EmptyPage title="Настройки" />} />
+                                <Route path="drev" element={<MyDrevPage />} />
+                                <Route path="history" element={<PurchaseHistoryPage />} />
+                                <Route path="settings" element={<SettingsPage />} />
+                                <Route path="drev/new" element={<DrevEditorPage />} />
+                                <Route path="drev/:id/edit" element={<DrevEditorPage />} />
                                 <Route path="cards/:id/edit" element={<CardEditorPage />} />
                             </Route>
                         </Route>

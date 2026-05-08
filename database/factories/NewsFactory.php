@@ -2,15 +2,15 @@
 
 namespace Database\Factories;
 
-use App\Models\Novost;
+use App\Models\News;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends Factory<Novost>
+ * @extends Factory<News>
  */
-class NovostFactory extends Factory
+class NewsFactory extends Factory
 {
     public function definition(): array
     {
