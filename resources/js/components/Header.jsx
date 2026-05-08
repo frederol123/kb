@@ -38,7 +38,7 @@ export default function Header({ user, onAuthOpen, onLogout }) {
                                 {user.name}
                             </Link>
                         ) : (
-                            <button onClick={onAuthOpen} className="button header__login">Войти</button>
+                            <button onClick={onAuthOpen} className="button button--filled header__login">Войти</button>
                         )}
                     </div>
                     <button
