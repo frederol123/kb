@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useRef } from 'react';
 import api from '../../lib/api';
+import { useToast } from '../../contexts/ToastContext';
 
 const emptyInfo = { last_name: '', first_name: '', middle_name: '', birth_date: '', death_date: '', birthplace: '', deathplace: '', photo: '' };
 const emptyContent = { biography: '', gallery: [], video: null };
@@ -10,6 +11,7 @@ export default function CardEditorPage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const toast = useToast();
     const isNew = !id || id === 'new';
 
     const [info, setInfo] = useState({ ...emptyInfo });
@@ -40,6 +42,7 @@ export default function CardEditorPage() {
             return api.put(`/ankets/${id}`, payload);
         },
         onSuccess: (res) => {
+            toast('Изменения сохранены');
             queryClient.invalidateQueries({ queryKey: ['my-cards'] });
             if (isNew) navigate(`/lk/cards/${res.data.id}/edit`, { replace: true });
         },
@@ -47,7 +50,10 @@ export default function CardEditorPage() {
 
     const saveContentMut = useMutation({
         mutationFn: () => api.put(`/ankets/${id}/content`, { content: { ...content, gallery: content.gallery, video: content.video } }),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['card', id] }),
+        onSuccess: () => {
+            toast('Изменения сохранены');
+            queryClient.invalidateQueries({ queryKey: ['card', id] });
+        },
     });
 
     const updateInfo = (field, value) => setInfo(prev => ({ ...prev, [field]: value }));

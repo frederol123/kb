@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import MemorialPage from './pages/MemorialPage';
@@ -33,7 +34,8 @@ export default function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
-                <AuthProvider>
+                    <AuthProvider>
+                        <ToastProvider>
                     <Routes>
                         <Route element={<Layout />}>
                             <Route path="/" element={<HomePage />} />
@@ -55,6 +57,7 @@ export default function App() {
                             </Route>
                         </Route>
                     </Routes>
+                    </ToastProvider>
                 </AuthProvider>
             </BrowserRouter>
         </QueryClientProvider>
