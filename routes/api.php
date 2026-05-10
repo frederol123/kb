@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AnketController;
 use App\Http\Controllers\Api\QrController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 Route::middleware('throttle:10,1')->group(function () {
     Route::post('/auth/login', [AuthController::class, 'login']);
@@ -70,13 +71,17 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
         Route::post('/{anket}/upload', function (Request $request, \App\Models\Anket $anket) {
             if ($anket->user_id !== $request->user()->id) abort(403);
 
+            if ($anket->content && isset($anket->content['gallery']) && count($anket->content['gallery']) >= $request->user()->max_gallery_images) {
+                abort(422, 'Достигнут лимит изображений в галерее');
+            }
+
             $request->validate([
                 'file' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp,ico', 'max:10240'],
             ]);
 
-            $path = $request->file('file')->store('uploads', 'public');
+            $path = $request->file('file')->store('uploads', 's3');
 
-            return response()->json(['url' => asset('storage/' . $path)], 201);
+            return response()->json(['url' => Storage::disk('s3')->url($path)], 201);
         });
     });
 });

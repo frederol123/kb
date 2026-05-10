@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useRef } from 'react';
 import api from '../../lib/api';
 import { useToast } from '../../contexts/ToastContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const emptyInfo = { last_name: '', first_name: '', middle_name: '', birth_date: '', death_date: '', birthplace: '', deathplace: '', photo: '' };
 const emptyContent = { biography: '', gallery: [], video: null };
@@ -12,6 +13,8 @@ export default function CardEditorPage() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const toast = useToast();
+    const { user } = useAuth();
+    const maxGallery = user?.max_gallery_images ?? 6;
     const isNew = !id || id === 'new';
 
     const [info, setInfo] = useState({ ...emptyInfo });
@@ -36,8 +39,7 @@ export default function CardEditorPage() {
     }, [card]);
 
     const saveInfoMut = useMutation({
-        mutationFn: () => {
-            const payload = { info, content, status, family };
+        mutationFn: (payload) => {
             if (isNew) return api.post('/ankets', payload);
             return api.put(`/ankets/${id}`, payload);
         },
@@ -48,13 +50,22 @@ export default function CardEditorPage() {
         },
     });
 
+    const saveInfo = () => {
+        saveInfoMut.mutate({ info, content, status, family });
+    };
+
     const saveContentMut = useMutation({
-        mutationFn: () => api.put(`/ankets/${id}/content`, { content: { ...content, gallery: content.gallery, video: content.video } }),
+        mutationFn: (payload) => api.put(`/ankets/${id}/content`, payload),
         onSuccess: () => {
             toast('Изменения сохранены');
             queryClient.invalidateQueries({ queryKey: ['card', id] });
         },
     });
+
+    const saveContent = () => {
+        const payload = { content: { biography: content.biography, gallery: content.gallery, video: content.video } };
+        saveContentMut.mutate(payload);
+    };
 
     const updateInfo = (field, value) => setInfo(prev => ({ ...prev, [field]: value }));
 
@@ -72,7 +83,8 @@ export default function CardEditorPage() {
 
     const handleGalleryUpload = async (e) => {
         const file = e.target.files?.[0];
-        if (!file || !id || isNew) return alert('Сначала сохраните карточку');
+        if (!file || !id || isNew) return;
+        if ((content.gallery || []).length >= maxGallery) return toast(`Достигнут лимит (${maxGallery} изображений)`);
         setUploading(true);
         const form = new FormData();
         form.append('file', file);
@@ -160,7 +172,7 @@ export default function CardEditorPage() {
                             <option value="private">Приватная</option>
                         </select>
                     </div>
-                    <button onClick={() => saveInfoMut.mutate()} disabled={saveInfoMut.isPending}
+                    <button onClick={saveInfo} disabled={saveInfoMut.isPending}
                             className="btn-filled text-sm mt-4">
                         {saveInfoMut.isPending ? 'Сохранение...' : 'Сохранить'}
                     </button>
@@ -212,7 +224,7 @@ export default function CardEditorPage() {
                                     ))}
                                 </div>
                             ))}
-                            <button onClick={() => saveInfoMut.mutate()} disabled={saveInfoMut.isPending}
+                            <button onClick={saveInfo} disabled={saveInfoMut.isPending}
                                     className="btn-filled text-sm mt-4">
                                 {saveInfoMut.isPending ? 'Сохранение...' : 'Сохранить родственников'}
                             </button>
@@ -224,14 +236,14 @@ export default function CardEditorPage() {
                                       onChange={e => setContent(prev => ({ ...prev, biography: e.target.value }))}
                                       className="text-input resize-y"
                                       placeholder="Напишите биографию..." />
-                            <button onClick={() => saveContentMut.mutate()} disabled={saveContentMut.isPending}
+                            <button onClick={saveContent} disabled={saveContentMut.isPending}
                                     className="btn-filled mt-4 text-sm">
                                 {saveContentMut.isPending ? 'Сохранение...' : 'Сохранить биографию'}
                             </button>
                         </Section>
 
                         {/* Gallery */}
-                        <Section title="Галерея">
+                        <Section title={`Галерея (${(content.gallery || []).length}/${maxGallery})`}>
                             <div className="grid grid-cols-3 md:grid-cols-4 gap-3 mb-4">
                                 {(content.gallery || []).map((img, idx) => (
                                     <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 group">
@@ -244,12 +256,16 @@ export default function CardEditorPage() {
                                     </div>
                                 ))}
                             </div>
-                            <div className="flex items-center gap-3">
-                                <input type="file" accept="image/*" onChange={handleGalleryUpload} disabled={uploading}
-                                       className="text-sm text-[#6c6d7e]" />
-                                {uploading && <span className="text-sm text-[#999]">Загрузка...</span>}
-                            </div>
-                            <button onClick={() => saveContentMut.mutate()} disabled={saveContentMut.isPending}
+                            {(content.gallery || []).length >= maxGallery ? (
+                                <p className="text-sm text-red-500 mb-2">Достигнут лимит ({maxGallery} изображений)</p>
+                            ) : (
+                                <div className="flex items-center gap-3">
+                                    <input type="file" accept="image/*" onChange={handleGalleryUpload} disabled={uploading}
+                                           className="text-sm text-[#6c6d7e]" />
+                                    {uploading && <span className="text-sm text-[#999]">Загрузка...</span>}
+                                </div>
+                            )}
+                            <button onClick={saveContent} disabled={saveContentMut.isPending}
                                     className="btn-filled text-sm mt-4">
                                 {saveContentMut.isPending ? 'Сохранение...' : 'Сохранить галерею'}
                             </button>
@@ -271,7 +287,7 @@ export default function CardEditorPage() {
                                           onChange={e => setContent(prev => ({ ...prev, video: { ...prev.video, description: e.target.value } }))}
                                           className="text-input resize-none text-sm" />
                             </div>
-                            <button onClick={() => saveContentMut.mutate()} disabled={saveContentMut.isPending}
+                            <button onClick={saveContent} disabled={saveContentMut.isPending}
                                     className="btn-filled text-sm mt-4">
                                 {saveContentMut.isPending ? 'Сохранение...' : 'Сохранить видео'}
                             </button>

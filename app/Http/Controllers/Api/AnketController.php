@@ -69,9 +69,17 @@ class AnketController extends Controller
             'status' => ['string', 'in:draft,published,private'],
             'info' => ['array'],
             'family' => ['array', 'nullable'],
+            'content' => ['nullable', 'array'],
+            'content.gallery' => ['nullable', 'array', 'max:' . $request->user()->max_gallery_images],
         ]);
 
-        $anket->update($request->only(['status', 'info', 'family']));
+        $data = $request->only(['status', 'info', 'family']);
+
+        if ($request->has('content')) {
+            $data['content'] = $request->input('content');
+        }
+
+        $anket->update($data);
 
         return response()->json($anket);
     }
@@ -84,6 +92,7 @@ class AnketController extends Controller
 
         $request->validate([
             'content' => ['required', 'array'],
+            'content.gallery' => ['nullable', 'array', 'max:' . $request->user()->max_gallery_images],
         ]);
 
         $anket->update(['content' => $request->input('content')]);
