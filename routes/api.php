@@ -76,7 +76,7 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
             }
 
             $request->validate([
-                'file' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp,ico', 'max:10240'],
+                'file' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp,ico', 'max:65536'],
             ]);
 
             $path = $request->file('file')->store('uploads', 's3');
