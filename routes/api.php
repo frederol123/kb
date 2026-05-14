@@ -83,6 +83,27 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
 
             return response()->json(['url' => Storage::disk('s3')->url($path)], 201);
         });
+
+        Route::post('/{anket}/upload-video', function (Request $request, \App\Models\Anket $anket) {
+            if ($anket->user_id !== $request->user()->id) abort(403);
+
+            $videos = $anket->content['videos'] ?? [];
+            if (count($videos) >= $request->user()->max_videos) {
+                abort(422, 'Достигнут лимит видео');
+            }
+
+            $request->validate([
+                'file' => ['required', 'file', 'mimes:mp4,webm,mov,avi,mkv,ogv,ogg,mpeg,3gp,wmv,flv', 'max:204800'],
+            ]);
+
+            $path = $request->file('file')->store('uploads', 's3');
+
+            return response()->json([
+                'url' => Storage::disk('s3')->url($path),
+                'original_name' => $request->file('file')->getClientOriginalName(),
+                'mime_type' => $request->file('file')->getMimeType(),
+            ], 201);
+        });
     });
 });
 

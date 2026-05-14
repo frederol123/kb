@@ -108,6 +108,6 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        return response()->json($request->user()->only(['id', 'name', 'email', 'max_gallery_images']));
+        return response()->json($request->user()->only(['id', 'name', 'email', 'max_gallery_images', 'max_videos']));
     }
 }

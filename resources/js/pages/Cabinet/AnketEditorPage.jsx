@@ -6,7 +6,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { useAuth } from '../../contexts/AuthContext';
 
 const emptyInfo = { last_name: '', first_name: '', middle_name: '', birth_date: '', death_date: '', birthplace: '', deathplace: '', photo: '' };
-const emptyContent = { biography: '', gallery: [], video: null };
+const emptyContent = { biography: '', gallery: [], videos: [] };
 
 export default function CardEditorPage() {
     const { id } = useParams();
@@ -15,6 +15,7 @@ export default function CardEditorPage() {
     const toast = useToast();
     const { user } = useAuth();
     const maxGallery = user?.max_gallery_images ?? 6;
+    const maxVideos = user?.max_videos ?? 6;
     const isNew = !id || id === 'new';
 
     const [info, setInfo] = useState({ ...emptyInfo });
@@ -32,7 +33,7 @@ export default function CardEditorPage() {
     useEffect(() => {
         if (card) {
             setInfo({ ...emptyInfo, ...card.info });
-            setContent({ ...emptyContent, ...card.content, gallery: card.content?.gallery || [] });
+            setContent({ ...emptyContent, ...card.content, gallery: card.content?.gallery || [], videos: card.content?.videos || [] });
             setStatus(card.status);
             setFamily(card.family || { children: [], spouses: [], parents: [] });
         }
@@ -63,7 +64,7 @@ export default function CardEditorPage() {
     });
 
     const saveContent = () => {
-        const payload = { content: { biography: content.biography, gallery: content.gallery, video: content.video } };
+        const payload = { content: { biography: content.biography, gallery: content.gallery, videos: content.videos } };
         saveContentMut.mutate(payload);
     };
 
@@ -94,6 +95,41 @@ export default function CardEditorPage() {
 
     const removeGalleryItem = (idx) => {
         setContent(prev => ({ ...prev, gallery: prev.gallery.filter((_, i) => i !== idx) }));
+    };
+
+    const [videoMode, setVideoMode] = useState('link');
+    const [videoForm, setVideoForm] = useState({ link: '', preview: '', description: '', url: '', original_name: '', mime_type: '' });
+
+    const handleVideoUpload = async (file) => {
+        if (!file || !id || isNew) return;
+        setUploading(true);
+        const form = new FormData();
+        form.append('file', file);
+        try {
+            const { data } = await api.post(`/ankets/${id}/upload-video`, form);
+            setVideoForm(prev => ({ ...prev, url: data.url, original_name: data.original_name, mime_type: data.mime_type }));
+        } finally { setUploading(false); }
+    };
+
+    const addVideoItem = () => {
+        if ((content.videos || []).length >= maxVideos) return toast(`Достигнут лимит (${maxVideos} видео)`);
+        const item = videoMode === 'upload'
+            ? { type: 'upload', url: videoForm.url, original_name: videoForm.original_name, mime_type: videoForm.mime_type, description: videoForm.description }
+            : { type: 'link', link: videoForm.link, preview: videoForm.preview, description: videoForm.description };
+
+        if (videoMode === 'upload' && !videoForm.url) return toast('Сначала загрузите файл');
+        if (videoMode === 'link' && !videoForm.link) return toast('Укажите ссылку на видео');
+
+        const newVideos = [...(content.videos || []), item];
+        setContent(prev => ({ ...prev, videos: newVideos }));
+        setVideoForm({ link: '', preview: '', description: '', url: '', original_name: '', mime_type: '' });
+        saveContentMut.mutate({ content: { biography: content.biography, gallery: content.gallery, videos: newVideos } });
+    };
+
+    const removeVideoItem = (idx) => {
+        const newVideos = content.videos.filter((_, i) => i !== idx);
+        setContent(prev => ({ ...prev, videos: newVideos }));
+        saveContentMut.mutate({ content: { biography: content.biography, gallery: content.gallery, videos: newVideos } });
     };
 
     const addRelative = (type) => {
@@ -267,26 +303,92 @@ export default function CardEditorPage() {
                             </button>
                         </Section>
 
-                        {/* Video */}
-                        <Section title="Видео">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Field label="Ссылка на видео (YouTube/Vimeo)" value={content.video?.link || ''}
-                                       onChange={v => setContent(prev => ({ ...prev, video: { ...prev.video, link: v } }))}
-                                       placeholder="https://youtube.com/watch?v=..." />
-                                <Field label="URL превью" value={content.video?.preview || ''}
-                                       onChange={v => setContent(prev => ({ ...prev, video: { ...prev.video, preview: v } }))}
-                                       placeholder="https://..." />
-                            </div>
-                            <div className="mt-3">
-                                <label className="block text-sm text-[#999] mb-1.5">Описание видео</label>
-                                <textarea value={content.video?.description || ''} rows={2}
-                                          onChange={e => setContent(prev => ({ ...prev, video: { ...prev.video, description: e.target.value } }))}
-                                          className="text-input resize-none text-sm" />
-                            </div>
-                            <button onClick={saveContent} disabled={saveContentMut.isPending}
-                                    className="btn-filled text-sm mt-4">
-                                {saveContentMut.isPending ? 'Сохранение...' : 'Сохранить видео'}
-                            </button>
+                        {/* Videos */}
+                        <Section title={`Видео (${(content.videos || []).length}/${maxVideos})`}>
+                            {(content.videos || []).length > 0 && (
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-5">
+                                    {(content.videos || []).map((v, idx) => (
+                                        <div key={idx} className="relative rounded-lg overflow-hidden border border-gray-200 group bg-gray-900 aspect-video">
+                                            {v.type === 'upload' && v.url ? (
+                                                <video src={v.url} className="w-full h-full object-contain" preload="metadata" />
+                                            ) : v.preview ? (
+                                                <img src={v.preview} alt="" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <span className="text-white/60 text-xs truncate px-2">{v.link || v.original_name || 'Видео'}</span>
+                                                </div>
+                                            )}
+                                            <button onClick={() => removeVideoItem(idx)}
+                                                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                                ×
+                                            </button>
+                                            {v.description && (
+                                                <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1.5 truncate">{v.description}</div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            {(content.videos || []).length >= maxVideos ? (
+                                <p className="text-sm text-red-500 mb-2">Достигнут лимит ({maxVideos} видео)</p>
+                            ) : (
+                                <div className="border border-dashed border-[#cfd9e8] rounded-xl p-5 bg-[#f8faff]">
+                                    <div className="flex gap-2 mb-4">
+                                        <button onClick={() => setVideoMode('link')}
+                                                className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors ${videoMode === 'link' ? 'bg-[#3476f5] text-white' : 'bg-gray-100 text-[#666]'}`}>
+                                            Ссылка
+                                        </button>
+                                        <button onClick={() => setVideoMode('upload')}
+                                                className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors ${videoMode === 'upload' ? 'bg-[#3476f5] text-white' : 'bg-gray-100 text-[#666]'}`}>
+                                            Загрузить файл
+                                        </button>
+                                    </div>
+                                    {videoMode === 'link' ? (
+                                        <>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                                <Field label="Ссылка на видео (YouTube/Vimeo)" value={videoForm.link}
+                                                       onChange={v => setVideoForm(prev => ({ ...prev, link: v }))}
+                                                       placeholder="https://youtube.com/watch?v=..." />
+                                                <Field label="URL превью" value={videoForm.preview}
+                                                       onChange={v => setVideoForm(prev => ({ ...prev, preview: v }))}
+                                                       placeholder="https://..." />
+                                            </div>
+                                            <div className="mb-3">
+                                                <label className="block text-sm text-[#999] mb-1.5">Описание видео</label>
+                                                <textarea value={videoForm.description} rows={2}
+                                                          onChange={e => setVideoForm(prev => ({ ...prev, description: e.target.value }))}
+                                                          className="text-input resize-none text-sm" />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {videoForm.url ? (
+                                                <div className="mb-3">
+                                                    <video src={videoForm.url} controls className="w-full max-w-[400px] rounded-lg" preload="metadata">
+                                                        Ваш браузер не поддерживает видео.
+                                                    </video>
+                                                    <p className="text-sm text-[#1980DF] mt-1.5 truncate">{videoForm.original_name}</p>
+                                                </div>
+                                            ) : (
+                                                <div className="mb-3">
+                                                    <FileUpload onFile={handleVideoUpload} disabled={uploading} accept="video/*" />
+                                                    {uploading && <span className="text-sm text-[#999] ml-3">Загрузка...</span>}
+                                                </div>
+                                            )}
+                                            <div className="mb-3">
+                                                <label className="block text-sm text-[#999] mb-1.5">Описание видео</label>
+                                                <textarea value={videoForm.description} rows={2}
+                                                          onChange={e => setVideoForm(prev => ({ ...prev, description: e.target.value }))}
+                                                          className="text-input resize-none text-sm" />
+                                            </div>
+                                        </>
+                                    )}
+                                    <button onClick={addVideoItem}
+                                            className="btn-filled text-sm">
+                                        Добавить видео
+                                    </button>
+                                </div>
+                            )}
                         </Section>
                     </>
                 )}
@@ -304,7 +406,7 @@ function Section({ title, children }) {
     );
 }
 
-function FileUpload({ onFile, disabled }) {
+function FileUpload({ onFile, disabled, accept = 'image/*' }) {
     const [fileName, setFileName] = useState(null);
     const [dragOver, setDragOver] = useState(false);
     const inputRef = useRef(null);
@@ -351,7 +453,7 @@ function FileUpload({ onFile, disabled }) {
             <input
                 ref={inputRef}
                 type="file"
-                accept="image/*"
+                accept={accept}
                 onChange={handleChange}
                 disabled={disabled}
                 className="hidden"
@@ -364,7 +466,7 @@ function FileUpload({ onFile, disabled }) {
             ) : (
                 <>
                     <p className="text-sm font-medium text-[#4a4d6b]">Выберите файл</p>
-                    <p className="text-xs text-[#b0b0b0] mt-0.5">или перетащите изображение</p>
+                    <p className="text-xs text-[#b0b0b0] mt-0.5">или перетащите файл</p>
                 </>
             )}
         </div>
