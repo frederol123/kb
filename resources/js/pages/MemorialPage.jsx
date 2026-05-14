@@ -68,7 +68,7 @@ export default function MemorialPage() {
                 )}
 
                 {renderGallery(card.content?.gallery)}
-                {renderVideo(card.content?.video)}
+                {renderVideos(card.content?.videos)}
 
                 <div className="bg-white rounded-2xl p-6 lg:p-8 mb-6 shadow-sm">
                     <h2 className="font-extrabold text-xl text-[#1c2145] mb-6">Книга соболезнований</h2>
@@ -135,22 +135,32 @@ function renderGallery(gallery) {
     );
 }
 
-function renderVideo(video) {
-    if (!video || (!video.link && !video.preview)) return null;
+function renderVideos(videos) {
+    if (!videos || videos.length === 0) return null;
     return (
         <div className="bg-white rounded-2xl p-6 lg:p-8 mb-6 shadow-sm">
             <h2 className="font-extrabold text-xl text-[#1c2145] mb-4">Видео</h2>
-            {video.preview ? (
-                <a href={video.link || '#'} target="_blank" rel="noopener noreferrer" className="block">
-                    <img src={video.preview} alt="Видео" className="w-full max-w-[480px] rounded-xl" />
-                </a>
-            ) : video.link ? (
-                <a href={video.link} target="_blank" rel="noopener noreferrer"
-                   className="btn-outline inline-flex">Смотреть видео</a>
-            ) : null}
-            {video.description && (
-                <p className="text-[#6c6d7e] text-sm mt-3 leading-5">{video.description}</p>
-            )}
+            <div className="space-y-5">
+                {videos.map((v, i) => (
+                    <div key={i}>
+                        {v.type === 'upload' && v.url ? (
+                            <video src={v.url} controls className="w-full max-w-[480px] rounded-xl" preload="metadata">
+                                Ваш браузер не поддерживает видео.
+                            </video>
+                        ) : v.preview ? (
+                            <a href={v.link || '#'} target="_blank" rel="noopener noreferrer" className="block">
+                                <img src={v.preview} alt="Видео" className="w-full max-w-[480px] rounded-xl" />
+                            </a>
+                        ) : v.link ? (
+                            <a href={v.link} target="_blank" rel="noopener noreferrer"
+                               className="btn-outline inline-flex">Смотреть видео</a>
+                        ) : null}
+                        {v.description && (
+                            <p className="text-[#6c6d7e] text-sm mt-2 leading-5">{v.description}</p>
+                        )}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

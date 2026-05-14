@@ -71,6 +71,7 @@ class AnketController extends Controller
             'family' => ['array', 'nullable'],
             'content' => ['nullable', 'array'],
             'content.gallery' => ['nullable', 'array', 'max:' . $request->user()->max_gallery_images],
+            'content.videos' => ['nullable', 'array', 'max:' . $request->user()->max_videos],
         ]);
 
         $data = $request->only(['status', 'info', 'family']);
@@ -93,6 +94,7 @@ class AnketController extends Controller
         $request->validate([
             'content' => ['required', 'array'],
             'content.gallery' => ['nullable', 'array', 'max:' . $request->user()->max_gallery_images],
+            'content.videos' => ['nullable', 'array', 'max:' . $request->user()->max_videos],
         ]);
 
         $anket->update(['content' => $request->input('content')]);
