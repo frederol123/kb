@@ -69,8 +69,7 @@ export default function CardEditorPage() {
 
     const updateInfo = (field, value) => setInfo(prev => ({ ...prev, [field]: value }));
 
-    const handlePhotoUpload = async (e) => {
-        const file = e.target.files?.[0];
+    const handlePhotoUpload = async (file) => {
         if (!file || !id || isNew) return alert('Сначала сохраните карточку');
         setUploading(true);
         const form = new FormData();
@@ -81,8 +80,7 @@ export default function CardEditorPage() {
         } finally { setUploading(false); }
     };
 
-    const handleGalleryUpload = async (e) => {
-        const file = e.target.files?.[0];
+    const handleGalleryUpload = async (file) => {
         if (!file || !id || isNew) return;
         if ((content.gallery || []).length >= maxGallery) return toast(`Достигнут лимит (${maxGallery} изображений)`);
         setUploading(true);
@@ -147,8 +145,7 @@ export default function CardEditorPage() {
                     {!isNew && (
                         <div className="mb-6">
                             <label className="block text-sm text-[#999] mb-1.5">Фото</label>
-                            <input type="file" accept="image/*" onChange={handlePhotoUpload} disabled={uploading}
-                                   className="text-sm text-[#6c6d7e]" />
+                            <FileUpload onFile={handlePhotoUpload} disabled={uploading} />
                         </div>
                     )}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -260,8 +257,7 @@ export default function CardEditorPage() {
                                 <p className="text-sm text-red-500 mb-2">Достигнут лимит ({maxGallery} изображений)</p>
                             ) : (
                                 <div className="flex items-center gap-3">
-                                    <input type="file" accept="image/*" onChange={handleGalleryUpload} disabled={uploading}
-                                           className="text-sm text-[#6c6d7e]" />
+                                    <FileUpload onFile={handleGalleryUpload} disabled={uploading} />
                                     {uploading && <span className="text-sm text-[#999]">Загрузка...</span>}
                                 </div>
                             )}
@@ -304,6 +300,73 @@ function Section({ title, children }) {
         <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-sm">
             <h2 className="font-extrabold text-xl text-[#1c2145] mb-6">{title}</h2>
             {children}
+        </div>
+    );
+}
+
+function FileUpload({ onFile, disabled }) {
+    const [fileName, setFileName] = useState(null);
+    const [dragOver, setDragOver] = useState(false);
+    const inputRef = useRef(null);
+
+    const processFile = (file) => {
+        if (!file || disabled) return;
+        setFileName(file.name);
+        onFile(file);
+        if (inputRef.current) inputRef.current.value = '';
+    };
+
+    const handleChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) processFile(file);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setDragOver(false);
+        const file = e.dataTransfer.files?.[0];
+        if (file) processFile(file);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        if (!disabled) setDragOver(true);
+    };
+
+    const handleDragLeave = () => setDragOver(false);
+
+    const isActive = dragOver && !disabled;
+
+    return (
+        <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onClick={() => inputRef.current?.click()}
+            className={`relative border-2 border-dashed rounded-xl px-5 py-4 text-center cursor-pointer transition-all duration-200 select-none
+                ${disabled ? 'opacity-50 cursor-not-allowed border-gray-200 bg-gray-50' :
+                  isActive ? 'border-[#1980DF] bg-[#eef5ff] scale-[1.02]' :
+                  'border-[#cfd9e8] bg-[#f8faff] hover:border-[#1980DF] hover:bg-[#eef5ff]'}`}
+        >
+            <input
+                ref={inputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleChange}
+                disabled={disabled}
+                className="hidden"
+            />
+            <svg className="mx-auto mb-2 w-8 h-8 text-[#b0b8d0]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+            </svg>
+            {fileName ? (
+                <p className="text-sm font-medium text-[#1980DF] truncate max-w-[200px]">{fileName}</p>
+            ) : (
+                <>
+                    <p className="text-sm font-medium text-[#4a4d6b]">Выберите файл</p>
+                    <p className="text-xs text-[#b0b0b0] mt-0.5">или перетащите изображение</p>
+                </>
+            )}
         </div>
     );
 }
