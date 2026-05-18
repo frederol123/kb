@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\SvgWriter;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -13,17 +15,35 @@ class QrService
     {
         $cacheKey = 'qr_' . md5($url);
 
-        $svg = Cache::remember($cacheKey, now()->addDay(), function () use ($url) {
-            return (new SvgWriter())->write(new QrCode($url))->getString();
+        $png = Cache::remember($cacheKey, now()->addDay(), function () use ($url) {
+            $result = new Builder(
+                writer: new PngWriter(),
+                data: $url,
+                encoding: new Encoding('UTF-8'),
+                errorCorrectionLevel: ErrorCorrectionLevel::Medium,
+                size: 600,
+                margin: 20,
+            );
+
+            return $result->build()->getString();
         });
 
-        return response()->streamDownload(function () use ($svg) {
-            echo $svg;
-        }, $filename . '.svg', ['Content-Type' => 'image/svg+xml']);
+        return response()->streamDownload(function () use ($png) {
+            echo $png;
+        }, $filename . '.png', ['Content-Type' => 'image/png']);
     }
 
     public function generate(string $url): string
     {
-        return (new SvgWriter())->write(new QrCode($url))->getString();
+        $result = new Builder(
+            writer: new PngWriter(),
+            data: $url,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::Medium,
+            size: 600,
+            margin: 20,
+        );
+
+        return $result->build()->getString();
     }
 }

@@ -23,6 +23,7 @@ export default function CardEditorPage() {
     const [status, setStatus] = useState('draft');
     const [family, setFamily] = useState({ children: [], spouses: [], parents: [] });
     const [uploading, setUploading] = useState(false);
+    const [qrDownloading, setQrDownloading] = useState(false);
 
     const { data: card } = useQuery({
         queryKey: ['card', id],
@@ -69,6 +70,25 @@ export default function CardEditorPage() {
     };
 
     const updateInfo = (field, value) => setInfo(prev => ({ ...prev, [field]: value }));
+
+    const downloadQr = async () => {
+        setQrDownloading(true);
+        try {
+            const response = await api.get(`/ankets/${id}/qr`, { responseType: 'blob' });
+            const blobUrl = URL.createObjectURL(new Blob([response.data], { type: 'image/png' }));
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = (card?.slug || id) + '.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(blobUrl);
+        } catch {
+            toast('Не удалось скачать QR-код');
+        } finally {
+            setQrDownloading(false);
+        }
+    };
 
     const handlePhotoUpload = async (file) => {
         if (!file || !id || isNew) return alert('Сначала сохраните карточку');
@@ -165,7 +185,9 @@ export default function CardEditorPage() {
             {!isNew && (
                 <div className="flex gap-3 mb-8 flex-wrap">
                     <a href={`/m/${card?.slug}`} target="_blank" rel="noopener noreferrer" className="text-sm btn-download">Просмотр</a>
-                    <a href={`/api/ankets/${id}/qr`} className="text-sm btn-download" download>Скачать QR-код</a>
+                    <button onClick={downloadQr} disabled={qrDownloading} className="text-sm btn-download">
+                        {qrDownloading ? 'Загрузка...' : 'Скачать QR-код'}
+                    </button>
                 </div>
             )}
             
