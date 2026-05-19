@@ -20,7 +20,7 @@ class QrTest extends TestCase
             ->get("/api/ankets/{$anket->id}/qr");
 
         $response->assertStatus(200)
-            ->assertHeader('Content-Type', 'image/svg+xml');
+            ->assertHeader('Content-Type', 'image/png');
     }
 
     public function test_guest_cannot_download_qr_for_draft(): void
