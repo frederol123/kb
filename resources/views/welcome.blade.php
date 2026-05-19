@@ -16,6 +16,7 @@
     <meta name="msapplication-TileColor" content="#2d89ef">
     <meta name="msapplication-config" content="/browserconfig.xml">
     <meta name="theme-color" content="#3476F5">
+
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </head>
 <body>
