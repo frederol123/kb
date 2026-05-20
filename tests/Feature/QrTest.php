@@ -29,7 +29,7 @@ class QrTest extends TestCase
 
         $response = $this->get("/api/ankets/{$anket->id}/qr");
 
-        $response->assertStatus(401);
+        $response->assertStatus(404);
     }
 
     public function test_other_user_cannot_download_qr_for_draft(): void

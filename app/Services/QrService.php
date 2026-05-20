@@ -7,11 +7,10 @@ use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Cache;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class QrService
 {
-    public function generateStream(string $url, string $filename): StreamedResponse
+    public function generateStream(string $url, string $filename): \Illuminate\Http\Response
     {
         $cacheKey = 'qr_' . md5($url);
 
@@ -28,9 +27,11 @@ class QrService
             return $result->build()->getString();
         });
 
-        return response()->streamDownload(function () use ($png) {
-            echo $png;
-        }, $filename . '.png', ['Content-Type' => 'image/png']);
+        return response($png, 200, [
+            'Content-Type' => 'image/png',
+            'Content-Disposition' => 'inline; filename="' . $filename . '.png"',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
     }
 
     public function generate(string $url): string

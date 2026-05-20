@@ -67,7 +67,7 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
         Route::put('/{anket}', [AnketController::class, 'updateInfo']);
         Route::put('/{anket}/content', [AnketController::class, 'updateContent']);
         Route::delete('/{anket}', [AnketController::class, 'destroy']);
-        Route::get('/{anket}/qr', [QrController::class, 'download']);
+        Route::get('/{anket}/qr', [QrController::class, 'download'])->withoutMiddleware('auth:sanctum');
         Route::post('/{anket}/upload', function (Request $request, \App\Models\Anket $anket) {
             if ($anket->user_id !== $request->user()->id) abort(403);
 

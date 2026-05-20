@@ -12,7 +12,7 @@ export default function Layout() {
     return (
         <div className="flex flex-col min-h-screen" style={{ paddingTop: 80 }}>
             <Header user={user} onAuthOpen={() => setAuthOpen(true)} onLogout={logout} />
-            <main className="flex-1">
+            <main className="">
                 <Outlet />
             </main>
             <Footer />

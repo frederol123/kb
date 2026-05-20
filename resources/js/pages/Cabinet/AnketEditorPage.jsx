@@ -24,6 +24,7 @@ export default function CardEditorPage() {
     const [family, setFamily] = useState({ children: [], spouses: [], parents: [] });
     const [uploading, setUploading] = useState(false);
     const [qrDownloading, setQrDownloading] = useState(false);
+    const [qrSrc, setQrSrc] = useState(null);
 
     const { data: card } = useQuery({
         queryKey: ['card', id],
@@ -39,6 +40,23 @@ export default function CardEditorPage() {
             setFamily(card.family || { children: [], spouses: [], parents: [] });
         }
     }, [card]);
+
+    useEffect(() => {
+        if (!isNew && id) {
+            api.get(`/ankets/${id}/qr`, { responseType: 'blob' })
+                .then(res => {
+                    const url = URL.createObjectURL(new Blob([res.data], { type: 'image/png' }));
+                    setQrSrc(url);
+                })
+                .catch(() => setQrSrc(null));
+        }
+        return () => {
+            setQrSrc(prev => {
+                if (prev) URL.revokeObjectURL(prev);
+                return null;
+            });
+        };
+    }, [id, isNew]);
 
     const saveInfoMut = useMutation({
         mutationFn: (payload) => {
@@ -83,7 +101,8 @@ export default function CardEditorPage() {
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(blobUrl);
-        } catch {
+        } catch (err) {
+            console.error('QR download failed:', err);
             toast('Не удалось скачать QR-код');
         } finally {
             setQrDownloading(false);
@@ -119,6 +138,17 @@ export default function CardEditorPage() {
 
     const [videoMode, setVideoMode] = useState('link');
     const [videoForm, setVideoForm] = useState({ link: '', preview: '', description: '', url: '', original_name: '', mime_type: '' });
+
+    const extractYoutubePreview = (url) => {
+        const patterns = [
+            /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+        ];
+        for (const p of patterns) {
+            const m = url.match(p);
+            if (m) return `https://img.youtube.com/vi/${m[1]}/maxresdefault.jpg`;
+        }
+        return null;
+    };
 
     const handleVideoUpload = async (file) => {
         if (!file || !id || isNew) return;
@@ -183,11 +213,21 @@ export default function CardEditorPage() {
             </div>
 
             {!isNew && (
-                <div className="flex gap-3 mb-8 flex-wrap">
-                    <a href={`/m/${card?.slug}`} target="_blank" rel="noopener noreferrer" className="text-sm btn-download">Просмотр</a>
-                    <button onClick={downloadQr} disabled={qrDownloading} className="text-sm btn-download">
-                        {qrDownloading ? 'Загрузка...' : 'Скачать QR-код'}
-                    </button>
+                <div className="mb-8">
+                    <div className="flex gap-3 mb-4 flex-wrap items-center">
+                        <a href={`/m/${card?.slug}`} target="_blank" rel="noopener noreferrer" className="text-sm btn-download">Просмотр</a>
+                        <button onClick={downloadQr} disabled={qrDownloading} className="text-sm btn-download">
+                            {qrDownloading ? 'Загрузка...' : 'Скачать QR-код'}
+                        </button>
+                    </div>
+                    {qrSrc && (
+                        <div className="inline-block bg-white p-4 rounded-xl border border-gray-200">
+                            <img src={qrSrc} alt="QR-код" className="w-48 h-48" />
+                            <p className="text-xs text-gray-400 mt-2 text-center">
+                                {window.location.origin}/m/{card?.slug}
+                            </p>
+                        </div>
+                    )}
                 </div>
             )}
             
@@ -334,7 +374,16 @@ export default function CardEditorPage() {
                                             {v.type === 'upload' && v.url ? (
                                                 <video src={v.url} className="w-full h-full object-contain" preload="metadata" />
                                             ) : v.preview ? (
-                                                <img src={v.preview} alt="" className="w-full h-full object-cover" />
+                                                <div className="relative w-full h-full">
+                                                    <img src={v.preview} alt="" className="w-full h-full object-cover" />
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-black/60 group-hover:bg-[#ff0000] transition-colors">
+                                                            <svg className="w-5 h-5 text-white ml-0.5" viewBox="0 0 24 24" fill="currentColor">
+                                                                <path d="M8 5v14l11-7z" />
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center">
                                                     <span className="text-white/60 text-xs truncate px-2">{v.link || v.original_name || 'Видео'}</span>
@@ -369,7 +418,10 @@ export default function CardEditorPage() {
                                         <>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                                                 <Field label="Ссылка на видео (YouTube/Vimeo)" value={videoForm.link}
-                                                       onChange={v => setVideoForm(prev => ({ ...prev, link: v }))}
+                                                       onChange={v => {
+                                                           const preview = extractYoutubePreview(v);
+                                                           setVideoForm(prev => ({ ...prev, link: v, preview: preview || prev.preview }));
+                                                       }}
                                                        placeholder="https://youtube.com/watch?v=..." />
                                                 <Field label="URL превью" value={videoForm.preview}
                                                        onChange={v => setVideoForm(prev => ({ ...prev, preview: v }))}
