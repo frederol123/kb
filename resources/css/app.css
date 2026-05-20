@@ -1268,9 +1268,139 @@
         .secondary-hero__preview { padding-bottom: 0; }
         .secondary-hero__image { transform: none; }
         .number-cards { grid-template-columns: 1fr; gap: 23px; }
+
+        /* ======== MEMORIAL PAGE MOBILE ======== */
+        .memorial-page { padding-top: 80px !important; }
+        
+        /* Hero mobile */
+        .memorial-hero {
+            min-height: auto;
+            flex-direction: column;
+            gap: 40px;
+            padding-top: 80px !important;
+        }
+        .memorial-hero__content { order: -1; width: 100%; text-align: center; }
+        .memorial-hero__photo { 
+            max-width: 300px; 
+            margin: 0 auto; 
+            transform: none !important; 
+            box-shadow: none;
+        }
+        .memorial-hero__name { font-size: 28px !important; line-height: 37px !important; }
+        .memorial-hero__dates { font-size: 24px !important; line-height: 32px !important; }
+        .memorial-hero__places, 
+        .memorial-hero__quote, 
+        .memorial-hero__condolence-btn {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .memorial-hero__condolence-btn { padding: 14px 32px !important; font-size: 15px !important; }
+        
+        /* Relatives mobile */
+        .memorial-relatives { padding-top: 80px !important; gap: 20px; }
+        .memorial-relative-card { flex: 0 0 200px !important; padding: 18px 14px; }
+        .memorial-relative-card__avatar, 
+        .memorial-relative-card__avatar-placeholder { width: 100px !important; height: 100px !important; font-size: 24px !important; margin-bottom: 10px; }
+        .memorial-relative-card__relation, 
+        .memorial-relative-card__name { font-size: 18px !important; line-height: 24px !important; }
+        .memorial-relative-card__message { max-width: none; font-size: 13px; }
+        
+        /* Biography mobile */
+        .memorial-bio { padding-top: 80px !important; gap: 20px; flex-direction: column; }
+        .memorial-bio__header { flex-direction: column-reverse; align-items: center; text-align: center; }
+        .memorial-bio__photo, 
+        .memorial-bio__quote { max-width: 100%; }
+        
+        /* Gallery mobile */
+        .memorial-gallery { padding-top: 80px !important; gap: 16px; }
+        .memorial-polaroid { flex: 0 0 auto; width: 240px !important; margin-bottom: 16px; }
+        
+        /* Videos mobile */
+        .memorial-video { padding-top: 80px !important; gap: 16px; padding-bottom: 80px;}
+        .memorial-video__preview { flex-direction: column; }
+        
+        /* Condolences mobile */
+        .memorial-section__title { font-size: 30px !important; line-height: 40px !important; }
+        .memorial-section__desc { font-size: 14px !important; }
+    }
+
+    /* ======== MEMORIAL PAGE MOBILE ======== */
+    @media (max-width: 767px) {
+        .memorial-page { padding-top: 80px !important;padding-top: 100px; }
+        
+        /* Hero mobile */
+        .memorial-hero {
+            min-height: auto;
+            flex-direction: column;
+            gap: 40px;
+            padding-top: 80px !important;
+        }
+        .memorial-hero__content { order: -1; width: 100%; text-align: center; }
+        .memorial-hero__photo { 
+            max-width: 300px; 
+            margin: 0 auto; 
+            transform: none !important; 
+            box-shadow: none;
+        }
+        .memorial-hero__name { font-size: 28px !important; line-height: 37px !important; }
+        .memorial-hero__dates { font-size: 24px !important; line-height: 32px !important; }
+        .memorial-hero__places, 
+        .memorial-hero__quote, 
+        .memorial-hero__condolence-btn {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .memorial-hero__condolence-btn { padding: 14px 32px !important; font-size: 15px !important; }
+        
+        /* Relatives mobile */
+        .memorial-relatives { padding-top: 763px !important; gap: 20px; }
+        .memorial-relative-card { flex: 0 0 200px !important; padding: 18px 14px; }
+        .memorial-relative-card__avatar, 
+        .memorial-relative-card__avatar-placeholder { width: 100px !important; height: 100px !important; font-size: 24px !important; margin-bottom: 10px; }
+        .memorial-relative-card__relation, 
+        .memorial-relative-card__name { font-size: 18px !important; line-height: 24px !important; }
+        .memorial-relative-card__message { max-width: none; font-size: 13px; }
+        
+        /* Biography mobile */
+        .memorial-bio { padding-top: 80px !important; gap: 20px; flex-direction: column; }
+        .memorial-bio__header { flex-direction: column-reverse; align-items: center; text-align: center; }
+        .memorial-bio__photo, 
+        .memorial-bio__quote { max-width: 100%; }
+        
+        /* Gallery mobile */
+        .memorial-gallery { padding-top: 2070px !important; gap: 16px; }
+        .memorial-polaroid { flex: 0 0 auto; width: 240px !important; margin-bottom: 16px; }
+        
+        /* Videos mobile */
+        .memorial-video { padding-top: 2727px !important; gap: 16px; padding-bottom: 80px; }
+        .memorial-video__preview { flex-direction: column; }
+        
+        /* Condolences mobile */
+        .memorial-section__title { font-size: 30px !important; line-height: 40px !important; }
+        .memorial-section__desc { font-size: 14px !important; }
     }
 
     @media (max-width: 479px) {
+        /* Memorial Page Small Mobile */
+        .memorial-hero__name { font-size: 24px !important; line-height: 32px !important; }
+        .memorial-hero__dates { font-size: 20px !important; line-height: 28px !important; }
+        .memorial-hero__places, 
+        .memorial-hero__quote { font-size: 16px !important; line-height: 24px !important; }
+        .memorial-hero__condolence-btn { padding: 12px 24px !important; font-size: 14px !important; }
+        
+        .memorial-relative-card { flex: 0 0 180px !important; padding: 15px 12px; }
+        .memorial-relative-card__relation, 
+        .memorial-relative-card__name { font-size: 16px !important; line-height: 22px !important; }
+        
+        .memorial-bio__title { font-size: 28px !important; }
+        .memorial-bio__text { font-size: 14px !important; }
+        
+        .memorial-polaroid { width: 200px !important; padding: 16px 16px 35px; }
+    }
+
+    @media (max-width: 270px) {
         .hero__title { width: 100%; font-size: 29px; line-height: 32px; }
         .logo { width: 114px; height: 42px; }
         .header__right { gap: 28px; }
@@ -1306,6 +1436,7 @@
     }
     .memorial-section {
         position: relative;
+        padding-left: 360px !important;
     }
     .memorial-section__title {
         font-family: 'Vela Sans', sans-serif;
@@ -1326,8 +1457,8 @@
         min-height: 700px;
         display: flex;
         align-items: flex-start;
-        padding-top: 0;
-        padding-bottom: 60px;
+        padding-top: 80px; /* как memorial-bio */
+        padding-bottom: 80px;
     }
     .memorial-hero__bg {
         position: absolute;
@@ -1418,7 +1549,7 @@
 
     /* Relatives */
     .memorial-relatives {
-        padding: 60px 0 80px;
+        padding-top: 80px;
     }
     .memorial-relatives__carousel {
         display: flex;
@@ -1508,7 +1639,7 @@
 
     /* Biography */
     .memorial-bio {
-        padding: 80px 0;
+        padding-top: 80px;
     }
     .memorial-bio__header {
         display: flex;
@@ -1564,7 +1695,7 @@
 
     /* Gallery */
     .memorial-gallery {
-        padding: 80px 0;
+        padding-top: 180px;
     }
     .memorial-gallery__carousel {
         display: flex;
@@ -1579,7 +1710,7 @@
     .memorial-polaroid {
         flex: 0 0 auto;
         background: #fff;
-        padding: 22px 22px 45px;
+        padding: 15px 15px 45px;
         box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
         scroll-snap-align: start;
         display: flex;
@@ -1594,7 +1725,8 @@
 
     /* Video */
     .memorial-video {
-        padding: 80px 0;
+        padding-top: 80px;
+        padding-bottom: 80px;
     }
     .memorial-video__preview {
         max-width: 578px;
@@ -1609,7 +1741,8 @@
 
     /* Condolences */
     .memorial-condolences {
-        padding: 80px 0;
+        padding-top: 80px;
+        padding-bottom: 80px;
     }
     .memorial-condolences__cards {
         display: grid;
@@ -1704,7 +1837,7 @@
 
     /* Burial place */
     .memorial-burial {
-        padding: 80px 0;
+        padding-top: 80px;
     }
     .memorial-burial__map {
         max-width: 1031px;
@@ -1726,7 +1859,8 @@
 
     /* QR code */
     .memorial-qr {
-        padding: 80px 0;
+        padding-top: 80px;
+        padding-bottom: 80px;
     }
     .memorial-qr__code {
         width: 263px;

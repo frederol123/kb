@@ -5,6 +5,8 @@ import api from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 
+const SECTION = 'max-w-[1543px] mx-auto px-4';
+
 export default function MemorialPage() {
     const { slug } = useParams();
     const { data: card, isLoading } = useQuery({
@@ -28,7 +30,7 @@ export default function MemorialPage() {
             <MemorialVideos videos={card.content?.videos} />
             <MemorialCondolences card={card} />
             <MemorialBurial info={info} />
-            <MemorialQR slug={card.slug} />
+            <MemorialQR id={card.id} slug={card.slug} />
         </div>
     );
 }
@@ -41,7 +43,7 @@ function MemorialHero({ info, fio, dates }) {
     return (
         <section className="memorial-hero relative overflow-hidden">
             <div className="memorial-hero__bg" />
-            <div className="max-w-[1200px] mx-auto px-4">
+            <div className={`w-full ${SECTION}`}>
                 <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-16">
                     <div className="order-2 lg:order-1 flex flex-col pt-4 lg:pt-24 max-w-[673px]">
                         <h1 className="memorial-hero__name mb-4">{fio}</h1>
@@ -100,7 +102,7 @@ function MemorialRelatives({ family }) {
 
     return (
         <section className="memorial-relatives">
-            <div className="max-w-[1200px] mx-auto px-4">
+            <div className={SECTION}>
                 <h2 className="memorial-section__title mb-10 lg:ml-[20px]">Родственники</h2>
                 <div className="relative">
                     <div ref={scrollRef} className="memorial-relatives__carousel">
@@ -145,7 +147,7 @@ function MemorialBiography({ content }) {
 
     return (
         <section className="memorial-bio">
-            <div className="max-w-[1200px] mx-auto px-4">
+            <div className={SECTION}>
                 <div className="memorial-bio__header">
                     <h2 className="memorial-section__title">Биография</h2>
                     <p className="memorial-section__desc max-w-[552px]">
@@ -171,7 +173,7 @@ function MemorialBiography({ content }) {
                             </div>
                         )}
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div>
                         {content.bio_quote && (
                             <p className="memorial-bio__quote mb-6">«{content.bio_quote}»</p>
                         )}
@@ -186,6 +188,7 @@ function MemorialBiography({ content }) {
     );
 }
 
+
 function MemorialGallery({ gallery }) {
     const scrollRef = useRef(null);
     if (!gallery || gallery.length === 0) return null;
@@ -198,9 +201,9 @@ function MemorialGallery({ gallery }) {
 
     return (
         <section className="memorial-gallery">
-            <div className="max-w-[1200px] mx-auto px-4">
-                <h2 className="memorial-section__title mb-4">Галерея</h2>
-                <p className="memorial-section__desc max-w-[552px] mb-8">
+            <div className={SECTION}>
+                <h2 className="memorial-section__title mb-8">Галерея</h2>
+                <p className="memorial-section__desc max-w-[800px] mb-8">
                     «Эта галерея — визуальная хроника жизни. Здесь собраны редкие архивные снимки из семейных альбомов, кадры ключевых карьерных моментов и знаковые события. Откройте для себя историю, рассказанную через фотографию».
                 </p>
                 <div className="relative">
@@ -232,7 +235,7 @@ function MemorialVideos({ videos }) {
 
     return (
         <section className="memorial-video">
-            <div className="max-w-[1200px] mx-auto px-4">
+            <div className={SECTION}>
                 <h2 className="memorial-section__title mb-4">Видео</h2>
                 <p className="memorial-section__desc max-w-[552px] mb-8">
                     «Здесь вы можете посмотреть видео из разных временных отрезков жизни».
@@ -243,8 +246,15 @@ function MemorialVideos({ videos }) {
                             {v.type === 'upload' && v.url ? (
                                 <video src={v.url} controls className="w-full rounded-xl" preload="metadata" />
                             ) : v.preview ? (
-                                <a href={v.link || '#'} target="_blank" rel="noopener noreferrer">
-                                    <img src={v.preview} alt={v.description || 'Видео'} />
+                                <a href={v.link || '#'} target="_blank" rel="noopener noreferrer" className="relative block rounded-xl overflow-hidden group">
+                                    <img src={v.preview} alt={v.description || 'Видео'} className="w-full" />
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-14 h-14 flex items-center justify-center rounded-full bg-black/60 group-hover:bg-[#ff0000] group-hover:scale-110 transition-all">
+                                            <svg className="w-6 h-6 text-white ml-0.5" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M8 5v14l11-7z" />
+                                            </svg>
+                                        </div>
+                                    </div>
                                 </a>
                             ) : v.link ? (
                                 <iframe
@@ -310,17 +320,12 @@ function MemorialCondolences({ card }) {
                     zIndex: 0,
                 }}
             />
-            <div className="max-w-[1200px] mx-auto px-4 relative z-[1]">
+            <div className={`${SECTION} relative z-[1]`}>
                 <h2 className="memorial-section__title mb-4">Книга соболезнований</h2>
                 <p className="memorial-section__desc max-w-[732px] mb-10">
                     Вы можете оставить свои воспоминания и слова поддержки в «Книге соболезнований»
                 </p>
 
-                <div className="memorial-condolences__cta mb-10">
-                    <a href="#condolence-form" className="memorial-condolence-submit">
-                        Оставить соболезнование
-                    </a>
-                </div>
 
                 {displayCondolences.length > 0 && (
                     <div className="memorial-condolences__cards">
@@ -383,7 +388,7 @@ function MemorialBurial({ info }) {
 
     return (
         <section className="memorial-burial">
-            <div className="max-w-[1200px] mx-auto px-4">
+            <div className={SECTION}>
                 <h2 className="memorial-section__title mb-6">Место захоронения</h2>
                 {address && (
                     <p className="memorial-burial__address">{address}</p>
@@ -398,12 +403,12 @@ function MemorialBurial({ info }) {
     );
 }
 
-function MemorialQR({ slug }) {
-    const qrUrl = `/api/ankets/${slug}/qr`;
+function MemorialQR({ id, slug }) {
+    const qrUrl = `/api/ankets/${id}/qr`;
 
     return (
         <section className="memorial-qr">
-            <div className="max-w-[1200px] mx-auto px-4">
+            <div className={SECTION}>
                 <h2 className="memorial-section__title mb-2">QR-код</h2>
                 <p className="memorial-section__desc mb-6">
                     Вы можете скачать или распечатать готовый qr-код

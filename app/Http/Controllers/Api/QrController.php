@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Anket;
 use App\Services\QrService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class QrController extends Controller
@@ -14,9 +13,9 @@ class QrController extends Controller
     {
     }
 
-    public function download(Request $request, Anket $anket): \Symfony\Component\HttpFoundation\StreamedResponse|JsonResponse
+    public function download(Request $request, Anket $anket): \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
     {
-        if ($anket->user_id !== $request->user()->id && $anket->status !== 'published') {
+        if ($anket->user_id !== $request->user()?->id && $anket->status !== 'published') {
             abort(404);
         }
 
