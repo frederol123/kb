@@ -605,7 +605,10 @@ function ImageCropModal({ file, aspect, onCrop, onClose }) {
 
     const getCroppedBlob = () =>
         new Promise((resolve) => {
-            if (!imageSrc || !croppedAreaPixels) return resolve(null);
+            if (!imageSrc || !croppedAreaPixels) {
+                console.warn('Crop: missing data', { hasImageSrc: !!imageSrc, hasCropArea: !!croppedAreaPixels });
+                return resolve(null);
+            }
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
@@ -620,7 +623,18 @@ function ImageCropModal({ file, aspect, onCrop, onClose }) {
                     croppedAreaPixels.height,
                     0, 0, 800, 500,
                 );
-                canvas.toBlob(resolve, 'image/jpeg', 0.92);
+                // Используем dataURL → Blob для надёжности
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                const byteString = atob(dataUrl.split(',')[1]);
+                const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+                resolve(new Blob([ab], { type: mimeString }));
+            };
+            img.onerror = () => {
+                console.error('Crop: failed to load image for cropping');
+                resolve(null);
             };
             img.src = imageSrc;
         });
@@ -629,7 +643,12 @@ function ImageCropModal({ file, aspect, onCrop, onClose }) {
         setSaving(true);
         try {
             const blob = await getCroppedBlob();
-            if (blob) onCrop(blob);
+            if (blob) {
+                onCrop(blob);
+            } else {
+                // Если blob = null — вероятно, croppedAreaPixels не установлен
+                onClose();
+            }
         } finally {
             setSaving(false);
         }
