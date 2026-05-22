@@ -72,10 +72,6 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
         Route::post('/{anket}/upload', function (Request $request, \App\Models\Anket $anket) {
             if ($anket->user_id !== $request->user()->id) abort(403);
 
-            if ($anket->content && isset($anket->content['gallery']) && count($anket->content['gallery']) >= $request->user()->max_gallery_images) {
-                abort(422, 'Достигнут лимит изображений в галерее');
-            }
-
             $request->validate([
                 'file' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp,ico', 'max:65536'],
             ]);
