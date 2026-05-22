@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\QrController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 Route::middleware('throttle:10,1')->group(function () {
     Route::post('/auth/login', [AuthController::class, 'login']);
@@ -79,7 +80,9 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
                 'file' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp,ico', 'max:65536'],
             ]);
 
-            $path = $request->file('file')->store('uploads', 's3');
+            $originalName = $request->file('file')->getClientOriginalName();
+            $hash = substr(md5(uniqid($originalName, true)), 0, 8);
+            $path = $request->file('file')->storeAs('uploads', time() . '_' . $hash . '_' . Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '.' . $request->file('file')->getClientOriginalExtension(), 's3');
 
             return response()->json(['url' => Storage::disk('s3')->url($path)], 201);
         });
@@ -96,7 +99,9 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
                 'file' => ['required', 'file', 'mimes:mp4,webm,mov,avi,mkv,ogv,ogg,mpeg,3gp,wmv,flv', 'max:204800'],
             ]);
 
-            $path = $request->file('file')->store('uploads', 's3');
+            $originalName = $request->file('file')->getClientOriginalName();
+            $hash = substr(md5(uniqid($originalName, true)), 0, 8);
+            $path = $request->file('file')->storeAs('uploads', time() . '_' . $hash . '_' . Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '.' . $request->file('file')->getClientOriginalExtension(), 's3');
 
             return response()->json([
                 'url' => Storage::disk('s3')->url($path),
