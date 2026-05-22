@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useRef } from 'react';
+import Cropper from 'react-easy-crop';
 import api from '../../lib/api';
 import { useToast } from '../../contexts/ToastContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -23,6 +24,8 @@ export default function CardEditorPage() {
     const [status, setStatus] = useState('draft');
     const [family, setFamily] = useState({ children: [], spouses: [], parents: [] });
     const [uploading, setUploading] = useState(false);
+    const [cropFile, setCropFile] = useState(null);
+    const [cropOpen, setCropOpen] = useState(false);
     const [qrDownloading, setQrDownloading] = useState(false);
     const [qrSrc, setQrSrc] = useState(null);
 
@@ -109,15 +112,27 @@ export default function CardEditorPage() {
         }
     };
 
-    const handlePhotoUpload = async (file) => {
+    const handlePhotoUpload = (file) => {
         if (!file || !id || isNew) return alert('Сначала сохраните карточку');
+        setCropFile(file);
+        setCropOpen(true);
+    };
+
+    const handleCropComplete = async (croppedBlob) => {
+        setCropOpen(false);
+        setCropFile(null);
+        if (!croppedBlob || !id) return;
         setUploading(true);
         const form = new FormData();
-        form.append('file', file);
+        form.append('file', croppedBlob, 'photo.jpg');
         try {
             const { data } = await api.post(`/ankets/${id}/upload`, form);
             updateInfo('photo', data.url);
-        } finally { setUploading(false); }
+        } catch (err) {
+            console.error('Upload error:', err);
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleGalleryUpload = async (file) => {
@@ -467,6 +482,14 @@ export default function CardEditorPage() {
                     </>
                 )}
             </div>
+            {cropOpen && cropFile && (
+                <ImageCropModal
+                    file={cropFile}
+                    aspect={16 / 10}
+                    onCrop={handleCropComplete}
+                    onClose={() => { setCropOpen(false); setCropFile(null); }}
+                />
+            )}
         </div>
     );
 }
@@ -553,6 +576,90 @@ function Field({ label, value, onChange, placeholder, type = 'text' }) {
             <label className="block text-sm text-[#999] mb-1.5">{label}</label>
             <input type={type} value={value || ''} onChange={e => onChange(e.target.value)}
                    className="text-input" placeholder={placeholder} />
+        </div>
+    );
+}
+
+function ImageCropModal({ file, aspect, onCrop, onClose }) {
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const [imageSrc, setImageSrc] = useState(null);
+
+    useEffect(() => {
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        setImageSrc(url);
+        return () => URL.revokeObjectURL(url);
+    }, [file]);
+
+    const getCroppedBlob = () =>
+        new Promise((resolve) => {
+            if (!imageSrc || !croppedAreaPixels) return resolve(null);
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 800;
+                canvas.height = 500;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(
+                    img,
+                    croppedAreaPixels.x,
+                    croppedAreaPixels.y,
+                    croppedAreaPixels.width,
+                    croppedAreaPixels.height,
+                    0, 0, 800, 500,
+                );
+                canvas.toBlob(resolve, 'image/jpeg', 0.92);
+            };
+            img.src = imageSrc;
+        });
+
+    const handleSave = async () => {
+        const blob = await getCroppedBlob();
+        if (blob) onCrop(blob);
+    };
+
+    if (!imageSrc) return null;
+
+    return (
+        // Полный экран — гарантированные размеры, никаких flex-проблем
+        <div className="fixed inset-0 z-50 bg-black flex flex-col">
+            <div className="flex items-center justify-between px-6 py-3 bg-black/80 flex-shrink-0">
+                <h3 className="text-white font-semibold text-lg">Кадрирование фото</h3>
+                <button onClick={onClose} className="text-white/70 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            <div className="relative flex-1">
+                <Cropper
+                    image={imageSrc}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={aspect}
+                    onCropChange={setCrop}
+                    onCropComplete={(_, p) => setCroppedAreaPixels(p)}
+                    onZoomChange={setZoom}
+                />
+            </div>
+            <div className="bg-black/90 px-6 py-4 flex items-center gap-4 flex-shrink-0">
+                <span className="text-white/60 text-sm">Масштаб</span>
+                <input
+                    type="range"
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    value={zoom}
+                    onChange={e => setZoom(Number(e.target.value))}
+                    className="flex-1 accent-[#1e79d0]"
+                />
+                <div className="flex gap-3">
+                    <button onClick={onClose} className="px-5 py-2.5 rounded-xl bg-white/10 text-white font-semibold text-sm hover:bg-white/20 transition-colors">
+                        Отмена
+                    </button>
+                    <button onClick={handleSave} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#1e79d0] to-[#2563eb] text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all">
+                        Применить
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }

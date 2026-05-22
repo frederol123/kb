@@ -80,9 +80,18 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
                 'file' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp,ico', 'max:65536'],
             ]);
 
+            // Обработка: cover(1540, 963) → webp без искажений
+            $imageService = app(\App\Services\ImageService::class);
+            $processedPath = $imageService->process($request->file('file'));
+
             $originalName = $request->file('file')->getClientOriginalName();
             $hash = substr(md5(uniqid($originalName, true)), 0, 8);
-            $path = $request->file('file')->storeAs('uploads', time() . '_' . $hash . '_' . Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '.' . $request->file('file')->getClientOriginalExtension(), 's3');
+            $filename = time() . '_' . $hash . '_' . Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '.webp';
+
+            $path = Storage::disk('s3')->putFileAs('uploads', new \Illuminate\Http\File($processedPath), $filename);
+
+            // Удаляем временный файл
+            @unlink($processedPath);
 
             return response()->json(['url' => Storage::disk('s3')->url($path)], 201);
         });
