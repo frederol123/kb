@@ -119,17 +119,26 @@ export default function CardEditorPage() {
     };
 
     const handleCropComplete = async (croppedBlob) => {
-        setCropOpen(false);
-        setCropFile(null);
-        if (!croppedBlob || !id) return;
+        if (!croppedBlob || !id) {
+            setCropOpen(false);
+            setCropFile(null);
+            return;
+        }
+        // Модалка остаётся открытой во время загрузки
         setUploading(true);
         const form = new FormData();
         form.append('file', croppedBlob, 'photo.jpg');
         try {
             const { data } = await api.post(`/ankets/${id}/upload`, form);
             updateInfo('photo', data.url);
+            toast('Фото загружено — нажмите «Сохранить»');
+            setCropOpen(false);
+            setCropFile(null);
         } catch (err) {
             console.error('Upload error:', err);
+            toast('Ошибка загрузки фото');
+            setCropOpen(false);
+            setCropFile(null);
         } finally {
             setUploading(false);
         }
@@ -585,6 +594,7 @@ function ImageCropModal({ file, aspect, onCrop, onClose }) {
     const [zoom, setZoom] = useState(1);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
     const [imageSrc, setImageSrc] = useState(null);
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         if (!file) return;
@@ -616,8 +626,13 @@ function ImageCropModal({ file, aspect, onCrop, onClose }) {
         });
 
     const handleSave = async () => {
-        const blob = await getCroppedBlob();
-        if (blob) onCrop(blob);
+        setSaving(true);
+        try {
+            const blob = await getCroppedBlob();
+            if (blob) onCrop(blob);
+        } finally {
+            setSaving(false);
+        }
     };
 
     if (!imageSrc) return null;
@@ -652,11 +667,12 @@ function ImageCropModal({ file, aspect, onCrop, onClose }) {
                     className="flex-1 accent-[#1e79d0]"
                 />
                 <div className="flex gap-3">
-                    <button onClick={onClose} className="px-5 py-2.5 rounded-xl bg-white/10 text-white font-semibold text-sm hover:bg-white/20 transition-colors">
+                    <button onClick={onClose} className="px-5 py-2.5 rounded-xl bg-white/10 text-white font-semibold text-sm hover:bg-white/20 transition-colors" disabled={saving}>
                         Отмена
                     </button>
-                    <button onClick={handleSave} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#1e79d0] to-[#2563eb] text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all">
-                        Применить
+                    <button onClick={handleSave} disabled={saving}
+                            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#1e79d0] to-[#2563eb] text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all disabled:opacity-50">
+                        {saving ? 'Сохранение...' : 'Применить'}
                     </button>
                 </div>
             </div>
