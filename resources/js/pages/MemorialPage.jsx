@@ -5,7 +5,7 @@ import api from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 
-const SECTION = 'max-w-[1543px] mx-auto px-4';
+const SECTION = 'max-w-[1540px] mx-auto px-4';
 
 export default function MemorialPage() {
     const { slug } = useParams();
