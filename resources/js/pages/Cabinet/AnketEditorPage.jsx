@@ -135,8 +135,11 @@ export default function CardEditorPage() {
             setCropOpen(false);
             setCropFile(null);
         } catch (err) {
+            const msg = err.response?.data?.errors?.file?.[0]
+                || err.response?.data?.message
+                || err.message;
             console.error('Upload error:', err);
-            toast('Ошибка загрузки фото');
+            toast('Ошибка: ' + msg);
             setCropOpen(false);
             setCropFile(null);
         } finally {
@@ -623,14 +626,9 @@ function ImageCropModal({ file, aspect, onCrop, onClose }) {
                     croppedAreaPixels.height,
                     0, 0, 800, 500,
                 );
-                // Используем dataURL → Blob для надёжности
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-                const byteString = atob(dataUrl.split(',')[1]);
-                const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
-                const ab = new ArrayBuffer(byteString.length);
-                const ia = new Uint8Array(ab);
-                for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-                resolve(new Blob([ab], { type: mimeString }));
+                canvas.toBlob((blob) => {
+                    resolve(blob || null);
+                }, 'image/jpeg', 0.92);
             };
             img.onerror = () => {
                 console.error('Crop: failed to load image for cropping');
