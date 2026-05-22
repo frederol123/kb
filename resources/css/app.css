@@ -1370,11 +1370,11 @@
         .memorial-bio__quote { max-width: 100%; }
         
         /* Gallery mobile */
-        .memorial-gallery { padding-top: 2070px !important; gap: 16px; }
+        .memorial-gallery { padding-top: 40px !important; gap: 16px; }
         .memorial-polaroid { flex: 0 0 auto; width: 240px !important; margin-bottom: 16px; }
         
         /* Videos mobile */
-        .memorial-video { padding-top: 2727px !important; gap: 16px; padding-bottom: 80px; }
+        .memorial-video { padding-top: 40px !important; gap: 16px; padding-bottom: 40px; }
         .memorial-video__preview { flex-direction: column; }
         
         /* Condolences mobile */
@@ -1861,6 +1861,7 @@
     .memorial-qr {
         padding-top: 80px;
         padding-bottom: 80px;
+        display:flex;
     }
     .memorial-qr__code {
         width: 263px;
