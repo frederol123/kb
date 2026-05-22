@@ -1,11 +1,12 @@
 import { useParams, Link } from 'react-router-dom';
+import { Shield, MapPin, Briefcase, Share2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useRef } from 'react';
 import api from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 
-const SECTION = 'max-w-[1540px] mx-auto px-4';
+const SECTION = 'container mx-auto px-4';
 
 export default function MemorialPage() {
     const { slug } = useParams();
@@ -23,7 +24,7 @@ export default function MemorialPage() {
 
     return (
         <div className="memorial-page">
-            <MemorialHero info={info} fio={fio} dates={dates} />
+            <MemorialHero info={info} fio={fio} dates={dates} card={card} />
             <MemorialRelatives family={card.family} />
             <MemorialBiography content={card.content} />
             <MemorialGallery gallery={card.content?.gallery} />
@@ -35,49 +36,135 @@ export default function MemorialPage() {
     );
 }
 
-function MemorialHero({ info, fio, dates }) {
+function MemorialHero({ info, fio, dates, card }) {
     const birthplace = info.birthplace || '';
     const deathplace = info.deathplace || '';
     const hasPlaces = birthplace || deathplace;
+    const condolenceCount = card?.condolences?.length || 0;
+    const initial = [info.first_name?.[0], info.last_name?.[0]].filter(Boolean).join('');
 
     return (
-        <section className="memorial-hero relative overflow-hidden">
-            <div className="memorial-hero__bg" />
-            <div className={`w-full ${SECTION}`}>
-                <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-16">
-                    <div className="order-2 lg:order-1 flex flex-col pt-4 lg:pt-24 max-w-[673px]">
-                        <h1 className="memorial-hero__name mb-4">{fio}</h1>
+        <section className="memorial-hero relative overflow-hidden bg-gradient-to-b from-[#f8fbff] to-[#eef4ff]">
+            {/* Декоративные blur-элементы */}
+            <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-200/30 rounded-full blur-[100px] pointer-events-none" aria-hidden="true" />
+            <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-blue-300/20 rounded-full blur-[80px] pointer-events-none" aria-hidden="true" />
+            <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-purple-200/20 rounded-full blur-[90px] pointer-events-none" aria-hidden="true" />
+
+            <div className="relative container mx-auto px-6 py-8 md:py-12 lg:py-16">
+                {/* Pill badge */}
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/70 backdrop-blur-sm border border-blue-100 text-sm text-blue-700 font-medium mb-6 md:mb-8 shadow-sm">
+                    <Shield className="w-4 h-4 text-blue-500" />
+                    Сохраним память о важном
+                </div>
+
+                {/* Две колонки */}
+                <div className="flex flex-col lg:flex-row items-start lg:items-stretch gap-8 lg:gap-12">
+                    {/* Левая колонка ~45% */}
+                    <div className="w-full lg:w-[45%] flex-shrink-0 pt-0 flex flex-col">
+                        {/* Имя — очень крупное */}
+                        <h1 className="font-extrabold text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-[1.1] tracking-tight text-[#243B53] mb-4">
+                            {fio.split(' ').map((part, i) => (
+                                <span key={i} className="block">{part}</span>
+                            ))}
+                        </h1>
+
+                        {/* Даты */}
                         {dates && (
-                            <p className="memorial-hero__dates mb-4">{dates}</p>
-                        )}
-                        {hasPlaces && (
-                            <p className="memorial-hero__places mb-6">
-                                Место рождения: <span>{birthplace}</span>
-                                {birthplace && deathplace && '— '}
-                                Место смерти: <span>{deathplace}</span>
+                            <p className="text-blue-600 font-semibold text-lg md:text-xl mb-6">
+                                {dates}
                             </p>
                         )}
-                        {info.quote && (
-                            <p className="memorial-hero__quote">«{info.quote}»</p>
-                        )}
-                        <a href="#condolences" className="memorial-hero__condolence-btn mt-8">
-                            Оставить соболезнование
-                        </a>
-                    </div>
-                    <div className="order-1 lg:order-2 flex-shrink-0 lg:ml-auto">
-                        {info.photo ? (
-                            <img src={info.photo} alt={fio} className="memorial-hero__photo" />
-                        ) : (
-                            <div className="memorial-hero__photo-placeholder">
-                                {info.first_name?.[0]}{info.last_name?.[0]}
+
+                        {/* Места */}
+                        {hasPlaces && (
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-gray-500 mb-6">
+                                <div className="flex items-center gap-1.5">
+                                    <MapPin className="w-4 h-4 text-blue-500" />
+                                    <span>Место рождения: <span className="text-gray-700 font-medium">{birthplace}</span></span>
+                                </div>
+                                {birthplace && deathplace && (
+                                    <span className="hidden sm:inline-block w-[3px] h-[3px] rounded-full bg-gray-300" aria-hidden="true" />
+                                )}
+                                <div className="flex items-center gap-1.5">
+                                    <Briefcase className="w-4 h-4 text-blue-500" />
+                                    <span>Место смерти: <span className="text-gray-700 font-medium">{deathplace}</span></span>
+                                </div>
                             </div>
                         )}
+
+                        {/* Описание / цитата */}
+                        {info.quote && (
+                            <p className="text-gray-500 text-base md:text-lg leading-relaxed mb-8 max-w-[520px]">
+                                «{info.quote}»
+                            </p>
+                        )}
+
+                        {/* Кнопки */}
+                        <div className="flex flex-wrap gap-4 mt-auto lg:mt-auto pt-6 lg:pt-0">
+                            <a
+                                href="#condolences"
+                                className="inline-flex items-center justify-center px-7 py-3.5 rounded-2xl text-white font-semibold text-base shadow-lg shadow-blue-200/60 hover:shadow-xl hover:shadow-blue-300/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                                style={{
+                                    background: 'linear-gradient(135deg, #1e79d0, #2563eb)',
+                                }}
+                            >
+                                Оставить соболезнование
+                            </a>
+                            <button
+                                onClick={() => {
+                                    if (navigator.share) {
+                                        navigator.share({ title: fio, url: window.location.href });
+                                    } else {
+                                        navigator.clipboard?.writeText(window.location.href);
+                                    }
+                                }}
+                                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl border border-blue-200/60 bg-white/60 backdrop-blur-sm text-gray-700 font-semibold text-base shadow-sm hover:bg-white/90 hover:shadow-md hover:border-blue-300 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                            >
+                                <Share2 className="w-4 h-4" />
+                                Поделиться памятью
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Правая колонка ~55% */}
+                    <div className="w-full lg:w-[55%] flex-shrink-0">
+                        <div className="relative rounded-[32px] overflow-hidden shadow-[0_8px_40px_-8px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.03)] bg-gradient-to-br from-blue-50 to-white">
+                            {info.photo ? (
+                                <img
+                                    src={info.photo}
+                                    alt={fio}
+                                    className="w-full aspect-[4/3] md:aspect-[16/10] object-cover"
+                                />
+                            ) : (
+                                <div className="w-full aspect-[4/3] md:aspect-[16/10] flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
+                                    <span className="text-7xl md:text-8xl font-extrabold text-blue-200 select-none">
+                                        {initial}
+                                    </span>
+                                </div>
+                            )}
+                            {/* Glassmorphism overlay снизу */}
+                            {condolenceCount > 0 && (
+                                <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-white/90 via-white/60 to-transparent backdrop-blur-[2px]">
+                                    <div className="flex items-center gap-6">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-lg">❤</span>
+                                            <span className="text-sm font-semibold text-gray-700">
+                                                {condolenceCount} {condolenceCount === 1 ? 'воспоминание' : condolenceCount < 5 ? 'воспоминания' : 'воспоминаний'}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-lg">👥</span>
+                                            <span className="text-sm font-semibold text-gray-700">
+                                                {condolenceCount} человек{condolenceCount === 1 ? '' : 'а'} почтили память
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-            <svg className="memorial-hero__decor hidden lg:block" style={{ right: 0, top: '50%', width: 585, height: 355 }} viewBox="0 0 585 355" fill="none">
-                <path d="M1 354C1 354 86 200 292 200C498 200 584 1 584 1" stroke="#1E79D0" strokeWidth="2" strokeDasharray="8 8" />
-            </svg>
         </section>
     );
 }
