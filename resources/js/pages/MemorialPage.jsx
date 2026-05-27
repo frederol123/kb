@@ -48,9 +48,10 @@ function MemorialHero({ info, fio, dates, card }) {
             {/* Декоративные blur-элементы */}
             <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-200/30 rounded-full blur-[100px] pointer-events-none" aria-hidden="true" />
             <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-blue-300/20 rounded-full blur-[80px] pointer-events-none" aria-hidden="true" />
+            <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-blue-300/20 rounded-full blur-[80px] pointer-events-none" aria-hidden="true" />
             <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-purple-200/20 rounded-full blur-[90px] pointer-events-none" aria-hidden="true" />
 
-            <div className="relative container mx-auto px-6 py-8 md:py-12 lg:py-16">
+            <div className="relative container mx-auto px-6 py-8 md:py-12 lg:py-8">
                 {/* Pill badge */}
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/70 backdrop-blur-sm border border-blue-100 text-sm text-blue-700 font-medium mb-6 md:mb-8 shadow-sm">
                     <Shield className="w-4 h-4 text-blue-500" />
@@ -231,43 +232,99 @@ function MemorialBiography({ content }) {
     const gallery = content?.gallery || [];
     const [activeThumb, setActiveThumb] = useState(0);
     const mainPhoto = gallery[activeThumb]?.url;
+    const [expanded, setExpanded] = useState(false);
 
     return (
-        <section className="memorial-bio">
-            <div className={SECTION}>
-                <div className="memorial-bio__header">
-                    <h2 className="memorial-section__title">Биография</h2>
-                    <p className="memorial-section__desc max-w-[552px]">
-                        «Краткий рассказ о жизненном пути, образовании, профессии и основных достижениях».
-                    </p>
-                </div>
-                <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 mt-10">
-                    <div className="flex-shrink-0">
-                        {mainPhoto && (
-                            <img src={mainPhoto} alt="" className="memorial-bio__photo" />
-                        )}
-                        {gallery.length > 1 && (
-                            <div className="memorial-bio__thumbs">
-                                {gallery.map((img, i) => (
-                                    <img
-                                        key={i}
-                                        src={img.url}
-                                        alt=""
-                                        className={`memorial-bio__thumb ${i === activeThumb ? 'memorial-bio__thumb--active' : ''}`}
-                                        onClick={() => setActiveThumb(i)}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
+        <section className="memorial-bio relative overflow-hidden bg-[#eef4ff]">
+            {/* Цветок */}
+            <div
+                className="absolute top-0 left-0 pointer-events-none"
+                style={{
+                    background: 'url(/images/bio_flower.png) top left / contain no-repeat',
+                    width: '50%',
+                    maxWidth: '700px',
+                    height: '100%',
+                    zIndex: 0,
+                }}
+            />
+
+            <div className={`${SECTION} relative z-[1]`}>
+                {/* Заголовок */}
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-10 lg:mb-14">
                     <div>
-                        {content.bio_quote && (
-                            <p className="memorial-bio__quote mb-6">«{content.bio_quote}»</p>
-                        )}
-                        <div
-                            className="memorial-bio__text"
-                            dangerouslySetInnerHTML={{ __html: content.biography }}
-                        />
+                        <h2 className="memorial-section__title">Биография</h2>
+                        <p className="memorial-section__desc max-w-[552px] mt-2">
+                            «Краткий рассказ о жизненном пути, образовании, профессии и основных достижениях»
+                        </p>
+                    </div>
+                </div>
+
+                {/* Основной контент: карточка с фото + текст */}
+                <div className="bg-white rounded-[28px] shadow-[0_8px_32px_-4px_rgba(30,121,208,0.12)] p-6 md:p-10 lg:p-12">
+                    <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+                        {/* Левая колонка: фото + миниатюры */}
+                        <div className="flex-shrink-0 w-full lg:w-[374px]">
+                            {mainPhoto && (
+                                <img
+                                    src={mainPhoto}
+                                    alt=""
+                                    className="w-full h-[280px] lg:h-[320px] object-cover rounded-2xl"
+                                />
+                            )}
+                            {gallery.length > 1 && (
+                                <div className="flex gap-3 mt-4 flex-wrap">
+                                    {gallery.map((img, i) => (
+                                        <img
+                                            key={i}
+                                            src={img.url}
+                                            alt=""
+                                            className={`w-[63px] h-[59px] rounded-lg object-cover cursor-pointer border-2 transition-colors ${
+                                                i === activeThumb
+                                                    ? 'border-[#1E79D0]'
+                                                    : 'border-transparent hover:border-[#1E79D0]/40'
+                                            }`}
+                                            onClick={() => setActiveThumb(i)}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Правая колонка: текст */}
+                        <div className="flex-1 min-w-0">
+                            {content.bio_quote && (
+                                <blockquote className="text-[#243B53] font-medium text-lg md:text-xl leading-relaxed mb-6 border-l-4 border-[#1E79D0]/30 pl-5 italic">
+                                    «{content.bio_quote}»
+                                </blockquote>
+                            )}
+                            <div
+                                className={`memorial-bio__text prose prose-sm max-w-none ${
+                                    !expanded ? 'line-clamp-[12] lg:line-clamp-[16]' : ''
+                                }`}
+                                dangerouslySetInnerHTML={{ __html: content.biography }}
+                            />
+                            {/* Кнопка «Читать далее» для длинных текстов */}
+                            {content.biography && content.biography.length > 800 && (
+                                <button
+                                    onClick={() => setExpanded(!expanded)}
+                                    className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-white font-semibold text-sm shadow-lg shadow-blue-200/50 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #1e79d0, #2563eb)',
+                                    }}
+                                >
+                                    {expanded ? 'Скрыть' : 'Читать далее'}
+                                    <svg
+                                        className={`w-4 h-4 transition-transform ${expanded ? 'rotate-180' : ''}`}
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                    >
+                                        <path d="M6 9l6 6 6-6" />
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -287,27 +344,78 @@ function MemorialGallery({ gallery }) {
     };
 
     return (
-        <section className="memorial-gallery">
-            <div className={SECTION}>
-                <h2 className="memorial-section__title mb-8">Галерея</h2>
-                <p className="memorial-section__desc max-w-[800px] mb-8">
-                    «Эта галерея — визуальная хроника жизни. Здесь собраны редкие архивные снимки из семейных альбомов, кадры ключевых карьерных моментов и знаковые события. Откройте для себя историю, рассказанную через фотографию».
-                </p>
+        <section className="memorial-gallery relative overflow-hidden">
+            {/* Тёмный фон + gallery_back.png с цветами */}
+            <div
+                className="absolute inset-0 w-full h-full"
+                style={{
+                    background: 'linear-gradient(rgb(15, 15, 35) 0%, rgb(37 99 235 / 71%) 50%, rgb(15, 15, 35) 100%)',
+                    zIndex: 0,
+                }}
+            />
+            <div
+                className="absolute inset-0 w-full h-full pointer-events-none"
+                style={{
+                    backgroundImage: 'url(/images/gallery_back.png)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    opacity: 0.35,
+                    zIndex: 1,
+                }}
+            />
+
+            <div className={`${SECTION} relative z-[2] py-16 md:py-24`}>
+                {/* Заголовок секции — светлый текст */}
+                <div className="text-center mb-10 md:mb-14">
+                    <h2 className="text-white font-extrabold text-3xl md:text-4xl lg:text-5xl leading-tight mb-4">
+                        Галерея
+                    </h2>
+                    <p className="text-blue-200/80 text-base md:text-lg max-w-[700px] mx-auto leading-relaxed">
+                        «Эта галерея — визуальная хроника жизни. Здесь собраны редкие архивные снимки из семейных альбомов, кадры ключевых карьерных моментов и знаковые события. Откройте для себя историю, рассказанную через фотографию»
+                    </p>
+                </div>
+
+                {/* Карусель polaroid-фото */}
                 <div className="relative">
-                    <div ref={scrollRef} className="memorial-gallery__carousel">
+                    <div
+                        ref={scrollRef}
+                        className="flex gap-6 md:gap-8 overflow-x-auto scroll-smooth px-2 py-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                    >
                         {gallery.map((img, i) => (
-                            <div key={i} className="memorial-polaroid">
-                                <img src={img.url} alt={img.text || `Фото ${i + 1}`} className="memorial-polaroid__image" />
+                            <div
+                                key={i}
+                                className="flex-shrink-0 snap-start bg-white/95 backdrop-blur-sm rounded-sm shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-3 pb-10 w-[250px] md:w-[290px] transition-transform hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
+                            >
+                                <img
+                                    src={img.url}
+                                    alt={img.text || `Фото ${i + 1}`}
+                                    className="w-full aspect-square object-cover rounded-sm"
+                                />
                             </div>
                         ))}
                     </div>
+
+                    {/* Стрелки навигации */}
                     {gallery.length > 3 && (
-                        <div className="memorial-carousel-arrows justify-center mt-6">
-                            <button className="memorial-carousel-arrow" onClick={() => scroll(-1)} aria-label="Назад">
-                                <svg width="32" height="32" viewBox="0 0 32 32"><path d="M20 6L10 16L20 26" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
+                        <div className="flex justify-center gap-4 mt-8">
+                            <button
+                                className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all backdrop-blur-sm border border-white/10"
+                                onClick={() => scroll(-1)}
+                                aria-label="Назад"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 32 32">
+                                    <path d="M20 6L10 16L20 26" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
                             </button>
-                            <button className="memorial-carousel-arrow" onClick={() => scroll(1)} aria-label="Вперёд">
-                                <svg width="32" height="32" viewBox="0 0 32 32"><path d="M12 6L22 16L12 26" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
+                            <button
+                                className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all backdrop-blur-sm border border-white/10"
+                                onClick={() => scroll(1)}
+                                aria-label="Вперёд"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 32 32">
+                                    <path d="M12 6L22 16L12 26" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
                             </button>
                         </div>
                     )}
@@ -396,17 +504,36 @@ function MemorialCondolences({ card }) {
     };
 
     return (
-        <section className="memorial-condolences relative" id="condolences">
+        <section className="memorial-condolences relative overflow-hidden" id="condolences">
+            {/* CSS-фон: небо с облаками */}
             <div
-                className="memorial-condolences__bg absolute inset-0 w-full"
+                className="absolute inset-0 w-full"
                 style={{
-                    backgroundImage: `url(/images/memorial-condolences-bg.png)`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
+                    background: `
+                        linear-gradient(180deg, #d4e7fc 0%, #e8f2fd 30%, #f0f6ff 60%, #f8faff 100%)
+                    `,
                     zIndex: 0,
                 }}
             />
+            {/* Облака — мягкие radial-gradient пятна */}
+            <div className="absolute inset-0 w-full pointer-events-none" style={{ zIndex: 0 }} aria-hidden="true">
+                {/* Крупное облако слева */}
+                <div className="absolute w-[600px] h-[200px] rounded-full bg-white/50 blur-[60px] -left-20 top-[10%]" />
+                <div className="absolute w-[400px] h-[150px] rounded-full bg-white/40 blur-[50px] left-[5%] top-[15%]" />
+                {/* Среднее облако справа */}
+                <div className="absolute w-[500px] h-[180px] rounded-full bg-white/45 blur-[55px] -right-16 top-[25%]" />
+                <div className="absolute w-[350px] h-[130px] rounded-full bg-white/35 blur-[45px] right-[5%] top-[20%]" />
+                {/* Лёгкие облака в центре сверху */}
+                <div className="absolute w-[450px] h-[120px] rounded-full bg-white/30 blur-[50px] left-[25%] top-[5%]" />
+                <div className="absolute w-[300px] h-[100px] rounded-full bg-white/25 blur-[40px] left-[40%] top-[8%]" />
+                {/* Нижние облака */}
+                <div className="absolute w-[550px] h-[160px] rounded-full bg-white/35 blur-[55px] left-[10%] bottom-[10%]" />
+                <div className="absolute w-[400px] h-[140px] rounded-full bg-white/30 blur-[50px] right-[10%] bottom-[15%]" />
+                {/* Мелкие облачка для объёма */}
+                <div className="absolute w-[200px] h-[80px] rounded-full bg-white/20 blur-[35px] left-[35%] top-[30%]" />
+                <div className="absolute w-[250px] h-[90px] rounded-full bg-white/20 blur-[40px] right-[30%] top-[35%]" />
+                <div className="absolute w-[180px] h-[70px] rounded-full bg-white/15 blur-[30px] left-[55%] bottom-[25%]" />
+            </div>
             <div className={`${SECTION} relative z-[1]`}>
                 <h2 className="memorial-section__title mb-4">Книга соболезнований</h2>
                 <p className="memorial-section__desc max-w-[732px] mb-10">
@@ -494,22 +621,45 @@ function MemorialQR({ id, slug }) {
     const qrUrl = `/api/ankets/${id}/qr`;
 
     return (
-        <section className="memorial-qr">
+        <section className="memorial-qr relative bg-white border-t border-blue-100/60">
             <div className={SECTION}>
-                <h2 className="memorial-section__title mb-2">QR-код</h2>
-                <p className="memorial-section__desc mb-6">
-                    Вы можете скачать или распечатать готовый qr-код
-                </p>
-                <div className="memorial-qr__code">
-                    <img src={qrUrl} alt="QR-код" />
-                </div>
-                <div className="memorial-qr__actions">
-                    <a href={qrUrl} download className="memorial-qr__action-btn" title="Скачать">
-                        <svg width="21" height="23" viewBox="0 0 21 23"><path d="M10.5 16.5L10.5 1M10.5 16.5L5.5 11.5M10.5 16.5L15.5 11.5M1 18V22H20V18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    </a>
-                    <button onClick={() => window.print()} className="memorial-qr__action-btn" title="Распечатать">
-                        <svg width="24" height="24" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6v-8Z" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
-                    </button>
+                <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-16">
+                    {/* QR-код */}
+                    <div className="flex-shrink-0 bg-white rounded-2xl p-4 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.06)]">
+                        <div className="w-[220px] h-[220px]">
+                            <img src={qrUrl} alt="QR-код" className="w-full h-full" />
+                        </div>
+                    </div>
+                    {/* Текст + кнопки */}
+                    <div className="flex flex-col items-center lg:items-start text-center lg:text-left pt-2">
+                        <h2 className="memorial-section__title mb-2">QR-код</h2>
+                        <p className="memorial-section__desc mb-6">
+                            Вы можете скачать или распечатать готовый qr-код
+                        </p>
+                        <div className="flex gap-4">
+                            <a
+                                href={qrUrl}
+                                download
+                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1E79D0] text-white font-medium text-sm hover:bg-[#1865B0] transition-colors shadow-sm"
+                                title="Скачать"
+                            >
+                                <svg width="18" height="20" viewBox="0 0 21 23">
+                                    <path d="M10.5 16.5L10.5 1M10.5 16.5L5.5 11.5M10.5 16.5L15.5 11.5M1 18V22H20V18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                Скачать
+                            </a>
+                            <button
+                                onClick={() => window.print()}
+                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors shadow-sm"
+                                title="Распечатать"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24">
+                                    <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6v-8Z" stroke="currentColor" strokeWidth="2" fill="none" />
+                                </svg>
+                                Распечатать
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
