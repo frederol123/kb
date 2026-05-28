@@ -554,11 +554,13 @@ function MemorialCondolences({ card }) {
     const { user } = useAuth();
     const addToast = useToast();
     const queryClient = useQueryClient();
+    const [expanded, setExpanded] = useState(false);
     const [authorName] = useState(user?.name || '');
     const [message, setMessage] = useState('');
 
     const condolences = card?.condolences || [];
-    const displayCondolences = condolences.slice(0, 8);
+    const displayCondolences = expanded ? condolences : condolences.slice(0, 4);
+    const hasMore = condolences.length > 4;
 
     const addMutation = useMutation({
         mutationFn: () => api.post('/condolences', {
@@ -637,6 +639,30 @@ function MemorialCondolences({ card }) {
                                 </p>
                             </div>
                         ))}
+                    </div>
+                )}
+
+                {hasMore && (
+                    <div className="flex justify-center mb-10">
+                        <button
+                            onClick={() => setExpanded(!expanded)}
+                            className="inline-flex items-center gap-2 px-6 py-3 text-white font-semibold text-sm shadow-lg shadow-blue-200/50 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                            style={{
+                                background: 'linear-gradient(135deg, rgb(30, 121, 208), rgb(0, 0, 0))',
+                                borderRadius: '5px',
+                            }}
+                        >
+                            {expanded ? 'Скрыть' : 'Читать далее'}
+                            <svg
+                                className={`w-4 h-4 transition-transform ${expanded ? 'rotate-180' : ''}`}
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                            >
+                                <path d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
                     </div>
                 )}
 
