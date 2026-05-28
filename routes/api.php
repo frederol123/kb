@@ -124,17 +124,27 @@ Route::post('/condolences', function (Request $request) {
         'message' => ['required', 'string'],
     ]);
 
-    $authorName = $request->user()?->name ?? $request->author_name ?? 'Аноним';
+    // Проверка на дубликат — один пользователь не может оставить больше
+    // одного соболезнования на одной странице
+    $exists = \App\Models\Condolence::where('anket_id', $request->anket_id)
+        ->where('user_id', $request->user()->id)
+        ->exists();
+
+    if ($exists) {
+        return response()->json([
+            'message' => 'Вы уже оставили соболезнование на этой странице',
+        ], 422);
+    }
 
     $condolence = \App\Models\Condolence::create([
         'anket_id' => $request->anket_id,
-        'author_name' => $authorName,
+        'author_name' => $request->user()->name,
         'message' => $request->message,
-        'user_id' => $request->user()?->id,
+        'user_id' => $request->user()->id,
     ]);
 
     return response()->json($condolence, 201);
-})->middleware('throttle:30,1');
+})->middleware(['auth:sanctum', 'throttle:30,1']);
 
 Route::get('/m/news', function () {
     $news = \App\Models\News::whereNotNull('published_at')
