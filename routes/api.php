@@ -17,6 +17,7 @@ Route::middleware('throttle:10,1')->group(function () {
 
 Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/change-name', [AuthController::class, 'changeName']);
     Route::get('/auth/me', [AuthController::class, 'me']);
 
     Route::get('/drevs', function (Request $request) {
@@ -120,13 +121,14 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
 Route::post('/condolences', function (Request $request) {
     $request->validate([
         'anket_id' => ['required', 'integer', 'exists:ankets,id'],
-        'author_name' => ['required', 'string', 'max:255'],
         'message' => ['required', 'string'],
     ]);
 
+    $authorName = $request->user()?->name ?? $request->author_name ?? 'Аноним';
+
     $condolence = \App\Models\Condolence::create([
         'anket_id' => $request->anket_id,
-        'author_name' => $request->author_name,
+        'author_name' => $authorName,
         'message' => $request->message,
         'user_id' => $request->user()?->id,
     ]);

@@ -110,4 +110,29 @@ class AuthController extends Controller
     {
         return response()->json($request->user()->only(['id', 'name', 'email', 'max_gallery_images', 'max_videos']));
     }
+
+    public function changeName(Request $request): JsonResponse
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $user = $request->user();
+
+        if ($user->name_changed_at && $user->name_changed_at->gt(now()->subHour())) {
+            $remaining = (int) ceil($user->name_changed_at->copy()->addHour()->diffInSeconds(now()) / 60);
+            return response()->json([
+                'message' => "Имя можно сменить через {$remaining} мин.",
+            ], 429);
+        }
+
+        $user->name = $request->name;
+        $user->name_changed_at = now();
+        $user->save();
+
+        return response()->json([
+            'message' => 'Имя успешно изменено.',
+            'user' => $user->only(['id', 'name', 'email']),
+        ]);
+    }
 }
