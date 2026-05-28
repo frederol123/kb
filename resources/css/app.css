@@ -1674,6 +1674,13 @@
         color: #1E79D0;
         text-decoration: underline;
     }
+    .memorial-bio__text p {
+        margin-bottom: 12px;
+        margin-top: 0;
+    }
+    .memorial-bio__text p:last-child {
+        margin-bottom: 0;
+    }
     .memorial-bio__thumbs {
         display: flex;
         gap: 14px;
