@@ -291,7 +291,7 @@ function MemorialBiography({ content }) {
                         </div>
 
                         {/* Правая колонка: текст */}
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0 !pt-0">
                             {content.bio_quote && (
                                 <blockquote className="text-[#243B53] font-medium text-lg md:text-xl leading-relaxed mb-6 border-l-4 border-[#1E79D0]/30 pl-5 italic">
                                     «{content.bio_quote}»

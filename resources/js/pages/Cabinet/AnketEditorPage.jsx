@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useRef } from 'react';
 import Cropper from 'react-easy-crop';
+import RichTextEditor from '../../components/RichTextEditor';
 import api from '../../lib/api';
 import { useToast } from '../../contexts/ToastContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -354,10 +355,11 @@ export default function CardEditorPage() {
 
                         {/* Biography */}
                         <Section title="Биография">
-                            <textarea value={content.biography || ''} rows={12}
-                                      onChange={e => setContent(prev => ({ ...prev, biography: e.target.value }))}
-                                      className="text-input resize-y"
-                                      placeholder="Напишите биографию..." />
+                            <RichTextEditor
+                                content={content.biography || ''}
+                                onChange={html => setContent(prev => ({ ...prev, biography: html }))}
+                                placeholder="Напишите биографию..."
+                            />
                             <button onClick={saveContent} disabled={saveContentMut.isPending}
                                     className="btn-filled mt-4 text-sm">
                                 {saveContentMut.isPending ? 'Сохранение...' : 'Сохранить биографию'}
