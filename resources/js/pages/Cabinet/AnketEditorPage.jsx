@@ -248,14 +248,6 @@ export default function CardEditorPage() {
                             {qrDownloading ? 'Загрузка...' : 'Скачать QR-код'}
                         </button>
                     </div>
-                    {qrSrc && (
-                        <div className="inline-block bg-white p-4 rounded-xl border border-gray-200">
-                            <img src={qrSrc} alt="QR-код" className="w-48 h-48" />
-                            <p className="text-xs text-gray-400 mt-2 text-center">
-                                {window.location.origin}/m/{card?.slug}
-                            </p>
-                        </div>
-                    )}
                 </div>
             )}
             
@@ -496,6 +488,19 @@ export default function CardEditorPage() {
                     </>
                 )}
             </div>
+
+            {/* QR-код — превью в конце страницы */}
+            {!isNew && qrSrc && (
+                <div className="mt-8">
+                    <div className="inline-block bg-white p-4 rounded-xl border border-gray-200">
+                        <img src={qrSrc} alt="QR-код" className="w-48 h-48" />
+                        <p className="text-xs text-gray-400 mt-2 text-center">
+                            {window.location.origin}/m/{card?.slug}
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {cropOpen && cropFile && (
                 <ImageCropModal
                     file={cropFile}
