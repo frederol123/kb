@@ -104,9 +104,10 @@ function MemorialHero({ info, fio, dates, card }) {
                         <div className="flex flex-wrap gap-4 mt-auto lg:mt-auto pt-6 lg:pt-0">
                             <a
                                 href="#condolences"
-                                className="inline-flex items-center justify-center px-7 py-3.5 rounded-2xl text-white font-semibold text-base shadow-lg shadow-blue-200/60 hover:shadow-xl hover:shadow-blue-300/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                                className="inline-flex items-center justify-center px-7 py-3.5 text-white font-semibold text-base shadow-lg shadow-blue-200/60 hover:shadow-xl hover:shadow-blue-300/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                                 style={{
-                                    background: 'linear-gradient(135deg, #1e79d0, #2563eb)',
+                                    background: 'linear-gradient(135deg, rgb(30, 121, 208), rgb(0, 0, 0))',
+                                    borderRadius: '5px',
                                 }}
                             >
                                 Оставить соболезнование
@@ -119,7 +120,8 @@ function MemorialHero({ info, fio, dates, card }) {
                                         navigator.clipboard?.writeText(window.location.href);
                                     }
                                 }}
-                                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl border border-blue-200/60 bg-white/60 backdrop-blur-sm text-gray-700 font-semibold text-base shadow-sm hover:bg-white/90 hover:shadow-md hover:border-blue-300 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                                className="inline-flex items-center gap-2 px-7 py-3.5 border border-blue-200/60 bg-white/60 backdrop-blur-sm text-gray-700 font-semibold text-base shadow-sm hover:bg-white/90 hover:shadow-md hover:border-blue-300 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                                style={{ borderRadius: '5px' }}
                             >
                                 <Share2 className="w-4 h-4" />
                                 Поделиться памятью
@@ -307,9 +309,10 @@ function MemorialBiography({ content }) {
                             {content.biography && content.biography.length > 800 && (
                                 <button
                                     onClick={() => setExpanded(!expanded)}
-                                    className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-white font-semibold text-sm shadow-lg shadow-blue-200/50 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                                    className="mt-6 inline-flex items-center gap-2 px-6 py-3 text-white font-semibold text-sm shadow-lg shadow-blue-200/50 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                                     style={{
-                                        background: 'linear-gradient(135deg, #1e79d0, #2563eb)',
+                                        background: 'linear-gradient(135deg, rgb(30, 121, 208), rgb(0, 0, 0))',
+                                        borderRadius: '5px',
                                     }}
                                 >
                                     {expanded ? 'Скрыть' : 'Читать далее'}
@@ -551,7 +554,7 @@ function MemorialCondolences({ card }) {
     const { user } = useAuth();
     const addToast = useToast();
     const queryClient = useQueryClient();
-    const [authorName, setAuthorName] = useState(user?.name || '');
+    const [authorName] = useState(user?.name || '');
     const [message, setMessage] = useState('');
 
     const condolences = card?.condolences || [];
@@ -560,7 +563,6 @@ function MemorialCondolences({ card }) {
     const addMutation = useMutation({
         mutationFn: () => api.post('/condolences', {
             anket_id: card.id,
-            author_name: authorName,
             message,
         }),
         onSuccess: () => {
@@ -575,7 +577,7 @@ function MemorialCondolences({ card }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (authorName.trim() && message.trim()) {
+        if (message.trim()) {
             addMutation.mutate();
         }
     };
@@ -640,31 +642,42 @@ function MemorialCondolences({ card }) {
 
                 <div className="memorial-condolences__form" id="condolence-form">
                     <h3>Оставить соболезнование</h3>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <input
-                            type="text"
-                            placeholder="Ваше имя"
-                            value={authorName}
-                            onChange={e => setAuthorName(e.target.value)}
-                            required
-                            className="text-input"
-                        />
-                        <textarea
-                            placeholder="Ваше соболезнование..."
-                            value={message}
-                            onChange={e => setMessage(e.target.value)}
-                            required
-                            rows={3}
-                            className="text-input resize-none"
-                        />
-                        <button
-                            type="submit"
-                            disabled={addMutation.isPending}
-                            className="memorial-condolence-submit"
-                        >
-                            {addMutation.isPending ? 'Отправка...' : 'Оставить соболезнование'}
-                        </button>
-                    </form>
+                    {!user ? (
+                        <div className="text-center py-6 px-4 bg-white/60 backdrop-blur-sm rounded-xl border border-blue-100">
+                            <p className="text-gray-500 mb-4">Чтобы оставить соболезнование, необходимо войти</p>
+                            <button
+                                type="button"
+                                onClick={() => window.dispatchEvent(new CustomEvent('auth:open'))}
+                                className="inline-flex items-center justify-center px-7 py-3 rounded-2xl text-white font-semibold text-base shadow-lg shadow-blue-200/60 hover:shadow-xl transition-all duration-200"
+                                style={{ background: 'linear-gradient(135deg, #1e79d0, #2563eb)' }}
+                            >
+                                Войти
+                            </button>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <p className="text-sm text-gray-500 mb-1">{authorName}</p>
+                            <textarea
+                                placeholder="Ваше соболезнование..."
+                                value={message}
+                                onChange={e => setMessage(e.target.value)}
+                                required
+                                rows={3}
+                                className="text-input resize-none"
+                            />
+                            <button
+                                type="submit"
+                                disabled={addMutation.isPending}
+                                className="memorial-condolence-submit hover:shadow-xl hover:shadow-blue-300/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                                style={{
+                                    background: 'linear-gradient(135deg, rgb(30, 121, 208), rgb(0, 0, 0))',
+                                    borderRadius: '5px',
+                                }}
+                            >
+                                {addMutation.isPending ? 'Отправка...' : 'Оставить соболезнование'}
+                            </button>
+                        </form>
+                    )}
                 </div>
             </div>
         </section>
@@ -717,7 +730,11 @@ function MemorialQR({ id, slug }) {
                             <a
                                 href={qrUrl}
                                 download
-                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1E79D0] text-white font-medium text-sm hover:bg-[#1865B0] transition-colors shadow-sm"
+                                className="inline-flex items-center gap-2 px-5 py-2.5 text-white font-medium text-sm shadow-sm hover:shadow-xl hover:shadow-blue-300/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                                style={{
+                                    background: 'linear-gradient(135deg, rgb(30, 121, 208), rgb(0, 0, 0))',
+                                    borderRadius: '5px',
+                                }}
                                 title="Скачать"
                             >
                                 <svg width="18" height="20" viewBox="0 0 21 23">
@@ -727,7 +744,11 @@ function MemorialQR({ id, slug }) {
                             </a>
                             <button
                                 onClick={() => window.print()}
-                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors shadow-sm"
+                                className="inline-flex items-center gap-2 px-5 py-2.5 text-white font-medium text-sm shadow-sm hover:shadow-xl hover:shadow-green-300/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                                style={{
+                                    background: 'linear-gradient(135deg, rgb(46, 160, 67), rgb(0, 0, 0))',
+                                    borderRadius: '5px',
+                                }}
                                 title="Распечатать"
                             >
                                 <svg width="20" height="20" viewBox="0 0 24 24">
