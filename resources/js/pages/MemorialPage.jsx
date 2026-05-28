@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { Shield, MapPin, Briefcase, Share2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import api from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -44,7 +44,7 @@ function MemorialHero({ info, fio, dates, card }) {
     const initial = [info.first_name?.[0], info.last_name?.[0]].filter(Boolean).join('');
 
     return (
-        <section className="memorial-hero relative overflow-hidden bg-gradient-to-b from-[#f8fbff] to-[#eef4ff]">
+        <section className="memorial-hero relative overflow-hidden bg-gradient-to-b from-[#fdfaf5] via-[#f5efe4] to-[#ede4f2]">
             {/* Декоративные blur-элементы */}
             <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-200/30 rounded-full blur-[100px] pointer-events-none" aria-hidden="true" />
             <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-blue-300/20 rounded-full blur-[80px] pointer-events-none" aria-hidden="true" />
@@ -335,6 +335,7 @@ function MemorialBiography({ content }) {
 
 function MemorialGallery({ gallery }) {
     const scrollRef = useRef(null);
+    const [lightboxIndex, setLightboxIndex] = useState(null);
     if (!gallery || gallery.length === 0) return null;
 
     const scroll = (dir) => {
@@ -342,6 +343,23 @@ function MemorialGallery({ gallery }) {
             scrollRef.current.scrollBy({ left: dir * 350, behavior: 'smooth' });
         }
     };
+
+    const openLightbox = (index) => setLightboxIndex(index);
+    const closeLightbox = () => setLightboxIndex(null);
+    const prevImage = (e) => { e.stopPropagation(); setLightboxIndex(i => i > 0 ? i - 1 : gallery.length - 1); };
+    const nextImage = (e) => { e.stopPropagation(); setLightboxIndex(i => i < gallery.length - 1 ? i + 1 : 0); };
+
+    // Закрытие по Escape
+    useEffect(() => {
+        if (lightboxIndex === null) return;
+        const onKey = (e) => {
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') setLightboxIndex(i => i > 0 ? i - 1 : gallery.length - 1);
+            if (e.key === 'ArrowRight') setLightboxIndex(i => i < gallery.length - 1 ? i + 1 : 0);
+        };
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, [lightboxIndex, gallery.length]);
 
     return (
         <section className="memorial-gallery relative overflow-hidden">
@@ -385,7 +403,8 @@ function MemorialGallery({ gallery }) {
                         {gallery.map((img, i) => (
                             <div
                                 key={i}
-                                className="flex-shrink-0 snap-start bg-white/95 backdrop-blur-sm rounded-sm shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-3 pb-10 w-[250px] md:w-[290px] transition-transform hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
+                                className="flex-shrink-0 snap-start bg-white/95 backdrop-blur-sm rounded-sm shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-3 pb-10 w-[250px] md:w-[290px] transition-transform hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] cursor-pointer"
+                                onClick={() => openLightbox(i)}
                             >
                                 <img
                                     src={img.url}
@@ -421,6 +440,64 @@ function MemorialGallery({ gallery }) {
                     )}
                 </div>
             </div>
+
+            {/* Lightbox */}
+            {lightboxIndex !== null && (
+                <div
+                    className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
+                    onClick={closeLightbox}
+                >
+                    {/* Кнопка закрытия */}
+                    <button
+                        className="absolute top-4 right-4 md:top-6 md:right-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all backdrop-blur-sm z-10"
+                        onClick={closeLightbox}
+                        aria-label="Закрыть"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                    {/* Счётчик */}
+                    <div className="absolute top-4 left-4 md:top-6 md:left-6 text-white/70 text-sm font-medium z-10">
+                        {lightboxIndex + 1} / {gallery.length}
+                    </div>
+
+                    {/* Стрелка влево */}
+                    {gallery.length > 1 && (
+                        <button
+                            className="absolute left-2 md:left-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all backdrop-blur-sm z-10"
+                            onClick={prevImage}
+                            aria-label="Предыдущее"
+                        >
+                            <svg width="24" height="24" viewBox="0 0 32 32">
+                                <path d="M20 6L10 16L20 26" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </button>
+                    )}
+
+                    {/* Изображение */}
+                    <img
+                        src={gallery[lightboxIndex].url}
+                        alt={gallery[lightboxIndex].text || `Фото ${lightboxIndex + 1}`}
+                        className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+
+                    {/* Стрелка вправо */}
+                    {gallery.length > 1 && (
+                        <button
+                            className="absolute right-2 md:right-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all backdrop-blur-sm z-10"
+                            onClick={nextImage}
+                            aria-label="Следующее"
+                        >
+                            <svg width="24" height="24" viewBox="0 0 32 32">
+                                <path d="M12 6L22 16L12 26" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </button>
+                    )}
+                </div>
+            )}
         </section>
     );
 }
