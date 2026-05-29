@@ -260,12 +260,14 @@ export default function CardEditorPage() {
                             <button onClick={() => updateInfo('photo', '')} className="text-red-500 text-sm hover:underline">Удалить фото</button>
                         </div>
                     )}
-                    {!isNew && (
-                        <div className="mb-6">
-                            <label className="block text-sm text-[#999] mb-1.5">Фото</label>
+                    <div className="mb-6">
+                        <label className="block text-sm text-[#999] mb-1.5">Фото</label>
+                        {isNew ? (
+                            <p className="text-sm text-[#999] italic">Сохраните карточку, чтобы добавить фото</p>
+                        ) : (
                             <FileUpload onFile={handlePhotoUpload} disabled={uploading} />
-                        </div>
-                    )}
+                        )}
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <Field label="Фамилия" value={info.last_name} onChange={v => updateInfo('last_name', v)} placeholder="Фамилия" />
                         <Field label="Имя" value={info.first_name} onChange={v => updateInfo('first_name', v)} placeholder="Имя" />
@@ -294,7 +296,22 @@ export default function CardEditorPage() {
                 </Section>
 
                 {/* Relatives */}
-                {!isNew && (
+                {isNew ? (
+                    <>
+                        <Section title="Родственники">
+                            <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить родственников</p>
+                        </Section>
+                        <Section title="Биография">
+                            <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить биографию</p>
+                        </Section>
+                        <Section title={`Галерея (0/${maxGallery})`}>
+                            <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить изображения</p>
+                        </Section>
+                        <Section title={`Видео (0/${maxVideos})`}>
+                            <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить видео</p>
+                        </Section>
+                    </>
+                ) : (
                     <>
                         <Section title="Родственники">
                             {(['children', 'spouses', 'parents']).map(type => (
