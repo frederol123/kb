@@ -53,6 +53,7 @@ export default function App() {
                                 <Route path="settings" element={<SettingsPage />} />
                                 <Route path="drev/new" element={<DrevEditorPage />} />
                                 <Route path="drev/:id/edit" element={<DrevEditorPage />} />
+                                <Route path="cards/new/edit" element={<CardEditorPage />} />
                                 <Route path="cards/:id/edit" element={<CardEditorPage />} />
                             </Route>
                         </Route>

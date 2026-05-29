@@ -25,10 +25,10 @@ export default function MemorialPage() {
     return (
         <div className="memorial-page">
             <MemorialHero info={info} fio={fio} dates={dates} card={card} />
-            <MemorialRelatives family={card.family} />
             <MemorialBiography content={card.content} />
             <MemorialGallery gallery={card.content?.gallery} />
             <MemorialVideos videos={card.content?.videos} />
+            <MemorialRelatives family={card.family} />
             <MemorialCondolences card={card} />
             <MemorialBurial info={info} />
             <MemorialQR id={card.id} slug={card.slug} />
@@ -191,9 +191,9 @@ function MemorialRelatives({ family }) {
     };
 
     return (
-        <section className="memorial-relatives">
+        <section className="memorial-relatives bg-white">
             <div className={SECTION}>
-                <h2 className="memorial-section__title mb-10 lg:ml-[20px]">Родственники</h2>
+                <h2 className="memorial-section__title mb-10">Родственники</h2>
                 <div className="relative">
                     <div ref={scrollRef} className="memorial-relatives__carousel">
                         {allRelatives.map((r, i) => (

@@ -1299,7 +1299,7 @@
         .memorial-hero__condolence-btn { padding: 14px 32px !important; font-size: 15px !important; }
         
         /* Relatives mobile */
-        .memorial-relatives { padding-top: 80px !important; gap: 20px; }
+        .memorial-relatives { padding-top: 80px !important; padding-bottom: 80px !important; gap: 20px; }
         .memorial-relative-card { flex: 0 0 200px !important; padding: 18px 14px; }
         .memorial-relative-card__avatar, 
         .memorial-relative-card__avatar-placeholder { width: 100px !important; height: 100px !important; font-size: 24px !important; margin-bottom: 10px; }
@@ -1550,6 +1550,7 @@
     /* Relatives */
     .memorial-relatives {
         padding-top: 80px;
+        padding-bottom: 80px;
     }
     .memorial-relatives__carousel {
         display: flex;
@@ -1565,7 +1566,7 @@
         flex: 0 0 270px;
         border-radius: 10px;
         border: 1px solid #1E79D0;
-        background: #fff;
+        background: #eef4ff;
         padding: 27px 20px 20px;
         display: flex;
         flex-direction: column;
@@ -1584,13 +1585,13 @@
         width: 144px;
         height: 144px;
         border-radius: 50%;
-        background: #E8F0F8;
+        background: #1E79D0;
         display: flex;
         align-items: center;
         justify-content: center;
         font-family: 'Vela Sans', sans-serif;
         font-size: 36px;
-        color: #1E79D0;
+        color: #fff;
         margin-bottom: 13px;
     }
     .memorial-relative-card__relation {
