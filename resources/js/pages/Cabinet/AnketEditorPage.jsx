@@ -29,6 +29,8 @@ export default function CardEditorPage() {
     const [cropOpen, setCropOpen] = useState(false);
     const [qrDownloading, setQrDownloading] = useState(false);
     const [qrSrc, setQrSrc] = useState(null);
+    const [cropRelativeFile, setCropRelativeFile] = useState(null);
+    const [cropRelativeTarget, setCropRelativeTarget] = useState(null); // {type, idx}
 
     const { data: card } = useQuery({
         queryKey: ['card', id],
@@ -145,6 +147,35 @@ export default function CardEditorPage() {
             setCropFile(null);
         } finally {
             setUploading(false);
+        }
+    };
+
+    const handleRelativePhotoUpload = (file, type, idx) => {
+        if (!file || !id || isNew) return alert('Сначала сохраните карточку');
+        setCropRelativeFile(file);
+        setCropRelativeTarget({ type, idx });
+    };
+
+    const handleRelativeCropComplete = async (croppedBlob) => {
+        if (!croppedBlob || !cropRelativeTarget) {
+            setCropRelativeFile(null);
+            setCropRelativeTarget(null);
+            return;
+        }
+        setUploading(true);
+        const form = new FormData();
+        form.append('file', croppedBlob, 'relative.jpg');
+        try {
+            const { data } = await api.post(`/ankets/${id}/upload`, form);
+            updateRelative(cropRelativeTarget.type, cropRelativeTarget.idx, 'photo', data.url);
+            toast('Фото загружено — не забудьте сохранить родственников');
+        } catch (err) {
+            const msg = err.response?.data?.message || err.message;
+            toast('Ошибка: ' + msg);
+        } finally {
+            setUploading(false);
+            setCropRelativeFile(null);
+            setCropRelativeTarget(null);
         }
     };
 
@@ -326,6 +357,21 @@ export default function CardEditorPage() {
                                     </div>
                                     {(family[type] || []).map((item, idx) => (
                                         <div key={idx} className="flex items-start gap-3 mb-2 p-3 bg-[#f8f8f8] rounded-lg">
+                                            {/* Avatar upload */}
+                                            <div className="flex-shrink-0 flex flex-col items-center gap-1">
+                                                {item.photo ? (
+                                                    <img src={item.photo} className="w-12 h-12 rounded-full object-cover border-2 border-[#1E79D0]" alt="" />
+                                                ) : (
+                                                    <div className="w-12 h-12 rounded-full bg-[#E8F0F8] flex items-center justify-center text-[#1E79D0] font-bold text-sm select-none">
+                                                        {item.name?.[0] || '?'}
+                                                    </div>
+                                                )}
+                                                <label className="text-[10px] text-[#3476f5] cursor-pointer hover:underline">
+                                                    Фото
+                                                    <input type="file" accept="image/*" className="hidden"
+                                                        onChange={e => { const f = e.target.files?.[0]; if(f) handleRelativePhotoUpload(f, type, idx); e.target.value = ''; }} />
+                                                </label>
+                                            </div>
                                             <div className="flex-1 space-y-2">
                                                 <input type="text" value={item.name || ''} placeholder="ФИО"
                                                        onChange={e => updateRelative(type, idx, 'name', e.target.value)}
@@ -524,6 +570,15 @@ export default function CardEditorPage() {
                     aspect={16 / 10}
                     onCrop={handleCropComplete}
                     onClose={() => { setCropOpen(false); setCropFile(null); }}
+                />
+            )}
+
+            {cropRelativeFile && (
+                <ImageCropModal
+                    file={cropRelativeFile}
+                    aspect={1}
+                    onCrop={handleRelativeCropComplete}
+                    onClose={() => { setCropRelativeFile(null); setCropRelativeTarget(null); }}
                 />
             )}
         </div>

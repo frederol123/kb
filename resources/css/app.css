@@ -1314,7 +1314,6 @@
         .memorial-bio__quote { max-width: 100%; }
         
         /* Gallery mobile */
-        .memorial-gallery { padding-top: 40px !important; padding-bottom: 40px !important; }
         
         /* Videos mobile */
         .memorial-video { padding-top: 80px !important; gap: 16px; padding-bottom: 80px;}
@@ -1370,7 +1369,6 @@
         .memorial-bio__quote { max-width: 100%; }
         
         /* Gallery mobile */
-        .memorial-gallery { padding-top: 40px !important; gap: 16px; }
         .memorial-polaroid { flex: 0 0 auto; width: 240px !important; margin-bottom: 16px; }
         
         /* Videos mobile */
@@ -1597,16 +1595,16 @@
     .memorial-relative-card__relation {
         font-family: 'Vela Sans', sans-serif;
         font-weight: 500;
-        font-size: 20px;
-        line-height: 27px;
+        font-size: 18px;
+        line-height: 24px;
         color: #000;
         margin-bottom: 4px;
     }
     .memorial-relative-card__name {
         font-family: 'Vela Sans', sans-serif;
         font-weight: 500;
-        font-size: 20px;
-        line-height: 27px;
+        font-size: 18px;
+        line-height: 24px;
         color: #000;
         margin-bottom: 11px;
     }
