@@ -262,7 +262,7 @@ function MemorialBiography({ content }) {
                 </div>
 
                 {/* Основной контент: карточка с фото + текст */}
-                <div className="bg-white rounded-[28px] shadow-[0_8px_32px_-4px_rgba(30,121,208,0.12)] p-6 md:p-10 lg:p-12">
+                <div className="bg-white rounded-[5px] shadow-[0_8px_32px_-4px_rgba(30,121,208,0.12)] p-6 md:p-10 lg:p-12">
                     <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
                         {/* Левая колонка: фото + миниатюры */}
                         <div className="flex-shrink-0 w-full lg:w-[374px]">
