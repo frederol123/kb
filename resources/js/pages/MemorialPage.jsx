@@ -44,7 +44,7 @@ function MemorialHero({ info, fio, dates, card }) {
     const initial = [info.first_name?.[0], info.last_name?.[0]].filter(Boolean).join('');
 
     return (
-        <section className="memorial-hero relative overflow-hidden bg-gradient-to-b from-[#fdfaf5] via-[#f5efe4] to-[#ede4f2]">
+        <section className="memorial-hero relative overflow-hidden bg-gradient-to-b bg-[#eef4ff]">
             {/* Декоративные blur-элементы */}
             <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-200/30 rounded-full blur-[100px] pointer-events-none" aria-hidden="true" />
             <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-blue-300/20 rounded-full blur-[80px] pointer-events-none" aria-hidden="true" />
@@ -106,7 +106,7 @@ function MemorialHero({ info, fio, dates, card }) {
                                 href="#condolences"
                                 className="inline-flex items-center justify-center px-7 py-3.5 text-white font-semibold text-base shadow-lg shadow-blue-200/60 hover:shadow-xl hover:shadow-blue-300/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                                 style={{
-                                    background: 'linear-gradient(135deg, rgb(30, 121, 208), rgb(0, 0, 0))',
+                                    background: '#1e79d0',
                                     borderRadius: '5px',
                                 }}
                             >
@@ -193,7 +193,7 @@ function MemorialRelatives({ family }) {
     return (
         <section className="memorial-relatives bg-white">
             <div className={SECTION}>
-                <h2 className="memorial-section__title mb-10">Родственники</h2>
+<h2 className="memorial-section__title mb-10">Родственники</h2>
                 <div className="relative">
                     <div ref={scrollRef} className="memorial-relatives__carousel">
                         {allRelatives.map((r, i) => (
@@ -293,14 +293,14 @@ function MemorialBiography({ content }) {
                         </div>
 
                         {/* Правая колонка: текст */}
-                        <div className="flex-1 min-w-0 !pt-0">
+                        <div className="flex-1 min-w-0 !pt-0 overflow-hidden">
                             {content.bio_quote && (
                                 <blockquote className="text-[#243B53] font-medium text-lg md:text-xl leading-relaxed mb-6 border-l-4 border-[#1E79D0]/30 pl-5 italic">
                                     «{content.bio_quote}»
                                 </blockquote>
                             )}
                             <div
-                                className={`memorial-bio__text prose prose-sm max-w-none ${
+                                className={`memorial-bio__text prose prose-sm max-w-none break-words ${
                                     !expanded ? 'line-clamp-[12] lg:line-clamp-[16]' : ''
                                 }`}
                                 dangerouslySetInnerHTML={{ __html: content.biography }}
@@ -311,7 +311,7 @@ function MemorialBiography({ content }) {
                                     onClick={() => setExpanded(!expanded)}
                                     className="mt-6 inline-flex items-center gap-2 px-6 py-3 text-white font-semibold text-sm shadow-lg shadow-blue-200/50 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                                     style={{
-                                        background: 'linear-gradient(135deg, rgb(30, 121, 208), rgb(0, 0, 0))',
+                                        background: '#1e79d0',
                                         borderRadius: '5px',
                                     }}
                                 >
@@ -365,34 +365,14 @@ function MemorialGallery({ gallery }) {
     }, [lightboxIndex, gallery.length]);
 
     return (
-        <section className="memorial-gallery relative overflow-hidden">
-            {/* Тёмный фон + gallery_back.png с цветами */}
-            <div
-                className="absolute inset-0 w-full h-full"
-                style={{
-                    background: 'linear-gradient(rgb(15, 15, 35) 0%, rgb(37 99 235 / 71%) 50%, rgb(15, 15, 35) 100%)',
-                    zIndex: 0,
-                }}
-            />
-            <div
-                className="absolute inset-0 w-full h-full pointer-events-none"
-                style={{
-                    backgroundImage: 'url(/images/gallery_back.png)',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                    opacity: 0.35,
-                    zIndex: 1,
-                }}
-            />
-
-            <div className={`${SECTION} relative z-[2] py-16 md:py-24`}>
-                {/* Заголовок секции — светлый текст */}
+        <section className="memorial-gallery relative overflow-hidden bg-[#eef4ff]">
+            <div className={`${SECTION} relative z-[1] py-16 md:py-24`}>
+                {/* Заголовок секции */}
                 <div className="text-center mb-10 md:mb-14">
-                    <h2 className="text-white font-extrabold text-3xl md:text-4xl lg:text-5xl leading-tight mb-4">
+                    <h2 className="text-[#1c2145] font-extrabold text-3xl md:text-4xl lg:text-5xl leading-tight mb-4">
                         Галерея
                     </h2>
-                    <p className="text-blue-200/80 text-base md:text-lg max-w-[700px] mx-auto leading-relaxed">
+                    <p className="text-[#6c6d7e] text-base md:text-lg max-w-[700px] mx-auto leading-relaxed">
                         «Эта галерея — визуальная хроника жизни. Здесь собраны редкие архивные снимки из семейных альбомов, кадры ключевых карьерных моментов и знаковые события. Откройте для себя историю, рассказанную через фотографию»
                     </p>
                 </div>
@@ -401,12 +381,12 @@ function MemorialGallery({ gallery }) {
                 <div className="relative">
                     <div
                         ref={scrollRef}
-                        className="flex gap-6 md:gap-8 overflow-x-auto scroll-smooth px-2 py-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                        className="flex gap-4 md:gap-11 overflow-x-auto scroll-smooth px-2 py-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                     >
                         {gallery.map((img, i) => (
                             <div
                                 key={i}
-                                className="flex-shrink-0 snap-start bg-white/95 backdrop-blur-sm rounded-sm shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-3 pb-10 w-[250px] md:w-[290px] transition-transform hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] cursor-pointer"
+                                className="flex-shrink-0 snap-start bg-white rounded-[5px] shadow-[0_2px_12px_rgba(0,0,0,0.08)] p-3 pb-10 w-[215px] md:w-[260px] transition-transform hover:scale-[1.02] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] cursor-pointer"
                                 onClick={() => openLightbox(i)}
                             >
                                 <img
@@ -422,7 +402,7 @@ function MemorialGallery({ gallery }) {
                     {gallery.length > 3 && (
                         <div className="flex justify-center gap-4 mt-8">
                             <button
-                                className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all backdrop-blur-sm border border-white/10"
+                                className="w-12 h-12 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 flex items-center justify-center transition-all border border-gray-300"
                                 onClick={() => scroll(-1)}
                                 aria-label="Назад"
                             >
@@ -431,7 +411,7 @@ function MemorialGallery({ gallery }) {
                                 </svg>
                             </button>
                             <button
-                                className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all backdrop-blur-sm border border-white/10"
+                                className="w-12 h-12 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 flex items-center justify-center transition-all border border-gray-300"
                                 onClick={() => scroll(1)}
                                 aria-label="Вперёд"
                             >
@@ -648,7 +628,7 @@ function MemorialCondolences({ card }) {
                             onClick={() => setExpanded(!expanded)}
                             className="inline-flex items-center gap-2 px-6 py-3 text-white font-semibold text-sm shadow-lg shadow-blue-200/50 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                             style={{
-                                background: 'linear-gradient(135deg, rgb(30, 121, 208), rgb(0, 0, 0))',
+                                background: '#1e79d0',
                                 borderRadius: '5px',
                             }}
                         >
@@ -675,7 +655,7 @@ function MemorialCondolences({ card }) {
                                 type="button"
                                 onClick={() => window.dispatchEvent(new CustomEvent('auth:open'))}
                                 className="inline-flex items-center justify-center px-7 py-3 rounded-2xl text-white font-semibold text-base shadow-lg shadow-blue-200/60 hover:shadow-xl transition-all duration-200"
-                                style={{ background: 'linear-gradient(135deg, #1e79d0, #2563eb)' }}
+                                style={{ background: '#1e79d0' }}
                             >
                                 Войти
                             </button>
@@ -696,7 +676,7 @@ function MemorialCondolences({ card }) {
                                 disabled={addMutation.isPending}
                                 className="memorial-condolence-submit hover:shadow-xl hover:shadow-blue-300/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                                 style={{
-                                    background: 'linear-gradient(135deg, rgb(30, 121, 208), rgb(0, 0, 0))',
+                                    background: '#1e79d0',
                                     borderRadius: '5px',
                                 }}
                             >
@@ -758,7 +738,7 @@ function MemorialQR({ id, slug }) {
                                 download
                                 className="inline-flex items-center gap-2 px-5 py-2.5 text-white font-medium text-sm shadow-sm hover:shadow-xl hover:shadow-blue-300/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                                 style={{
-                                    background: 'linear-gradient(135deg, rgb(30, 121, 208), rgb(0, 0, 0))',
+                                    background: '#1e79d0',
                                     borderRadius: '5px',
                                 }}
                                 title="Скачать"
@@ -772,7 +752,7 @@ function MemorialQR({ id, slug }) {
                                 onClick={() => window.print()}
                                 className="inline-flex items-center gap-2 px-5 py-2.5 text-white font-medium text-sm shadow-sm hover:shadow-xl hover:shadow-green-300/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                                 style={{
-                                    background: 'linear-gradient(135deg, rgb(46, 160, 67), rgb(0, 0, 0))',
+                                    background: '#1e79d0',
                                     borderRadius: '5px',
                                 }}
                                 title="Распечатать"
