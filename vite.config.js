@@ -12,6 +12,19 @@ export default defineConfig({
         tailwindcss(),
         react(),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules/react-dom')) return 'vendor-react';
+                    if (id.includes('node_modules/react-router')) return 'vendor-router';
+                    if (id.includes('node_modules/react')) return 'vendor-react';
+                    if (id.includes('node_modules/@tanstack')) return 'vendor-query';
+                    if (id.includes('node_modules')) return 'vendor';
+                },
+            },
+        },
+    },
     server: {
         watch: {
             ignored: ['**/storage/framework/views/**'],

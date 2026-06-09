@@ -1,4 +1,7 @@
 *.log
+*.docx
+*.docx:Zone.Identifier
+:Zone.Identifier
 .DS_Store
 .env
 .env.backup

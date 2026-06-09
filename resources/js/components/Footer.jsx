@@ -7,14 +7,14 @@ export default function Footer() {
                 <div className="footer__inner">
                     <nav className="footer__menu">
                         <ul>
-                            <li><Link to="/family_tree">Генеалогическое древо</Link></li>
+                            <li><Link to="/qr-install">Варианты установки QR</Link></li>
                             <li><Link to="/tariffs">Цены</Link></li>
                             <li><Link to="/order-steps">Как заказать</Link></li>
                             <li><Link to="/faq">Частые вопросы</Link></li>
                         </ul>
                     </nav>
                     <div className="footer__links">
-                        <a href="tel:+79811269133" className="footer__link">+ 7 (981) 126-91-33</a>
+                        <a href="tel:+798****9133" className="footer__link">+ 7 (981) 126-91-33</a>
                         <a href="https://t.me/Kod_bessmertiya" className="footer__link">Telegram</a>
                         <a href="https://wa.me/79811269133" className="footer__link">WhatsApp</a>
                         <a href="viber://chat?number=%2B79811269133" className="footer__link">Viber</a>

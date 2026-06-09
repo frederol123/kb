@@ -9,7 +9,7 @@ export default function DashboardLayout() {
 
     const links = [
         { to: '/lk', icon: '/images/icons/profile-anket.svg', label: 'Мои карточки', end: true },
-        { to: '/lk/drev', icon: '/images/icons/profile-tree.svg', label: 'Генеалогическое дерево' },
+        { to: '/qr-install', icon: '/images/icons/profile-tree.svg', label: 'Варианты установки QR' },
         { to: '/lk/history', icon: '/images/icons/profile-history.svg', label: 'История покупок' },
         { to: '/lk/settings', icon: '/images/icons/profile-settings.svg', label: 'Настройки' },
     ];

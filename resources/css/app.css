@@ -40,7 +40,7 @@
         line-height: 22px;
         letter-spacing: 0.09px;
         color: #6c6d7e;
-        background: #fff;
+        background: #f8f8f8;
         margin: 0;
     }
 }
@@ -292,7 +292,7 @@
     }
     .logo__image { max-width: 100%; max-height: 100%; }
     .flex-1{
-        padding-top: 35px;
+        padding-top: 0px !important;
     }
 
     /* ======== HERO ======== */
@@ -492,7 +492,7 @@
     .number-card__body a:hover { text-decoration: underline; }
 
     /* ======== SINGLE CONTENT (tariff page) ======== */
-    .single-content { padding-top: 51px; }
+    .single-content { padding-top: 100px; }
     .single-content__title {
         font-size: 50px;
         line-height: 54px;
@@ -592,17 +592,29 @@
 
     /* ======== ORDER STEPS ======== */
     .order-steps {
-        padding: 150px 0;
-        margin-top: 35px;
-        background-color: #dce5f5;
-        background-image: url('/images/order-steps-bg.svg');
-        background-repeat: no-repeat;
+        padding: 0;
+        margin-top: 0;
+        background-color: #e9f0ff;
+        background-image: url('/images/how-works-bg.svg');
         background-size: cover;
+        background-repeat: no-repeat;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        flex: 1;
+        padding-top: 175px;
+        padding-bottom: 311px;
+    }
+    .order-steps > .container {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
     }
     .order-steps__title { text-align: center; }
     .order-steps__desc { text-align: center; margin: 0 auto 50px auto; }
     .order-steps__desc p { margin: 0; }
-    .order-steps__items { margin-bottom: 49px; }
+    .order-steps__items { margin-bottom: 49px; flex: 1; }
     .steps {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -610,29 +622,53 @@
     }
     .steps__item {
         box-sizing: border-box;
-        padding: 33px 33px 32px 33px;
+        padding: 40px 33px 32px 33px;
         position: relative;
         border-radius: 24px;
         background: #fff;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
     }
-    .steps__item--mobile { display: none; }
-    .steps__label {
+    .steps__num {
         position: absolute;
-        left: -15px;
-        top: -13px;
-        transform: rotate(-3deg);
-        color: #fff;
-        font-size: 18px;
-        font-weight: 800;
-        line-height: 22px;
-        letter-spacing: 0.09px;
-        border-radius: 16px;
+        top: -16px;
+        left: -12px;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
         background: #74D41D;
-        padding: 9px 25px;
+        color: #fff;
+        font-size: 24px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(-3deg);
+        box-shadow: 0 4px 12px rgba(116, 212, 29, 0.3);
+    }
+    .steps__header {
+        padding-top: 8px;
+    }
+    .steps__label {
+        color: #74D41D;
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        display: block;
+        margin-bottom: 4px;
+    }
+    .steps__heading {
+        color: #1c2145;
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 26px;
+        display: block;
     }
     .steps__body {
         color: #6c6d7e;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 500;
         line-height: 22px;
         letter-spacing: 0.09px;
@@ -641,23 +677,46 @@
     .steps__body a { text-decoration: none; color: #1980DF; }
     .steps__body a:hover { text-decoration: underline; }
     .steps__body br { display: none; }
-    .order-steps__note {
-        width: 625px;
-        max-width: 100%;
+    .order-steps__action {
+        width: 100%;
+        max-width: 720px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 20px;
+        padding: 28px 32px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    .order-steps__action-body {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    .order-steps__action-icon {
+        font-size: 28px;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    .order-steps__action-text {
         color: #6c6d7e;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 500;
         line-height: 20px;
         letter-spacing: 0.08px;
+        margin: 0;
     }
-    .order-steps__note p { margin: 0; }
-    .order-steps__note a { text-decoration: none; color: #1980DF; }
-    .order-steps__note a:hover { text-decoration: underline; }
+    .order-steps__action-text a {
+        text-decoration: none;
+        color: #1980DF;
+        font-weight: 700;
+    }
+    .order-steps__action-text a:hover {
+        text-decoration: underline;
+    }
 
     /* ======== FAQ ======== */
     .faq-section {
         background: #e9f0ff;
-        padding: 51px 0 160px 0;
+        padding: 100px 0 160px 0;
     }
     .faq__title { text-align: left; margin-bottom: 49px; }
     .faq__items { display: flex; flex-direction: column; }
@@ -1061,13 +1120,16 @@
         .plan-card__heading { font-size: 16px; line-height: 18px; }
         .plan-card__label { font-size: 16px; line-height: 18px; font-weight: 700; padding: 8px 15px; top: -21px; left: -16px; }
         .plan-prices { padding-top: 90px; padding-bottom: 50px; }
-        .order-steps { padding: 101px 0 100px 0; }
+        .order-steps { padding: 0; }
         .steps { gap: 30px; }
         .steps__item { padding: 25px 25px 24px 25px; }
-        .steps__label { font-size: 16px; line-height: 20px; padding: 6px 25px; top: -11px; }
-        .steps__body { font-size: 16px; line-height: 20px; }
+        .steps__num { width: 44px; height: 44px; font-size: 20px; top: -14px; left: -10px; }
+        .steps__label { font-size: 12px; letter-spacing: 1.2px; }
+        .steps__heading { font-size: 18px; line-height: 22px; }
+        .steps__body { font-size: 15px; line-height: 19px; }
         .order-steps__items { margin-bottom: 39px; }
-        .order-steps__note { font-size: 14px; line-height: 18px; width: 557px; }
+        .order-steps__action { padding: 22px 24px; max-width: 640px; }
+        .order-steps__action-text { font-size: 14px; line-height: 18px; }
         .faq-section { padding: 100px 0 99px 0; }
         .faq__title { margin-bottom: 40px; }
         .faq__item { padding: 23px 29px 24px 24px; }
@@ -1197,13 +1259,15 @@
         .plan-card__title { font-size: 24px; line-height: 28px; margin-bottom: 17px; }
         .plan-card__price { font-size: 24px; line-height: 28px; margin-bottom: 17px; }
         .steps { gap: 24px; grid-template-columns: repeat(2, 1fr); }
-        .steps__item { padding: 17px 18px 16px 15px; display: flex; align-items: center; }
-        .steps__label { left: -8px; }
+        .steps__item { padding: 28px 22px 24px 22px; gap: 12px; }
+        .steps__num { width: 40px; height: 40px; font-size: 18px; top: -12px; left: -8px; }
+        .steps__label { font-size: 11px; letter-spacing: 1px; }
+        .steps__heading { font-size: 16px; line-height: 20px; }
         .plan-card__desc { margin-bottom: 16px; }
         .plan-card__heading { margin-bottom: 12px; }
         .order-steps__items { margin-bottom: 20px; }
-        .order-steps__note { display: none; }
-        .steps__item--mobile { display: block; padding: 27px 18px 24px 23px; }
+        .order-steps__action { padding: 18px 20px; }
+        .order-steps__action-icon { font-size: 22px; }
         .steps__body { font-size: 14px; line-height: 18px; }
         .faq__title { margin-bottom: 33px; }
         .faq__item { padding: 15px 29px 14px 17px; margin-bottom: 24px; }
@@ -1247,7 +1311,9 @@
         .plan-card__title { font-size: 22px; line-height: 26px; }
         .plan-card__price { font-size: 22px; line-height: 26px; margin-top: 15px; }
         .steps { grid-template-columns: 1fr; gap: 22px; }
-        .steps__label { padding: 5px 15px; top: -16px; }
+        .steps__num { width: 36px; height: 36px; font-size: 16px; top: -10px; left: -6px; }
+        .steps__label { font-size: 10px; letter-spacing: 0.8px; }
+        .steps__heading { font-size: 15px; line-height: 18px; }
         .faq__btn { font-size: 22px; line-height: 26px; }
         .faq__item { padding: 12px 27px 8px 15px; }
         .faq__btn::before { right: -17px; }
@@ -1258,6 +1324,7 @@
         .form__fields { grid-template-columns: 1fr; }
         .form__footer { grid-template-columns: 1fr; gap: 13px; }
         .order-steps__items { margin-bottom: 0; }
+        .order-steps { padding-bottom: 0; }
         .footer__inner { grid-template-columns: 1fr; gap: 33px; }
         .footer__links { justify-self: flex-start; gap: 14px 32px; }
         .footer__menu a { font-size: 18px; line-height: 22px; }
