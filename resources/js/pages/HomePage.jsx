@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function HomePage() {
@@ -7,8 +6,6 @@ export default function HomePage() {
             <HeroSection />
             <PricesSection />
             <HaveQuestionsSection />
-            <OrderStepsSection />
-            <FAQSection />
             <CallbackSection />
         </>
     );
@@ -115,75 +112,6 @@ function HaveQuestionsSection() {
                 </div>
                 <div className="have-questions__preview">
                     <img src="/uploads/2024/02/have-questions.svg" alt="" className="have-questions__image" />
-                </div>
-            </div>
-        </section>
-    );
-}
-
-function OrderStepsSection() {
-    return (
-        <section className="order-steps">
-            <div className="container">
-                <h2 className="section-title order-steps__title">Как оформить заказ</h2>
-                <span className="section-desc order-steps__desc"><p>Чтобы оформить заказ Вам необходимо:</p></span>
-                <div className="order-steps__items">
-                    <div className="steps">
-                        <div className="steps__item">
-                            <span className="steps__label">Шаг 1</span>
-                            <div className="steps__body">
-                                <p>Перейти на страницу <a href="/tariffs">Тарифов</a> и внимательно ознакомиться с тарифами услуг, которые мы предоставляем.</p>
-                            </div>
-                        </div>
-                        <div className="steps__item">
-                            <span className="steps__label">Шаг 2</span>
-                            <div className="steps__body">
-                                <p>Зарегистрироваться на сайте и единоразового оплатить тариф, который Вы выбрали.</p>
-                            </div>
-                        </div>
-                        <div className="steps__item">
-                            <span className="steps__label">Шаг 3</span>
-                            <div className="steps__body">
-                                <p>После оплаты Вам будут предоставлены все функции в рамках Вашего тарифа в личном кабинете.</p>
-                            </div>
-                        </div>
-                        <div className="steps__item steps__item--mobile">
-                            <div className="steps__body">
-                                <p>Либо Вы можете оставить <a href="#">заявку на сайте</a>. Наши специалисты свяжутся с Вами для уточнения всех данных и помогут вам в оформлении вашего заказа.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="order-steps__note">
-                    <p>Либо Вы можете оставить <a href="#">заявку на сайте</a>. Наши специалисты свяжутся с Вами для уточнения всех данных и помогут вам в оформлении вашего заказа.</p>
-                </div>
-            </div>
-        </section>
-    );
-}
-
-function FAQSection() {
-    const [openIdx, setOpenIdx] = useState(0);
-    const faqs = [
-        { q: '«Код бессмертия» – что это?', a: '<p>Код бессмертия это всем нам известный по мировой пандемии QR-код, на металле. Металл выбран из-за своей долговечности, устойчивости к непогоде и сохранению формы даже при попытке деформации, что позволит не беспокоиться о сроке службы и качеству считывания кода.</p><p>Установка памятной таблички производится посредством крепления на двухсторонний скотч, со специальным клейким составом для фиксации на камне и металле, устойчивым к погодным условиям и низким температурам</p>' },
-        { q: 'Как мне создать страницу?', a: '<p>Код бессмертия это всем нам известный по мировой пандемии QR-код, на металле. Металл выбран из-за своей долговечности, устойчивости к непогоде и сохранению формы даже при попытке деформации, что позволит не беспокоится о сроке службы и качеству считывания кода.</p><p>Установка памятной таблички производится посредством крепления на двухсторонний скотч, со специальным клейким составом для фиксации на камне и металле, устойчивым к погодным условиям и низким температурам</p>' },
-        { q: 'Я могу нанести QR код непосредственно на памятник?', a: '<p>Код бессмертия это всем нам известный по мировой пандемии QR-код, на металле. Металл выбран из-за своей долговечности, устойчивости к непогоде и сохранению формы даже при попытке деформации, что позволит не беспокоится о сроке службы и качеству считывания кода.</p><p>Установка памятной таблички производится посредством крепления на двухсторонний скотч, со специальным клейким составом для фиксации на камне и металле, устойчивым к погодным условиям и низким температурам</p>' },
-        { q: 'Сколько будет хранится страница памяти?', a: '<p>Код бессмертия это всем нам известный по мировой пандемии QR-код, на металле. Металл выбран из-за своей долговечности, устойчивости к непогоде и сохранению формы даже при попытке деформации, что позволит не беспокоится о сроке службы и качеству считывания кода.</p><p>Установка памятной таблички производится посредством крепления на двухсторонний скотч, со специальным клейким составом для фиксации на камне и металле, устойчивым к погодным условиям и низким температурам</p>' },
-    ];
-
-    return (
-        <section className="faq-section">
-            <div className="container">
-                <h2 className="section-title faq__title">Частые вопросы</h2>
-                <div className="faq__items">
-                    {faqs.map((f, i) => (
-                        <div key={i} className={`faq__item${openIdx === i ? ' faq__item--open' : ''}`}>
-                            <button className="faq__btn" onClick={() => setOpenIdx(openIdx === i ? null : i)}>
-                                {f.q}
-                            </button>
-                            {openIdx === i && <div className="faq__text" dangerouslySetInnerHTML={{ __html: f.a }} />}
-                        </div>
-                    ))}
                 </div>
             </div>
         </section>
