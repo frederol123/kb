@@ -105,11 +105,8 @@ services:
 
 volumes:
   postgres_data:
-    external: true
   redis_data:
-    external: true
   minio_data:
-    external: true
 
 networks:
   kod-net:
