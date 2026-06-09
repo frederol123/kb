@@ -500,7 +500,7 @@
     }
 
     /* ======== PLAN PRICES ======== */
-    .plan-prices { padding-top: 104px; padding-bottom: 65px; }
+    .plan-prices { padding-top: 80px; padding-bottom: 80px; }
     .prices-cards {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -773,7 +773,7 @@
     .faq__text p:last-child { margin-bottom: 0; }
 
     /* ======== HAVE QUESTIONS ======== */
-    .have-questions { padding: 85px 0 151px 0; }
+    .have-questions { padding: 80px 0 80px 0; }
     .have-questions__inner {
         display: grid;
         grid-template-columns: minmax(0, 59fr) minmax(0, 41fr);
@@ -841,7 +841,7 @@
 
     /* ======== CALLBACK ======== */
     .callback {
-        padding: 150px 0;
+        padding: 80px 0;
         background: #1c2145;
     }
     .callback--blue {
@@ -1119,7 +1119,7 @@
         .plan-card__desc { margin-bottom: 24px; font-size: 14px; line-height: 18px; }
         .plan-card__heading { font-size: 16px; line-height: 18px; }
         .plan-card__label { font-size: 16px; line-height: 18px; font-weight: 700; padding: 8px 15px; top: -21px; left: -16px; }
-        .plan-prices { padding-top: 90px; padding-bottom: 50px; }
+        .plan-prices { padding-top: 60px; padding-bottom: 60px; }
         .order-steps { padding: 0; }
         .steps { gap: 30px; }
         .steps__item { padding: 25px 25px 24px 25px; }
@@ -1135,14 +1135,14 @@
         .faq__item { padding: 23px 29px 24px 24px; }
         .faq__btn { font-size: 28px; line-height: 32px; }
         .faq__text { font-size: 16px; line-height: 20px; }
-        .have-questions { padding: 52px 0 100px 0; }
+        .have-questions { padding: 60px 0; }
         .have-questions__inner { grid-template-columns: minmax(0, 50fr) minmax(0, 50fr); gap: 30px; }
         .have-questions__image { margin-top: -5px; }
         .form__title, .callback .form__title { font-size: 38px; line-height: 42px; }
         .form__desc, .callback .form__desc { font-size: 16px; line-height: 20px; }
         .form__submit { padding: 14px; }
-        .callback { padding: 100px 0 101px 0; }
-        .callback--blue { padding: 100px 0 101px 0; }
+        .callback { padding: 60px 0; }
+        .callback--blue { padding: 60px; }
         .footer { padding: 38px 0 30px 0; }
         .footer__inner { padding-bottom: 40px; }
         .footer__menu a { font-size: 16px; line-height: 20px; }
