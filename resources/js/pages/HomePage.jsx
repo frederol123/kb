@@ -5,7 +5,6 @@ export default function HomePage() {
     return (
         <>
             <HeroSection />
-            <TreeIntroduceSection />
             <PricesSection />
             <HaveQuestionsSection />
             <OrderStepsSection />
@@ -29,31 +28,6 @@ function HeroSection() {
                 </div>
                 <div className="hero__preview">
                     <img src="/uploads/2024/02/hero.svg" alt="" className="hero__image" />
-                </div>
-            </div>
-        </section>
-    );
-}
-
-function TreeIntroduceSection() {
-    return (
-        <section className="tree-introduce">
-            <div className="container tree-introduce__inner">
-                <div className="tree-introduce__preview">
-                    <div className="tree-introduce-card">
-                        <img src="/uploads/2023/12/tree-introduce.jpg" alt="" className="tree-introduce-card__image" />
-                        <span className="tree-introduce-card__title">Пётр Ильич Чайковский</span>
-                        <span className="tree-introduce-card__desc">1840–1893</span>
-                    </div>
-                </div>
-                <div className="tree-introduce__content">
-                    <h2 className="section-title tree-introduce__title">Генеалогическое древо</h2>
-                    <div className="text-content tree-introduce__desc">
-                        <p>Сервис сохранения генеалогического древа — это превосходный способ сохранить историю своей семьи <strong>на долгие годы</strong>.</p>
-                        <p>Мы предоставляем услуги по сбору, обработке и сохранению вашей информации о родственниках, помогая найти и сохранить данные о предшественниках и поколениях вашей семьи. Наша команда работает с каждым клиентом индивидуально, учитывая их уникальные запросы и требования.</p>
-                        <p>Хранение генеалогического древа в нашей базе данных <strong>гарантирует сохранение информации в безопасности</strong> и доступность её в любое время.</p>
-                    </div>
-                    <Link to="/tariffs" className="button button--filled">Подробнее</Link>
                 </div>
             </div>
         </section>
