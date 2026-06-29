@@ -79,6 +79,11 @@ function PlanCard({ title, price, desc, features, highlighted, badge, index }) {
     // tariff_id в БД: basic=1, extended=2, special=3, pet=4
     const tariffId = index + 1;
 
+    const userPrice = parseFloat(user?.tariff?.price || 0);
+    const cardPrice = parseFloat(price);
+    const hasDiscount = userPrice > 0 && cardPrice > userPrice;
+    const discountedPrice = hasDiscount ? cardPrice - userPrice : null;
+
     const handleBuy = async () => {
         if (!user) {
             window.dispatchEvent(new CustomEvent('auth:open'));
@@ -116,7 +121,15 @@ function PlanCard({ title, price, desc, features, highlighted, badge, index }) {
                     ))}
                 </div>
             </div>
-            <span className="plan-card__price">{price} ₽</span>
+            <span className="plan-card__price">
+                {hasDiscount ? (
+                    <>
+                        <span className="line-through">{price} ₽</span> {discountedPrice} ₽
+                    </>
+                ) : (
+                    <>{price} ₽</>
+                )}
+            </span>
             <div className="plan-card__actions">
                 <Link to="/tariffs" className={`button plan-card__btn ${highlighted ? 'button--filled' : ''}`}>Подробнее</Link>
                 <button onClick={handleBuy} disabled={buyLoading}
