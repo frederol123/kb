@@ -10,6 +10,7 @@ export default function DashboardLayout() {
     const links = [
         { to: '/lk', icon: '/images/icons/profile-anket.svg', label: 'Мои карточки', end: true },
         { to: '/qr-install', icon: '/images/icons/profile-tree.svg', label: 'Варианты установки QR' },
+        { to: '/tariffs', icon: '/images/icons/profile-tree.svg', label: 'Тарифы' },
         { to: '/lk/history', icon: '/images/icons/profile-history.svg', label: 'История покупок' },
         { to: '/lk/settings', icon: '/images/icons/profile-settings.svg', label: 'Настройки' },
     ];
@@ -22,7 +23,14 @@ export default function DashboardLayout() {
                         <div className="bg-white rounded-2xl p-5 shadow-sm sticky top-[130px]">
                             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
                                 <img src="/images/no-photo.svg" alt="" className="w-10 h-10 rounded-full" />
-                                <span className="font-extrabold text-[#1c2145] text-sm">{user.name}</span>
+                                <div className="min-w-0">
+                                    <span className="font-extrabold text-[#1c2145] text-sm block truncate">{user.name}</span>
+                                    {user.tariff && (
+                                        <span className="text-xs text-[#22c55e] font-bold block mt-0.5">
+                                            {user.tariff.title}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <nav className="space-y-1">
                                 {links.map((l) => (

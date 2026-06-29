@@ -30,6 +30,17 @@ class AnketController extends Controller
             'family' => ['array', 'nullable'],
         ]);
 
+        $status = $request->input('status', 'draft');
+        if ($status === 'private' && !($request->user()->tariff?->limits['has_privacy'] ?? false)) {
+            abort(403, 'Функция «Приватность» недоступна на вашем тарифе.');
+        }
+
+        $family = $request->input('family');
+        $hasFamilyData = $family && (count($family['children'] ?? []) > 0 || count($family['spouses'] ?? []) > 0 || count($family['parents'] ?? []) > 0);
+        if ($hasFamilyData && !($request->user()->tariff?->limits['has_family_tree'] ?? false)) {
+            abort(403, 'Генеалогическое древо недоступно на вашем тарифе.');
+        }
+
         $slug = $this->generateSlug($request);
 
         $anket = $request->user()->ankets()->create([
@@ -73,6 +84,16 @@ class AnketController extends Controller
             'content.gallery' => ['nullable', 'array', 'max:' . $request->user()->max_gallery_images],
             'content.videos' => ['nullable', 'array', 'max:' . $request->user()->max_videos],
         ]);
+
+        if ($request->input('status') === 'private' && !($request->user()->tariff?->limits['has_privacy'] ?? false)) {
+            abort(403, 'Функция «Приватность» недоступна на вашем тарифе.');
+        }
+
+        $family = $request->input('family');
+        $hasFamilyData = $family && (count($family['children'] ?? []) > 0 || count($family['spouses'] ?? []) > 0 || count($family['parents'] ?? []) > 0);
+        if ($hasFamilyData && !($request->user()->tariff?->limits['has_family_tree'] ?? false)) {
+            abort(403, 'Генеалогическое древо недоступно на вашем тарифе.');
+        }
 
         $data = $request->only(['status', 'info', 'family']);
 

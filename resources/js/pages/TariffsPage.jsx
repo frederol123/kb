@@ -289,7 +289,7 @@ function TariffCard({ tariff, index, detailed }) {
             <span className="plan-card__price">
                 {hasDiscount ? (
                     <span className="flex flex-col items-center">
-                        <span className="line-through text-red-500 text-sm">{tariff.price} ₽</span>
+                        <span className="line-through text-red-500 text-base">{tariff.price} ₽</span>
                         <span>{discountedPrice} ₽</span>
                     </span>
                 ) : (
@@ -345,7 +345,7 @@ function TariffDetailPage({ tariff, index }) {
                             <div className="tariff-hero__price">
                                 {hasDiscount ? (
                                     <span className="flex flex-col items-center">
-                                        <span className="line-through text-red-500 text-sm">{tariff.price} ₽</span>
+                                        <span className="line-through text-red-500 text-base">{tariff.price} ₽</span>
                                         <span>{discountedPrice} ₽</span>
                                     </span>
                                 ) : (
@@ -426,7 +426,7 @@ function TariffDetailPage({ tariff, index }) {
                             <span className="tariff-cta__price">
                                 {hasDiscount ? (
                                     <span className="flex flex-col items-center">
-                                        <span className="line-through text-red-500 text-sm">{tariff.price} ₽</span>
+                                        <span className="line-through text-red-500 text-base">{tariff.price} ₽</span>
                                         <span>{discountedPrice} ₽</span>
                                     </span>
                                 ) : (

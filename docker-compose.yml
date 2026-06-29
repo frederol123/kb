@@ -39,6 +39,8 @@ services:
     image: laravel-php:latest
     container_name: kod-app
     restart: unless-stopped
+    environment:
+      APP_KEY: base64:veHV69ATG2CDlw4LAzBV0JYNqlLAI9RTJgw/OEerheg=
     volumes:
       - ./:/app
     depends_on:

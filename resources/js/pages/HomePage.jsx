@@ -124,7 +124,7 @@ function PlanCard({ title, price, desc, features, highlighted, badge, index }) {
             <span className="plan-card__price">
                 {hasDiscount ? (
                     <span className="flex flex-col items-center">
-                        <span className="line-through text-red-500 text-sm">{price} ₽</span>
+                        <span className="line-through text-red-500 text-base">{price} ₽</span>
                         <span>{discountedPrice} ₽</span>
                     </span>
                 ) : (

@@ -6,12 +6,13 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password', 'max_gallery_images', 'max_videos'])]
+#[Fillable(['name', 'email', 'password', 'max_gallery_images', 'max_videos', 'tariff_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -26,12 +27,18 @@ class User extends Authenticatable
             'password' => 'hashed',
             'max_gallery_images' => 'integer',
             'max_videos' => 'integer',
+            'tariff_id' => 'integer',
         ];
     }
 
     public function ankets(): HasMany
     {
         return $this->hasMany(Anket::class);
+    }
+
+    public function tariff(): BelongsTo
+    {
+        return $this->belongsTo(Tariff::class);
     }
 
     public function drevs(): HasMany

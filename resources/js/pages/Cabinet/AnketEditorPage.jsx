@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useRef } from 'react';
 import Cropper from 'react-easy-crop';
@@ -16,8 +16,10 @@ export default function CardEditorPage() {
     const queryClient = useQueryClient();
     const toast = useToast();
     const { user } = useAuth();
-    const maxGallery = user?.max_gallery_images ?? 6;
-    const maxVideos = user?.max_videos ?? 6;
+    const tariffLimits = user?.tariff?.limits || {};
+    const maxGallery = tariffLimits.max_gallery_images ?? user?.max_gallery_images ?? 6;
+    const maxVideos = tariffLimits.max_videos ?? user?.max_videos ?? 6;
+    const maxQrCodes = tariffLimits.max_qr_codes ?? 1;
     const isNew = !id || id === 'new';
 
     const [info, setInfo] = useState({ ...emptyInfo });
@@ -279,6 +281,21 @@ export default function CardEditorPage() {
                             {qrDownloading ? 'Загрузка...' : 'Скачать QR-код'}
                         </button>
                     </div>
+                    {/* Информация о тарифе и лимитах */}
+                    {user?.tariff && (
+                        <div className="bg-[#f0fdf4] border border-[#22c55e]/30 rounded-xl p-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                            <span className="font-bold text-[#16a34a]">Тариф: {user.tariff.title}</span>
+                            <span>QR-коды: <strong>{maxQrCodes}</strong></span>
+                            <span>Галерея: <strong>{maxGallery}</strong> фото</span>
+                            <span>Видео: <strong>{maxVideos}</strong></span>
+                            {!tariffLimits.has_family_tree && (
+                                <span className="text-amber-600">🔒 Древо — <Link to="/tariffs" className="underline">Особый тариф</Link></span>
+                            )}
+                            {!tariffLimits.has_privacy && (
+                                <span className="text-amber-600">🔒 Приватность — <Link to="/tariffs" className="underline">улучшить тариф</Link></span>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
             
@@ -317,8 +334,20 @@ export default function CardEditorPage() {
                         <select value={status} onChange={e => setStatus(e.target.value)} className="text-input w-auto">
                             <option value="draft">Черновик</option>
                             <option value="published">Опубликована</option>
-                            <option value="private">Приватная</option>
+                            {user?.tariff?.limits?.has_privacy ? (
+                                <option value="private">Приватная</option>
+                            ) : (
+                                <option value="private" disabled className="text-gray-400">
+                                    Приватная (доступно в Расширенном тарифе)
+                                </option>
+                            )}
                         </select>
+                        {!user?.tariff?.limits?.has_privacy && status === 'private' && (
+                            <p className="text-xs text-amber-600 mt-1">
+                                Функция «Приватность» недоступна на вашем тарифе. 
+                                <Link to="/tariffs" className="text-[#3476f5] hover:underline ml-1">Выбрать тариф</Link>
+                            </p>
+                        )}
                     </div>
                     <button onClick={saveInfo} disabled={saveInfoMut.isPending}
                             className="btn-filled text-sm mt-4">
@@ -330,7 +359,14 @@ export default function CardEditorPage() {
                 {isNew ? (
                     <>
                         <Section title="Родственники">
-                            <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить родственников</p>
+                            {tariffLimits.has_family_tree ? (
+                                <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить родственников</p>
+                            ) : (
+                                <div className="py-8 text-center">
+                                    <p className="text-sm text-[#999] italic mb-3">Генеалогическое древо недоступно на вашем тарифе</p>
+                                    <Link to="/tariffs" className="text-[#3476f5] text-sm font-bold hover:underline">Улучшить тариф →</Link>
+                                </div>
+                            )}
                         </Section>
                         <Section title="Биография">
                             <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить биографию</p>
@@ -345,6 +381,8 @@ export default function CardEditorPage() {
                 ) : (
                     <>
                         <Section title="Родственники">
+                            {tariffLimits.has_family_tree ? (
+                                <>
                             {(['children', 'spouses', 'parents']).map(type => (
                                 <div key={type} className="mb-6">
                                     <div className="flex items-center justify-between mb-3">
@@ -406,6 +444,13 @@ export default function CardEditorPage() {
                                     className="btn-filled text-sm mt-4">
                                 {saveInfoMut.isPending ? 'Сохранение...' : 'Сохранить родственников'}
                             </button>
+                                </>
+                            ) : (
+                                <div className="py-8 text-center">
+                                    <p className="text-sm text-[#999] italic mb-3">Генеалогическое древо доступно только в тарифе «Особая страница»</p>
+                                    <Link to="/tariffs" className="text-[#3476f5] text-sm font-bold hover:underline">Улучшить тариф →</Link>
+                                </div>
+                            )}
                         </Section>
 
                         {/* Biography */}

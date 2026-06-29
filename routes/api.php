@@ -20,6 +20,9 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::post('/auth/change-name', [AuthController::class, 'changeName']);
     Route::get('/auth/me', [AuthController::class, 'me']);
 
+    // Robokassa — создание платежа
+    Route::post('/robokassa/pay', [App\Http\Controllers\Api\RobokassaController::class, 'pay']);
+
     Route::get('/drevs', function (Request $request) {
         return $request->user()->drevs()->latest()->get();
     });
@@ -158,3 +161,15 @@ Route::post('/payments/callback', [App\Http\Controllers\Api\PaymentController::c
     ->middleware('throttle:10,1');
 
 Route::get('/m/{anket:slug}', [AnketController::class, 'public']);
+
+Route::get('/tariffs', function () {
+    return \App\Models\Tariff::where('is_active', true)->orderBy('price')->get();
+});
+
+// Robokassa — вебхуки и редиректы (без auth, только подпись)
+Route::post('/robokassa/result', [App\Http\Controllers\Api\RobokassaController::class, 'result'])
+    ->name('robokassa.result');
+Route::get('/robokassa/success', [App\Http\Controllers\Api\RobokassaController::class, 'success'])
+    ->name('robokassa.success');
+Route::get('/robokassa/fail', [App\Http\Controllers\Api\RobokassaController::class, 'fail'])
+    ->name('robokassa.fail');

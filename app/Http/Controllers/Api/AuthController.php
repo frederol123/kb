@@ -108,7 +108,10 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        return response()->json($request->user()->only(['id', 'name', 'email', 'max_gallery_images', 'max_videos']));
+        $user = $request->user()->load('tariff');
+        return response()->json($user->only(['id', 'name', 'email', 'max_gallery_images', 'max_videos', 'tariff_id']) + [
+            'tariff' => $user->tariff ? $user->tariff->only(['id', 'title', 'slug', 'price', 'limits']) : null,
+        ]);
     }
 
     public function changeName(Request $request): JsonResponse

@@ -19,6 +19,16 @@ class QrController extends Controller
             abort(404);
         }
 
+        // Проверка лимита QR-кодов по тарифу пользователя
+        if ($request->user()) {
+            $user = $request->user()->load('tariff');
+            $maxQr = $user->tariff?->limits['max_qr_codes'] ?? 1;
+            $anketCount = $user->ankets()->count();
+            if ($anketCount > $maxQr) {
+                abort(403, "Достигнут лимит генерации QR-кодов ({$maxQr}) по вашему тарифу.");
+            }
+        }
+
         $url = url("/m/{$anket->slug}");
 
         return $this->qrService->generateStream($url, $anket->slug);

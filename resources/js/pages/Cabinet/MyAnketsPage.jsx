@@ -1,9 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import api from '../../lib/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function MyCardsPage() {
     const queryClient = useQueryClient();
+    const { user } = useAuth();
     const { data, isLoading } = useQuery({
         queryKey: ['my-cards'],
         queryFn: () => api.get('/ankets').then(r => r.data),
@@ -29,6 +31,21 @@ export default function MyCardsPage() {
                     <Link to="/lk/cards/new/edit" className="btn-filled text-sm">Создать карточку</Link>
                 </div>
             </div>
+
+            {/* Информация о тарифе */}
+            {user?.tariff && (
+                <div className="bg-[#f0fdf4] border border-[#22c55e]/30 rounded-xl p-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm mb-6">
+                    <span className="font-bold text-[#16a34a]">{user.tariff.title}</span>
+                    <span className="text-[#4b5563]">
+                        Карточек: <strong>{cards.length}</strong> / <strong>{user.tariff.limits?.max_qr_codes ?? 1}</strong>
+                    </span>
+                    {(user.tariff.limits?.max_qr_codes ?? 1) <= cards.length && (
+                        <Link to="/tariffs" className="text-[#3476f5] font-bold hover:underline ml-auto">
+                            🚀 Улучшить тариф
+                        </Link>
+                    )}
+                </div>
+            )}
 
             {isLoading ? (
                 <p className="text-[#6c6d7e]">Загрузка...</p>
