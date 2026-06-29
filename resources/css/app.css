@@ -69,6 +69,13 @@
     .button--filled { color: #fff; background-color: #1980DF; }
     .button--filled:hover { background-color: rgba(25, 128, 223, 0.8); }
 
+    /* Кнопка Подробнее (outline) — hover в синий */
+    .button.plan-card__btn:not(.button--filled):not(.plan-card__btn--buy):hover {
+        background: #1e79d0;
+        color: #fff;
+        border-color: #1e79d0;
+    }
+
     .btn-download{
         all: unset;
         cursor: pointer;
