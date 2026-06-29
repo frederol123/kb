@@ -92,7 +92,10 @@ function PlanCard({ title, price, desc, features, highlighted, badge, index }) {
 
         setBuyLoading(true);
         try {
-            const { data } = await api.post('/robokassa/pay', { tariff_id: tariffId });
+            const { data } = await api.post('/robokassa/pay', { 
+                tariff_id: tariffId,
+                ...(hasDiscount ? { discounted_amount: discountedPrice } : {}),
+            });
             if (data.payment_url) {
                 window.location.href = data.payment_url;
             }
