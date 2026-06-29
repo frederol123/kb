@@ -1,4 +1,7 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import api from '../lib/api';
+import { useState } from 'react';
 
 export default function HomePage() {
     return (
@@ -40,13 +43,13 @@ function PricesSection() {
                     <p>Стоимость услуг может меняться в зависимости от партнёра и региона предоставления услуг.</p>
                 </span>
                 <div className="prices-cards">
-                    <PlanCard title="Базовая страница" price="6600"
+                    <PlanCard title="Базовая страница" price="6600" index={0}
                         features={[
                             { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
                             { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
                             { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
                         ]} />
-                    <PlanCard title="Расширенная страница" price="16500" highlighted
+                    <PlanCard title="Расширенная страница" price="16500" highlighted index={1}
                         desc='<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации 3 QR-кода. Возможность генерации QR-кода со скидкой 20% на следующие 3 анкеты.</p>'
                         features={[
                             { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
@@ -54,10 +57,10 @@ function PricesSection() {
                             { icon: 'icon-list-privacy.svg', text: 'Приватность' },
                             { icon: 'icon-list-support.svg', text: 'Обслуживание страницы' },
                         ]} />
-                    <PlanCard title="Особая страница" price="27500" badge="badge-special.svg"
+                    <PlanCard title="Особая страница" price="27500" badge="badge-special.svg" index={2}
                         desc='<p>Включает в себя все возможности <strong>расширенной страницы,</strong> с учетом генерации 5 QR-кода. Возможность генерации QR-кода со скидкой 20% на все следующие анкеты.</p>'
                         features={[{ icon: 'icon-list-tree.svg', text: 'Создание генеалогического древа в профиле пользователя.' }]} />
-                    <PlanCard title="Страница питомца" price="4400" badge="badge-pet.svg"
+                    <PlanCard title="Страница питомца" price="4400" badge="badge-pet.svg" index={3}
                         features={[
                             { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
                             { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
@@ -69,7 +72,33 @@ function PricesSection() {
     );
 }
 
-function PlanCard({ title, price, desc, features, highlighted, badge }) {
+function PlanCard({ title, price, desc, features, highlighted, badge, index }) {
+    const { user } = useAuth();
+    const [buyLoading, setBuyLoading] = useState(false);
+
+    // tariff_id в БД: basic=1, extended=2, special=3, pet=4
+    const tariffId = index + 1;
+
+    const handleBuy = async () => {
+        if (!user) {
+            window.dispatchEvent(new CustomEvent('auth:open'));
+            return;
+        }
+
+        setBuyLoading(true);
+        try {
+            const { data } = await api.post('/robokassa/pay', { tariff_id: tariffId });
+            if (data.payment_url) {
+                window.location.href = data.payment_url;
+            }
+        } catch (err) {
+            const msg = err.response?.data?.message || 'Ошибка при создании платежа';
+            alert(msg);
+        } finally {
+            setBuyLoading(false);
+        }
+    };
+
     return (
         <div className={`plan-card ${highlighted ? 'plan-card--highlighted' : ''}`}>
             {badge && <div className="plan-card__badges"><img src={`/uploads/2024/02/${badge}`} alt="" className="plan-card__badge" /></div>}
@@ -88,7 +117,13 @@ function PlanCard({ title, price, desc, features, highlighted, badge }) {
                 </div>
             </div>
             <span className="plan-card__price">{price} ₽</span>
-            <Link to="/tariffs" className={`button plan-card__btn ${highlighted ? 'button--filled' : ''}`}>Подробнее</Link>
+            <div className="plan-card__actions">
+                <Link to="/tariffs" className={`button plan-card__btn ${highlighted ? 'button--filled' : ''}`}>Подробнее</Link>
+                <button onClick={handleBuy} disabled={buyLoading}
+                        className="button plan-card__btn plan-card__btn--buy">
+                    {buyLoading ? 'Оплата...' : 'Купить'}
+                </button>
+            </div>
             <span className="plan-card__under-note">После оплаты анкеты сразу появятся в вашем Личном кабинете</span>
         </div>
     );
