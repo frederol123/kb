@@ -86,7 +86,6 @@ export default function SettingsPage() {
                             <LimitItem label="Установка" value={user.tariff.limits.has_installation ? 'Включена' : 'Нет'} active={user.tariff.limits.has_installation} />
                             <LimitItem label="Приватность" value={user.tariff.limits.has_privacy ? 'Включена' : 'Нет'} active={user.tariff.limits.has_privacy} />
                             <LimitItem label="Обслуживание" value={user.tariff.limits.has_maintenance ? 'Включено' : 'Нет'} active={user.tariff.limits.has_maintenance} />
-                            <LimitItem label="Генеалогическое древо" value={user.tariff.limits.has_family_tree ? 'Включено' : 'Нет'} active={user.tariff.limits.has_family_tree} />
                         </div>
                     )}
                     <Link to="/tariffs" className="btn-filled text-sm inline-flex">Сменить тариф</Link>

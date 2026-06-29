@@ -288,9 +288,6 @@ export default function CardEditorPage() {
                             <span>QR-коды: <strong>{maxQrCodes}</strong></span>
                             <span>Галерея: <strong>{maxGallery}</strong> фото</span>
                             <span>Видео: <strong>{maxVideos}</strong></span>
-                            {!tariffLimits.has_family_tree && (
-                                <span className="text-amber-600">🔒 Древо — <Link to="/tariffs" className="underline">Особый тариф</Link></span>
-                            )}
                             {!tariffLimits.has_privacy && (
                                 <span className="text-amber-600">🔒 Приватность — <Link to="/tariffs" className="underline">улучшить тариф</Link></span>
                             )}
@@ -359,14 +356,7 @@ export default function CardEditorPage() {
                 {isNew ? (
                     <>
                         <Section title="Родственники">
-                            {tariffLimits.has_family_tree ? (
-                                <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить родственников</p>
-                            ) : (
-                                <div className="py-8 text-center">
-                                    <p className="text-sm text-[#999] italic mb-3">Генеалогическое древо недоступно на вашем тарифе</p>
-                                    <Link to="/tariffs" className="text-[#3476f5] text-sm font-bold hover:underline">Улучшить тариф →</Link>
-                                </div>
-                            )}
+                            <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить родственников</p>
                         </Section>
                         <Section title="Биография">
                             <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить биографию</p>
@@ -381,8 +371,6 @@ export default function CardEditorPage() {
                 ) : (
                     <>
                         <Section title="Родственники">
-                            {tariffLimits.has_family_tree ? (
-                                <>
                             {(['children', 'spouses', 'parents']).map(type => (
                                 <div key={type} className="mb-6">
                                     <div className="flex items-center justify-between mb-3">
@@ -444,13 +432,6 @@ export default function CardEditorPage() {
                                     className="btn-filled text-sm mt-4">
                                 {saveInfoMut.isPending ? 'Сохранение...' : 'Сохранить родственников'}
                             </button>
-                                </>
-                            ) : (
-                                <div className="py-8 text-center">
-                                    <p className="text-sm text-[#999] italic mb-3">Генеалогическое древо доступно только в тарифе «Особая страница»</p>
-                                    <Link to="/tariffs" className="text-[#3476f5] text-sm font-bold hover:underline">Улучшить тариф →</Link>
-                                </div>
-                            )}
                         </Section>
 
                         {/* Biography */}
