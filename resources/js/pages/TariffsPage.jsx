@@ -288,9 +288,10 @@ function TariffCard({ tariff, index, detailed }) {
             </div>
             <span className="plan-card__price">
                 {hasDiscount ? (
-                    <>
-                        <span className="line-through">{tariff.price} ₽</span> {discountedPrice} ₽
-                    </>
+                    <span className="flex flex-col items-center">
+                        <span className="line-through text-red-500 text-sm">{tariff.price} ₽</span>
+                        <span>{discountedPrice} ₽</span>
+                    </span>
                 ) : (
                     <>{tariff.price} ₽</>
                 )}
@@ -343,9 +344,10 @@ function TariffDetailPage({ tariff, index }) {
                             <p className="tariff-hero__subtitle">{detail.heroSubtitle}</p>
                             <div className="tariff-hero__price">
                                 {hasDiscount ? (
-                                    <>
-                                        <span className="line-through">{tariff.price} ₽</span> {discountedPrice} ₽
-                                    </>
+                                    <span className="flex flex-col items-center">
+                                        <span className="line-through text-red-500 text-sm">{tariff.price} ₽</span>
+                                        <span>{discountedPrice} ₽</span>
+                                    </span>
                                 ) : (
                                     <>{tariff.price} ₽</>
                                 )}
@@ -423,9 +425,10 @@ function TariffDetailPage({ tariff, index }) {
                             <span className="tariff-cta__label">Стоимость тарифа</span>
                             <span className="tariff-cta__price">
                                 {hasDiscount ? (
-                                    <>
-                                        <span className="line-through">{tariff.price} ₽</span> {discountedPrice} ₽
-                                    </>
+                                    <span className="flex flex-col items-center">
+                                        <span className="line-through text-red-500 text-sm">{tariff.price} ₽</span>
+                                        <span>{discountedPrice} ₽</span>
+                                    </span>
                                 ) : (
                                     <>{tariff.price} ₽</>
                                 )}
