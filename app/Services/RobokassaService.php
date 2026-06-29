@@ -41,7 +41,7 @@ class RobokassaService
         ]);
 
         $invId = $transaction->id;
-        $outSum = number_format((float) $tariff->price, 2, '.', '');
+        $outSum = number_format((float) $amount, 2, '.', '');
 
         $url = $this->generatePaymentUrl($outSum, $invId, $tariff->title, $successUrl, $failUrl);
 
