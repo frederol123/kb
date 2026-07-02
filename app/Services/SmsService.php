@@ -27,7 +27,7 @@ class SmsService
 
         $response = Http::withBasicAuth($this->email, $this->apiKey)
             ->asForm()
-            ->post('https://api.smsaero.ru/v2/sms/send', [
+            ->post('https://gate.smsaero.ru/v2/sms/send', [
                 'number' => $phone,
                 'text' => $text,
                 'sign' => $this->sign,
