@@ -311,7 +311,7 @@ export default function AuthModal({ open, onClose }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4"
-             onMouseDown={() => { mouseDownInside.current = false; }}
+             onMouseDown={e => { if (e.target === e.currentTarget) mouseDownInside.current = false; }}
              onClick={e => { if (e.target === e.currentTarget && !mouseDownInside.current) onClose(); }}>
             <div ref={modalRef} className="bg-white rounded-2xl p-6 lg:p-8 w-full max-w-[440px] shadow-2xl relative"
                  onClick={e => e.stopPropagation()}
