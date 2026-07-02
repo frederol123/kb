@@ -171,12 +171,12 @@ export default function AuthModal({ open, onClose }) {
                         <div className="flex rounded-lg border border-[#e9f0ff] overflow-hidden text-sm mt-4">
                             <button type="button"
                                 onClick={() => { setRegType('email'); setError(''); setPhoneCodeSent(false); }}
-                                className={`flex-1 py-2.5 font-medium transition-colors ${regType === 'email' ? 'bg-[#1e79d0] text-white' : 'bg-white text-[#6c6d7e] hover:bg-[#f7fbff]'}`}>
+                                className={`flex-1 pt-[5px] pb-2.5 font-medium transition-colors ${regType === 'email' ? 'bg-[#1e79d0] text-white' : 'bg-white text-[#6c6d7e] hover:bg-[#f7fbff]'}`}>
                                 Email
                             </button>
                             <button type="button"
                                 onClick={() => { setRegType('phone'); setError(''); }}
-                                className={`flex-1 py-2.5 font-medium transition-colors ${regType === 'phone' ? 'bg-[#1e79d0] text-white' : 'bg-white text-[#6c6d7e] hover:bg-[#f7fbff]'}`}>
+                                className={`flex-1 pt-[5px] pb-2.5 font-medium transition-colors ${regType === 'phone' ? 'bg-[#1e79d0] text-white' : 'bg-white text-[#6c6d7e] hover:bg-[#f7fbff]'}`}>
                                 Телефон
                             </button>
                         </div>
