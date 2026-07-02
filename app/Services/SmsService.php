@@ -33,6 +33,15 @@ class SmsService
                 'sign' => $this->sign,
             ]);
 
+        $data = $response->json();
+
+        Log::info('SMS Aero response', [
+            'phone' => $phone,
+            'text' => $text,
+            'status' => $response->status(),
+            'body' => $data,
+        ]);
+
         if ($response->failed()) {
             Log::error('SMS Aero send failed', [
                 'phone' => $phone,
@@ -41,8 +50,15 @@ class SmsService
             return false;
         }
 
-        $data = $response->json();
-        return ($data['success'] ?? false) === true;
+        if (!($data['success'] ?? false)) {
+            Log::error('SMS Aero success false', [
+                'phone' => $phone,
+                'data' => $data,
+            ]);
+            return false;
+        }
+
+        return true;
     }
 
     /**
