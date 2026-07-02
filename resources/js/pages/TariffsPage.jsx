@@ -11,6 +11,7 @@ const tariffs = [
         title: 'Базовая страница',
         price: '6800',
         features: [
+            { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },
             { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
             { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
             { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
@@ -20,20 +21,21 @@ const tariffs = [
         title: 'Расширенная страница',
         price: '16500',
         highlighted: true,
-        desc: '<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации 3 QR-кода. Возможность генерации QR-кода со скидкой 20% на следующие 3 анкеты.</p>',
+        desc: '<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации <strong>3 QR-кода</strong>. Возможность генерации QR-кода со скидкой 20% на следующие 3 анкеты.</p>',
         features: [
+            { icon: 'icon-list-qr.svg', text: '3 генерации QR-кода' },
             { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
             { icon: 'icon-list-mount.svg', text: 'Установка за счёт компании' },
             { icon: 'icon-list-privacy.svg', text: 'Приватность' },
-            { icon: 'icon-list-support.svg', text: 'Обслуживание страницы' },
         ],
     },
     {
         title: 'Особая страница',
         price: '27500',
         badge: 'badge-special.svg',
-        desc: '<p>Включает в себя все возможности <strong>расширенной страницы,</strong> с учетом генерации 5 QR-кода. Возможность генерации QR-кода со скидкой 20% на все следующие анкеты.</p>',
+        desc: '<p>Включает в себя все возможности <strong>расширенной страницы,</strong> с учетом генерации <strong>5 QR-кода</strong>. Возможность генерации QR-кода со скидкой 20% на все следующие анкеты.</p>',
         features: [
+            { icon: 'icon-list-qr.svg', text: '5 генераций QR-кода' },
             { icon: 'icon-list-support.svg', text: 'Приоритетная поддержка 24/7' },
         ],
     },
@@ -42,6 +44,7 @@ const tariffs = [
         price: '4400',
         badge: 'badge-pet.svg',
         features: [
+            { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },
             { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
             { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
             { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
@@ -54,7 +57,7 @@ const tariffDetails = [
     {
         heroSubtitle: 'Вы получаете металлическую табличку с нанесённым высокоточным лазером QR-кодом, по которому при сканировании вы попадаете в профиль пользователя.',
         heroVisualIcon: '/uploads/2024/02/icon-list-qr.svg',
-        heroVisualLabel: '1 генерация QR-кода',
+        heroVisualLabel: '<strong>1 генерация QR-кода</strong>',
         sections: [
             {
                 icon: '/uploads/2024/02/icon-list-qr.svg',
@@ -80,7 +83,7 @@ const tariffDetails = [
             },
         ],
         extraAdvantages: [
-            { iconSvg: '<path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" fill="#1e79d0" opacity="0.2"/><path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/>', text: '1 генерация QR-кода' },
+            { iconSvg: '<path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" fill="#1e79d0" opacity="0.2"/><path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/>', text: '<strong>1 генерация QR-кода</strong>' },
             { iconSvg: '<rect x="4" y="8" width="24" height="18" rx="3" stroke="#1e79d0" strokeWidth="1.5" fill="none"/><path d="M12 8V6a2 2 0 012-2h4a2 2 0 012 2v2" stroke="#1e79d0" strokeWidth="1.5" fill="none"/><path d="M10 14h12M10 18h8" stroke="#1e79d0" strokeWidth="1.5" strokeLinecap="round"/>', text: 'Металлическая табличка в футляре' },
         ],
     },
@@ -88,7 +91,7 @@ const tariffDetails = [
     {
         heroSubtitle: 'Всё, что в базовом тарифе, плюс установка за счёт компании, приватность и обслуживание страницы. 3 генерации QR-кода со скидкой 20% на следующие анкеты.',
         heroVisualIcon: '/uploads/2024/02/icon-list-mount.svg',
-        heroVisualLabel: '3 генерации QR-кода + установка',
+        heroVisualLabel: '<strong>3 генерации QR-кода</strong> + установка',
         sections: [
             {
                 icon: '/uploads/2024/02/icon-list-qr.svg',
@@ -123,7 +126,7 @@ const tariffDetails = [
             },
         ],
         extraAdvantages: [
-            { iconSvg: '<path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" fill="#1e79d0" opacity="0.2"/><path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/>', text: '3 генерации QR-кода' },
+            { iconSvg: '<path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" fill="#1e79d0" opacity="0.2"/><path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/>', text: '<strong>3 генерации QR-кода</strong>' },
             { iconSvg: '<path d="M8 14h16M8 14v10a2 2 0 002 2h12a2 2 0 002-2V14M12 14V10a4 4 0 018 0v4" stroke="#1e79d0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>', text: 'Металлическая табличка в футляре' },
             { iconSvg: '<path d="M12 22V12l4-3 4 3v10M14 22v-6h4v6" stroke="#1e79d0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>', text: 'Установка за счёт компании' },
             { iconSvg: '<circle cx="16" cy="16" r="8" stroke="#1e79d0" strokeWidth="1.5" fill="none"/><path d="M12 16l3 3 5-5" stroke="#1e79d0" strokeWidth="1.5" strokeLinecap="round"/>', text: 'Приватность профиля' },
@@ -134,7 +137,7 @@ const tariffDetails = [
     {
         heroSubtitle: 'Максимальный тариф: всё, что в расширенном, плюс 5 генераций QR-кода со скидкой 20% на все последующие анкеты.',
         heroVisualIcon: '/uploads/2024/02/icon-list-tree.svg',
-        heroVisualLabel: '5 генераций QR-кода + всё включено',
+        heroVisualLabel: '<strong>5 генераций QR-кода</strong> + всё включено',
         sections: [
             {
                 icon: '/uploads/2024/02/icon-list-qr.svg',
@@ -186,7 +189,7 @@ const tariffDetails = [
             },
         ],
         extraAdvantages: [
-            { iconSvg: '<path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" fill="#1e79d0" opacity="0.2"/><path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/>', text: '5 генераций QR-кода' },
+            { iconSvg: '<path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" fill="#1e79d0" opacity="0.2"/><path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/>', text: '<strong>5 генераций QR-кода</strong>' },
             { iconSvg: '<path d="M8 14h16M8 14v10a2 2 0 002 2h12a2 2 0 002-2V14M12 14V10a4 4 0 018 0v4" stroke="#1e79d0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>', text: 'Металлическая табличка в футляре' },
             { iconSvg: '<rect width="40" height="40" rx="8" fill="#E8F4FD"/><path d="M6 12h28M6 12v20a2 2 0 002 2h24a2 2 0 002-2V12M14 12V8a4 4 0 014-4h4a4 4 0 014 4v4" stroke="#1e79d0" strokeWidth="2" fill="none"/><circle cx="20" cy="18" r="3" stroke="#1e79d0" strokeWidth="2" fill="none"/><path d="M14 28h12" stroke="#1e79d0" strokeWidth="2" strokeLinecap="round"/>', text: 'Создание видеоролика' },
             { iconSvg: '<path d="M12 22V12l4-3 4 3v10M14 22v-6h4v6" stroke="#1e79d0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>', text: 'Установка за счёт компании' },
@@ -198,7 +201,7 @@ const tariffDetails = [
     {
         heroSubtitle: 'Увековечьте память о вашем любимце: металлическая табличка с QR-кодом, биография, фото, видео и аудио — всё, чтобы сохранить тёплые воспоминания.',
         heroVisualIcon: '/uploads/2024/02/badge-pet.svg',
-        heroVisualLabel: '1 генерация QR-кода',
+        heroVisualLabel: '<strong>1 генерация QR-кода</strong>',
         sections: [
             {
                 icon: '/uploads/2024/02/icon-list-qr.svg',
@@ -229,7 +232,7 @@ const tariffDetails = [
             },
         ],
         extraAdvantages: [
-            { iconSvg: '<path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" fill="#1e79d0" opacity="0.2"/><path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/>', text: '1 генерация QR-кода' },
+            { iconSvg: '<path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" fill="#1e79d0" opacity="0.2"/><path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/>', text: '<strong>1 генерация QR-кода</strong>' },
             { iconSvg: '<path d="M8 14h16M8 14v10a2 2 0 002 2h12a2 2 0 002-2V14M12 14V10a4 4 0 018 0v4" stroke="#1e79d0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>', text: 'Металлическая табличка в футляре' },
             { iconSvg: '<path d="M18 8C14 8 8 12 8 16c0 4 4 8 10 12 6-4 10-8 10-12 0-4-6-8-10-8z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/><circle cx="18" cy="15" r="1.5" fill="#1e79d0"/>', text: 'Память о любимце' },
         ],
@@ -369,7 +372,7 @@ function TariffDetailPage({ tariff, index }) {
                             <div className="tariff-hero__card-icon">
                                 <img src={detail.heroVisualIcon} alt="" />
                             </div>
-                            <span className="tariff-hero__card-label">{detail.heroVisualLabel}</span>
+                            <span className="tariff-hero__card-label" dangerouslySetInnerHTML={{ __html: detail.heroVisualLabel }} />
                         </div>
                     </div>
                 </div>
@@ -419,7 +422,7 @@ function TariffDetailPage({ tariff, index }) {
                                         dangerouslySetInnerHTML={{ __html: a.iconSvg }}
                                     />
                                 </div>
-                                <span className="tariff-advantage-item__text">{a.text}</span>
+                                <span className="tariff-advantage-item__text" dangerouslySetInnerHTML={{ __html: a.text }} />
                             </div>
                         ))}
                     </div>

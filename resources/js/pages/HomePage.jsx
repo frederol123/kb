@@ -147,23 +147,28 @@ function PricesSection() {
                 <div className="prices-cards">
                     <PlanCard title="Базовая страница" price="6600" index={0}
                         features={[
+                            { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },
                             { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
                             { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
                             { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
                         ]} />
                     <PlanCard title="Расширенная страница" price="16500" highlighted index={1}
-                        desc='<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации 3 QR-кода. Возможность генерации QR-кода со скидкой 20% на следующие 3 анкеты.</p>'
+                        desc='<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации <strong>3 QR-кода</strong>. Возможность генерации QR-кода со скидкой 20% на следующие 3 анкеты.</p>'
                         features={[
+                            { icon: 'icon-list-qr.svg', text: '3 генерации QR-кода' },
                             { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
                             { icon: 'icon-list-mount.svg', text: 'Установка за счёт компании' },
                             { icon: 'icon-list-privacy.svg', text: 'Приватность' },
-                            { icon: 'icon-list-support.svg', text: 'Обслуживание страницы' },
                         ]} />
                     <PlanCard title="Особая страница" price="27500" badge="badge-special.svg" index={2}
-                        desc='<p>Включает в себя все возможности <strong>расширенной страницы,</strong> с учетом генерации 5 QR-кода. Возможность генерации QR-кода со скидкой 20% на все следующие анкеты.</p>'
-                        features={[{ icon: 'icon-list-support.svg', text: 'Приоритетная поддержка 24/7' }]} />
+                        desc='<p>Включает в себя все возможности <strong>расширенной страницы,</strong> с учетом генерации <strong>5 QR-кода</strong>. Возможность генерации QR-кода со скидкой 20% на все следующие анкеты.</p>'
+                        features={[
+                            { icon: 'icon-list-qr.svg', text: '5 генераций QR-кода' },
+                            { icon: 'icon-list-support.svg', text: 'Приоритетная поддержка 24/7' },
+                        ]} />
                     <PlanCard title="Страница питомца" price="4400" badge="badge-pet.svg" index={3}
                         features={[
+                            { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },
                             { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
                             { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
                             { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
