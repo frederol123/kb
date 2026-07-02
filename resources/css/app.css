@@ -1026,6 +1026,10 @@
         flex-shrink: 0;
     }
 
+    .ptop-imp {
+        padding-top: 5px !important;
+    }
+
     .footer__links {
         display: flex;
         flex-wrap: wrap;
