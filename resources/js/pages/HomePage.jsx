@@ -19,12 +19,12 @@ function HeroSection() {
         <section className="hero">
             <div className="container hero__inner">
                 <div className="hero__content">
-                    <h1 className="hero__title">Сохраните свою историю жизни и историю близких на долгие годы</h1>
+                    <h1 className="hero__title">Каждая жизнь — это история, достойная вечности</h1>
                     <div className="hero__desc">
-                        <p><strong>Код Бессмертия</strong> запомнит все ваши воспоминания и сохранит их для ваших потомков.</p>
-                        <p>Мы работаем с людьми всех возрастов и помогаем им запечатлеть важные моменты из жизни, такие как детство, семейные мероприятия, свадьбы и многое другое.</p>
+                        <p><strong>Код Бессмертия</strong> — это цифровой мемориал, где память о ваших близких живёт с теплотой и заботой. Мы бережно сохраняем всё самое важное: детство, семью, достижения, увлечения — всё то, что делает каждую жизнь уникальной.</p>
+                        <p>Создайте вечную память для детей, внуков и будущих поколений. Разместите QR-код на памятнике — и каждый, кто придёт, сможет узнать историю человека, которого вы любите.</p>
                     </div>
-                    <Link to="/tariffs" className="button button--filled hero__btn">Сохранить историю</Link>
+                    <Link to="/tariffs" className="button button--filled hero__btn">Создать мемориал</Link>
                 </div>
                 <div className="hero__preview">
                     <img src="/uploads/2024/02/hero.svg" alt="" className="hero__image" />
@@ -38,9 +38,9 @@ function PricesSection() {
     return (
         <section className="plan-prices">
             <div className="container">
-                <h2 className="section-title" style={{ textAlign: 'center' }}>Цены и тарифы</h2>
+                <h2 className="section-title" style={{ textAlign: 'center' }}>Выберите формат памяти</h2>
                 <span className="section-desc" style={{ textAlign: 'center', margin: '0 auto 50px auto' }}>
-                    <p>Стоимость услуг может меняться в зависимости от партнёра и региона предоставления услуг.</p>
+                    <p>Каждая история заслуживает достойного обрамления. Мы предлагаем несколько форматов цифрового мемориала — от базовой страницы до полноценного семейного древа с фотографиями и видео.</p>
                 </span>
                 <div className="prices-cards">
                     <PlanCard title="Базовая страница" price="6600" index={0}
@@ -151,8 +151,8 @@ function HaveQuestionsSection() {
         <section className="have-questions">
             <div className="container have-questions__inner">
                 <div className="have-questions__content">
-                    <span className="form__title">Есть вопросы?</span>
-                    <span className="form__desc">Оставьте свои контактные данные и мы вскоре свяжемся с Вами.</span>
+                    <span className="form__title">Мы рядом, чтобы помочь</span>
+                    <span className="form__desc">Создание цифрового мемориала — дело бережное. Оставьте контактные данные, и мы с теплотой ответим на все вопросы.</span>
                     <div className="form__fields">
                         <label className="form__field"><input type="text" className="text-input" placeholder="Ваше имя" /></label>
                         <label className="form__field"><input type="text" className="text-input" placeholder="Телефон" /></label>
@@ -176,8 +176,8 @@ function CallbackSection() {
             <div className="container">
                 <div className="callback__form">
                     <div className="form__column">
-                        <span className="form__title">Остались вопросы?</span>
-                        <span className="form__desc">Оставьте свои контактные данные, заполнив строки справа, либо напишите нам в соц-сетях.</span>
+                        <span className="form__title">Поможем сохранить память</span>
+                        <span className="form__desc">Расскажите, какую историю вы хотите увековечить, — и мы подскажем лучший формат. Или просто напишите нам в удобном мессенджере:</span>
                         <div className="link-buttons link-buttons--white">
                             <a className="link-buttons__item" href="https://t.me/Kod_bessmertiya" style={{ color: '#29A0DC' }}>Telegram</a>
                             <a className="link-buttons__item" href="https://wa.me/79811269133" style={{ color: '#1A9F49' }}>WhatsApp</a>
