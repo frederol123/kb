@@ -10,6 +10,7 @@ export default function Footer() {
                             <li><Link to="/qr-install">Варианты установки QR</Link></li>
                             <li><Link to="/tariffs">Цены</Link></li>
                             <li><Link to="/order-steps">Как заказать</Link></li>
+                            <li><Link to="/offer">Публичная оферта</Link></li>
                             <li><Link to="/faq">Частые вопросы</Link></li>
                         </ul>
                     </nav>

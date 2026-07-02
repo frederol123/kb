@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import AuthModal from './AuthModal';
+import CookieConsent from './CookieConsent';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Layout() {
@@ -22,6 +23,7 @@ export default function Layout() {
                 <Outlet />
             </main>
             <Footer />
+            <CookieConsent />
             <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
         </div>
     );

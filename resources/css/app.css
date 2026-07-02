@@ -508,6 +508,24 @@
         line-height: 54px;
         letter-spacing: 0.25px;
     }
+    .single-content__body {
+        margin-top: 40px;
+    }
+    .single-content__body p {
+        font-size: 16px;
+        line-height: 1.8;
+        color: #1c2145;
+        margin-bottom: 16px;
+    }
+    .single-content__body h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1c2145;
+        margin: 36px 0 16px;
+    }
+    .single-content__back {
+        margin-top: 50px;
+    }
 
     /* ======== PLAN PRICES ======== */
     .plan-prices { padding-top: 80px; padding-bottom: 80px; }
@@ -970,6 +988,44 @@
         transition: border-color 0.1s;
     }
     .footer__menu a:hover { border-color: #f2f7ff; }
+
+    /* Cookie consent banner */
+    .cookie-consent {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        background: #1c2145;
+        padding: 16px 0;
+        box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+    }
+    .cookie-consent__inner {
+        max-width: 1190px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+    .cookie-consent__text {
+        color: #f2f7ff;
+        font-size: 14px;
+        line-height: 1.4;
+        margin: 0;
+    }
+    .cookie-consent__link {
+        color: #1e79d0;
+        text-decoration: underline;
+    }
+    .cookie-consent__link:hover {
+        color: #74d41d;
+    }
+    .cookie-consent__btn {
+        flex-shrink: 0;
+    }
+
     .footer__links {
         display: flex;
         flex-wrap: wrap;
