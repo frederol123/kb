@@ -178,7 +178,7 @@ export default function AuthModal({ open, onClose }) {
                             </button>
                             <button type="button"
                                 onClick={() => { setRegType('phone'); setError(''); }}
-                                className={`flex-1 pb-2.5 font-medium transition-colors ptop-imp ${regType === 'phone' ? 'bg-[#1e79d0] text-white' : 'bg-white text-[#6c6d7e] hover:bg-[#f7fbff]'}`}>
+                                className={`flex-1 pb-2.5 font-medium transition-colors ptop-imp ${regType === 'phone' ? 'bg-[#74d41d] text-white' : 'bg-white text-[#6c6d7e] hover:bg-[#f7fbff]'}`}>
                                 Телефон
                             </button>
                         </div>
