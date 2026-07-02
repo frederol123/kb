@@ -30,7 +30,6 @@ class SmsService
             ->post('https://gate.smsaero.ru/v2/sms/send', [
                 'number' => $phone,
                 'text' => $text,
-                'sign' => $this->sign,
             ]);
 
         $data = $response->json();
@@ -69,6 +68,11 @@ class SmsService
         $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
         $text = "Код подтверждения: {$code}";
 
+        if (config('services.sms_aero.debug', false)) {
+            Log::info("SMS verification code for {$phone}: {$code}");
+            return $code;
+        }
+
         $sent = $this->send($phone, $text);
         if (!$sent) {
             return false;
@@ -87,3 +91,5 @@ class SmsService
         return $code;
     }
 }
+
+// Remove the redundant _debug method at end of file

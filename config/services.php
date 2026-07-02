@@ -39,6 +39,7 @@ return [
         'email' => env('SMS_AERO_EMAIL'),
         'api_key' => env('SMS_AERO_API_KEY'),
         'sign' => env('SMS_AERO_SIGN', 'KodBessmert'),
+        'debug' => env('SMS_DEBUG', true),
     ],
 
 ];
