@@ -76,6 +76,10 @@ export default function CardEditorPage() {
             queryClient.invalidateQueries({ queryKey: ['my-cards'] });
             if (isNew) navigate(`/lk/cards/${res.data.id}/edit`, { replace: true });
         },
+        onError: (err) => {
+            const msg = err.response?.data?.message || err.message || 'Ошибка при сохранении';
+            toast('Ошибка: ' + msg);
+        },
     });
 
     const saveInfo = () => {
