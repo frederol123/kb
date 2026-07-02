@@ -308,8 +308,15 @@ export default function AuthModal({ open, onClose }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4" onClick={onClose}>
-            <div className="bg-white rounded-2xl p-6 lg:p-8 w-full max-w-[440px] shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+            <div className="bg-white rounded-2xl p-6 lg:p-8 w-full max-w-[440px] shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                <button type="button" onClick={onClose}
+                        className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-[#999] hover:text-[#1c2145] transition-colors rounded-full hover:bg-[#f0f4ff]">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
                 {renderForm()}
             </div>
         </div>
