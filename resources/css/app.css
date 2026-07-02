@@ -1028,6 +1028,7 @@
 
     .ptop-imp {
         padding-top: 5px !important;
+        cursor: pointer;
     }
 
     .footer__links {
