@@ -24,10 +24,17 @@ class PhoneVerificationController extends Controller
     public function sendCode(Request $request): JsonResponse
     {
         $request->validate([
-            'phone' => ['required', 'string', 'regex:/^(\+7|8)[0-9]{10}$/'],
+            'phone' => ['required', 'string'],
         ]);
 
         $phone = $this->normalizePhone($request->phone);
+
+        // Проверяем формат после нормализации
+        if (!preg_match('/^\+7[0-9]{10}$/', $phone)) {
+            throw ValidationException::withMessages([
+                'phone' => ['Неверный формат номера телефона.'],
+            ]);
+        }
 
         // Проверяем, не занят ли номер
         if (User::where('phone', $phone)->exists()) {
@@ -65,13 +72,19 @@ class PhoneVerificationController extends Controller
     public function verifyAndRegister(Request $request): JsonResponse
     {
         $request->validate([
-            'phone' => ['required', 'string', 'regex:/^(\+7|8)[0-9]{10}$/'],
+            'phone' => ['required', 'string'],
             'code' => ['required', 'string', 'size:4'],
             'name' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', PasswordRule::defaults()],
         ]);
 
         $phone = $this->normalizePhone($request->phone);
+
+        if (!preg_match('/^\+7[0-9]{10}$/', $phone)) {
+            throw ValidationException::withMessages([
+                'phone' => ['Неверный формат номера телефона.'],
+            ]);
+        }
 
         // Проверяем код
         $verification = \App\Models\PhoneVerification::where('phone', $phone)
