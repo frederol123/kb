@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PhoneVerificationController;
 use App\Http\Controllers\Api\AnketController;
 use App\Http\Controllers\Api\QrController;
 use Illuminate\Http\Request;
@@ -13,6 +14,10 @@ Route::middleware('throttle:10,1')->group(function () {
     Route::post('/auth/register', [AuthController::class, 'register']);
     Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
+
+    // Регистрация по телефону
+    Route::post('/auth/send-code', [PhoneVerificationController::class, 'sendCode']);
+    Route::post('/auth/verify-phone', [PhoneVerificationController::class, 'verifyAndRegister']);
 });
 
 Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {

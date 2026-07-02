@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'sms_aero' => [
+        'email' => env('SMS_AERO_EMAIL'),
+        'api_key' => env('SMS_AERO_API_KEY'),
+        'sign' => env('SMS_AERO_SIGN', 'Kod Bessmertiya'),
+    ],
+
 ];

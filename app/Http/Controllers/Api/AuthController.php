@@ -16,15 +16,26 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required_without:phone', 'email'],
+            'phone' => ['required_without:email', 'string'],
             'password' => ['required', 'string'],
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = null;
+        if ($request->email) {
+            $user = User::where('email', $request->email)->first();
+        } elseif ($request->phone) {
+            $phone = preg_replace('/[^0-9]/', '', $request->phone);
+            if (strlen($phone) === 11 && $phone[0] === '8') {
+                $phone = '7' . substr($phone, 1);
+            }
+            $phone = '+' . $phone;
+            $user = User::where('phone', $phone)->first();
+        }
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Неверный email или пароль.'],
+                'email' => ['Неверный email/телефон или пароль.'],
             ]);
         }
 
@@ -45,13 +56,15 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users'],
+            'email' => ['nullable', 'email', 'unique:users'],
+            'phone' => ['nullable', 'string', 'unique:users'],
             'password' => ['required', 'string', PasswordRule::defaults()],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'phone' => $request->phone,
             'password' => $request->password,
         ]);
 

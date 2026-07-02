@@ -33,7 +33,7 @@ function HeroSection() {
                     <Link to="/tariffs" className="button button--filled hero__btn">Создать мемориал</Link>
                 </div>
                 <div className="hero__preview">
-                    <img src="/uploads/2024/02/hero.svg" alt="" className="hero__image" />
+                    <img src="/uploads/2024/02/logo.jpg" alt="" className="hero__image" />
                 </div>
             </div>
         </section>
