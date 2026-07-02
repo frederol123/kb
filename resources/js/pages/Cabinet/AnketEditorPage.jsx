@@ -8,7 +8,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { useAuth } from '../../contexts/AuthContext';
 
 const emptyInfo = { last_name: '', first_name: '', middle_name: '', birth_date: '', death_date: '', birthplace: '', deathplace: '', photo: '' };
-const emptyContent = { biography: '', gallery: [], videos: [] };
+const emptyContent = { biography: '', gallery: [], videos: [], timeline: [] };
 
 export default function CardEditorPage() {
     const { id } = useParams();
@@ -91,7 +91,7 @@ export default function CardEditorPage() {
     });
 
     const saveContent = () => {
-        const payload = { content: { biography: content.biography, gallery: content.gallery, videos: content.videos } };
+        const payload = { content: { biography: content.biography, gallery: content.gallery, videos: content.videos, timeline: content.timeline } };
         saveContentMut.mutate(payload);
     };
 
@@ -431,6 +431,66 @@ export default function CardEditorPage() {
                             <button onClick={saveInfo} disabled={saveInfoMut.isPending}
                                     className="btn-filled text-sm mt-4">
                                 {saveInfoMut.isPending ? 'Сохранение...' : 'Сохранить родственников'}
+                            </button>
+                        </Section>
+
+                        {/* Timeline */}
+                        <Section title={`Жизненный путь (${(content.timeline || []).length} событий)`}>
+                            <p className="text-sm text-[#6c6d7e] mb-4">
+                                Добавьте важные события из жизни: даты, заголовки и краткое описание. Это отобразится на странице памяти в виде хронологии.
+                            </p>
+
+                            {(content.timeline || []).map((ev, idx) => (
+                                <div key={idx} className="flex items-start gap-3 mb-3 p-3 bg-[#f8f8f8] rounded-lg border-l-4 border-[#1e79d0]">
+                                    <div className="flex-1 space-y-2">
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <input type="text" value={ev.year || ''}
+                                                   onChange={e => {
+                                                       const arr = [...(content.timeline || [])];
+                                                       arr[idx] = { ...arr[idx], year: e.target.value };
+                                                       setContent(prev => ({ ...prev, timeline: arr }));
+                                                   }}
+                                                   placeholder="Год (например, 1957)"
+                                                   className="text-input text-sm" />
+                                            <input type="text" value={ev.title || ''}
+                                                   onChange={e => {
+                                                       const arr = [...(content.timeline || [])];
+                                                       arr[idx] = { ...arr[idx], title: e.target.value };
+                                                       setContent(prev => ({ ...prev, timeline: arr }));
+                                                   }}
+                                                   placeholder="Заголовок события"
+                                                   className="text-input text-sm" />
+                                        </div>
+                                        <textarea rows={2} value={ev.desc || ''}
+                                                  onChange={e => {
+                                                      const arr = [...(content.timeline || [])];
+                                                      arr[idx] = { ...arr[idx], desc: e.target.value };
+                                                      setContent(prev => ({ ...prev, timeline: arr }));
+                                                  }}
+                                                  placeholder="Краткое описание события"
+                                                  className="text-input resize-none text-sm" />
+                                    </div>
+                                    <button onClick={() => {
+                                        const arr = (content.timeline || []).filter((_, i) => i !== idx);
+                                        setContent(prev => ({ ...prev, timeline: arr }));
+                                    }} className="text-red-400 hover:text-red-600 mt-2 flex-shrink-0">
+                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            ))}
+
+                            <button onClick={() => {
+                                const arr = [...(content.timeline || []), { year: '', title: '', desc: '' }];
+                                setContent(prev => ({ ...prev, timeline: arr }));
+                            }} className="text-[#3476f5] text-sm font-bold hover:underline mb-3">
+                                + Добавить событие
+                            </button>
+
+                            <button onClick={saveContent} disabled={saveContentMut.isPending}
+                                    className="btn-filled text-sm mt-2 block">
+                                {saveContentMut.isPending ? 'Сохранение...' : 'Сохранить жизненный путь'}
                             </button>
                         </Section>
 

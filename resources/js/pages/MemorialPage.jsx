@@ -29,6 +29,7 @@ export default function MemorialPage() {
             <MemorialGallery gallery={card.content?.gallery} />
             <MemorialVideos videos={card.content?.videos} />
             <MemorialRelatives family={card.family} />
+            <MemorialTimeline timeline={card.content?.timeline} />
             <MemorialCondolences card={card} />
             <MemorialBurial info={info} />
             <MemorialQR id={card.id} slug={card.slug} />
@@ -524,6 +525,66 @@ function MemorialVideos({ videos }) {
                             )}
                         </div>
                     ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function MemorialTimeline({ timeline }) {
+    if (!timeline || timeline.length === 0) return null;
+
+    return (
+        <section className="py-16 md:py-24 bg-white">
+            <div className={SECTION}>
+                <div className="text-center mb-12">
+                    <h2 className="memorial-section__title">Жизненный путь</h2>
+                    <p className="memorial-section__desc max-w-[552px] mx-auto mt-2">
+                        «Хронология важных событий и ключевых моментов жизни»
+                    </p>
+                </div>
+
+                <div className="relative max-w-3xl mx-auto">
+                    {/* вертикальная линия */}
+                    <div className="absolute left-[19px] md:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#1e79d0] via-[#1e79d0]/40 to-transparent" />
+
+                    <div className="space-y-10">
+                        {timeline.map((e, i) => {
+                            const isLeft = i % 2 === 0;
+                            return (
+                                <div key={i} className={`relative flex items-start gap-6 md:gap-0 ${
+                                    isLeft ? 'md:flex-row' : 'md:flex-row-reverse'
+                                }`}>
+                                    {/* точка на линии */}
+                                    <div className="relative z-[2] flex-shrink-0 md:absolute md:left-1/2 md:-translate-x-1/2">
+                                        <div className="w-[40px] h-[40px] rounded-full bg-white border-2 border-[#1e79d0] flex items-center justify-center shadow-[0_0_0_4px_rgba(30,121,208,0.1)]">
+                                            <div className="w-[14px] h-[14px] rounded-full bg-[#1e79d0]" />
+                                        </div>
+                                    </div>
+
+                                    {/* контент */}
+                                    <div className={`flex-1 md:w-[calc(50%-40px)] ${
+                                        isLeft ? 'md:pr-16 md:text-right' : 'md:pl-16'
+                                    }`}>
+                                        <div className="bg-[#f7fbff] rounded-[20px] p-6 border border-[#e9f0ff] hover:shadow-[0_4px_20px_-4px_rgba(30,121,208,0.10)] transition-shadow">
+                                            {e.year && (
+                                                <span className="text-[#1e79d0] font-extrabold text-2xl block mb-1">{e.year}</span>
+                                            )}
+                                            {e.title && (
+                                                <h3 className="text-[#1c2145] font-bold text-lg mb-2">{e.title}</h3>
+                                            )}
+                                            {e.desc && (
+                                                <p className="text-[#6c6d7e] text-sm leading-relaxed">{e.desc}</p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* пустой блок для выравнивания */}
+                                    <div className="hidden md:block md:w-[calc(50%-40px)]" />
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         </section>
