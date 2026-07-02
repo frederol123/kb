@@ -168,7 +168,7 @@ export default function AuthModal({ open, onClose }) {
                         )}
 
                         {/* Переключатель Email / Телефон */}
-                        <div className="flex rounded-lg border border-[#e9f0ff] overflow-hidden text-sm">
+                        <div className="flex rounded-lg border border-[#e9f0ff] overflow-hidden text-sm mt-4">
                             <button type="button"
                                 onClick={() => { setRegType('email'); setError(''); setPhoneCodeSent(false); }}
                                 className={`flex-1 py-2.5 font-medium transition-colors ${regType === 'email' ? 'bg-[#1e79d0] text-white' : 'bg-white text-[#6c6d7e] hover:bg-[#f7fbff]'}`}>
