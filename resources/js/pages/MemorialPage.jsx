@@ -26,10 +26,10 @@ export default function MemorialPage() {
         <div className="memorial-page">
             <MemorialHero info={info} fio={fio} dates={dates} card={card} />
             <MemorialBiography content={card.content} />
+            <MemorialTimeline timeline={card.content?.timeline} />
+            <MemorialRelatives family={card.family} />
             <MemorialGallery gallery={card.content?.gallery} />
             <MemorialVideos videos={card.content?.videos} />
-            <MemorialRelatives family={card.family} />
-            <MemorialTimeline timeline={card.content?.timeline} />
             <MemorialCondolences card={card} />
             <MemorialBurial info={info} />
             <MemorialQR id={card.id} slug={card.slug} />

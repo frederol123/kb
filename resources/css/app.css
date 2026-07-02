@@ -1667,6 +1667,18 @@
     .memorial-relatives {
         padding-top: 80px;
         padding-bottom: 80px;
+        position: relative;
+    }
+    .memorial-relatives::before {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: 5%;
+        right: 5%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(30, 121, 208, 0.2), rgba(30, 121, 208, 0.3), rgba(30, 121, 208, 0.2), transparent);
+        filter: blur(3px);
+        pointer-events: none;
     }
     .memorial-relatives__carousel {
         display: flex;
