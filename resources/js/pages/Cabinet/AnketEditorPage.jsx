@@ -171,6 +171,7 @@ export default function CardEditorPage() {
         setUploading(true);
         const form = new FormData();
         form.append('file', croppedBlob, 'relative.jpg');
+        form.append('type', 'relative');
         try {
             const { data } = await api.post(`/ankets/${id}/upload`, form);
             updateRelative(cropRelativeTarget.type, cropRelativeTarget.idx, 'photo', data.url);
@@ -667,6 +668,7 @@ export default function CardEditorPage() {
                 <ImageCropModal
                     file={cropRelativeFile}
                     aspect={1}
+                    cropShape="round"
                     onCrop={handleRelativeCropComplete}
                     onClose={() => { setCropRelativeFile(null); setCropRelativeTarget(null); }}
                 />
@@ -761,7 +763,7 @@ function Field({ label, value, onChange, placeholder, type = 'text' }) {
     );
 }
 
-function ImageCropModal({ file, aspect, onCrop, onClose }) {
+function ImageCropModal({ file, aspect, cropShape = 'rect', onCrop, onClose }) {
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -784,8 +786,9 @@ function ImageCropModal({ file, aspect, onCrop, onClose }) {
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                canvas.width = 800;
-                canvas.height = 500;
+                const size = aspect === 1 ? 800 : 500;
+                canvas.width = aspect === 1 ? size : 800;
+                canvas.height = size;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(
                     img,
@@ -793,7 +796,7 @@ function ImageCropModal({ file, aspect, onCrop, onClose }) {
                     croppedAreaPixels.y,
                     croppedAreaPixels.width,
                     croppedAreaPixels.height,
-                    0, 0, 800, 500,
+                    0, 0, canvas.width, canvas.height,
                 );
                 canvas.toBlob((blob) => {
                     resolve(blob || null);
@@ -836,6 +839,7 @@ function ImageCropModal({ file, aspect, onCrop, onClose }) {
                     crop={crop}
                     zoom={zoom}
                     aspect={aspect}
+                    cropShape={cropShape}
                     onCropChange={setCrop}
                     onCropComplete={(_, p) => setCroppedAreaPixels(p)}
                     onZoomChange={setZoom}

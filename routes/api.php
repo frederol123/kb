@@ -80,6 +80,19 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
                 'file' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp,ico', 'max:65536'],
             ]);
 
+            $type = $request->input('type', ''); // 'relative' — для фото родственников
+            $file = $request->file('file');
+
+            if ($type === 'relative') {
+                // Фото родственника — клиент уже отдаёт готовый квадратный кроп (800×800)
+                // Сохраняем без серверной обработки, чтобы не исказить пропорции
+                $originalName = $file->getClientOriginalName();
+                $hash = substr(md5(uniqid($originalName, true)), 0, 8);
+                $filename = time() . '_' . $hash . '_' . Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '.jpg';
+                $path = Storage::disk('s3')->putFileAs('uploads/relatives', $file, $filename);
+                return response()->json(['url' => Storage::disk('s3')->url($path)], 201);
+            }
+
             // Обработка: cover(1540, 963) → webp без искажений
             $imageService = app(\App\Services\ImageService::class);
             $processedPath = $imageService->process($request->file('file'));
