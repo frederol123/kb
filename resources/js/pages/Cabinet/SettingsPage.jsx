@@ -77,7 +77,7 @@ export default function SettingsPage() {
                         </div>
                         <div>
                             <p className="font-bold text-[#1c2145] text-lg">{user.tariff.title}</p>
-                            <p className="text-sm text-[#6c6d7e]">{Number(user.tariff.price).toLocaleString()} ₽</p>
+                            <p className="text-base text-[#6c6d7e]">{Number(user.tariff.price).toLocaleString()} ₽</p>
                         </div>
                     </div>
                     {user.tariff.limits && (
@@ -88,7 +88,7 @@ export default function SettingsPage() {
                             <LimitItem label="Обслуживание" value={user.tariff.limits.has_maintenance ? 'Включено' : 'Нет'} active={user.tariff.limits.has_maintenance} />
                         </div>
                     )}
-                    <Link to="/tariffs" className="btn-filled text-sm inline-flex">Сменить тариф</Link>
+                    <Link to="/tariffs" className="btn-filled text-base inline-flex">Сменить тариф</Link>
                 </div>
             )}
 

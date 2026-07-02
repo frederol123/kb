@@ -24,9 +24,9 @@ export default function DashboardLayout() {
                             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
                                 <img src="/images/no-photo.svg" alt="" className="w-10 h-10 rounded-full" />
                                 <div className="min-w-0">
-                                    <span className="font-extrabold text-[#1c2145] text-sm block truncate">{user.name}</span>
+                                    <span className="font-extrabold text-[#1c2145] text-base block truncate">{user.name}</span>
                                     {user.tariff && (
-                                        <span className="text-xs text-[#22c55e] font-bold block mt-0.5">
+                                        <span className="text-sm text-[#22c55e] font-bold block mt-0.5">
                                             {user.tariff.title}
                                         </span>
                                     )}
@@ -39,7 +39,7 @@ export default function DashboardLayout() {
                                         to={l.to}
                                         end={l.end}
                                         className={({ isActive }) =>
-                                            `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-colors ${
+                                            `flex items-center gap-3 px-3 py-3 rounded-xl text-base font-bold transition-colors ${
                                                 isActive ? 'bg-[#edf2ff] text-[#3476f5]' : 'text-[#6c6d7e] hover:bg-gray-50'
                                             }`
                                         }
@@ -50,7 +50,7 @@ export default function DashboardLayout() {
                                 ))}
                             </nav>
                             <div className="mt-4 pt-4 border-t border-gray-100">
-                                <button onClick={logout} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 w-full">
+                                <button onClick={logout} className="flex items-center gap-3 px-3 py-3 rounded-xl text-base font-bold text-red-500 hover:bg-red-50 w-full">
                                     <img src="/images/icons/profile-logout.svg" alt="" className="w-5 h-5" />
                                     Выход
                                 </button>

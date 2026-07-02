@@ -270,7 +270,7 @@ export default function CardEditorPage() {
     return (
         <div className="max-w-[900px]">
             <div className="mb-6">
-                <button onClick={() => navigate('/lk')} className="text-[#3476f5] font-bold text-sm hover:underline">
+                <button onClick={() => navigate('/lk')} className="text-[#3476f5] font-bold text-base hover:underline">
                     ← Мои карточки
                 </button>
                 <h1 className="font-extrabold text-2xl lg:text-3xl text-[#1c2145] mt-2">
@@ -281,8 +281,8 @@ export default function CardEditorPage() {
             {!isNew && (
                 <div className="mb-8">
                     <div className="flex gap-3 mb-4 flex-wrap items-center">
-                        <a href={`/m/${card?.slug}`} target="_blank" rel="noopener noreferrer" className="text-sm btn-download">Просмотр</a>
-                        <button onClick={downloadQr} disabled={qrDownloading} className="text-sm btn-download">
+                        <a href={`/m/${card?.slug}`} target="_blank" rel="noopener noreferrer" className="text-base btn-download">Просмотр</a>
+                        <button onClick={downloadQr} disabled={qrDownloading} className="text-base btn-download">
                             {qrDownloading ? 'Загрузка...' : 'Скачать QR-код'}
                         </button>
                     </div>
@@ -307,13 +307,13 @@ export default function CardEditorPage() {
                     {info.photo && (
                         <div className="mb-6 flex items-center gap-4">
                             <img src={info.photo} alt="" className="w-24 h-24 rounded-full object-cover border-4 border-white shadow" />
-                            <button onClick={() => updateInfo('photo', '')} className="text-red-500 text-sm hover:underline">Удалить фото</button>
+                            <button onClick={() => updateInfo('photo', '')} className="text-red-500 text-base hover:underline">Удалить фото</button>
                         </div>
                     )}
                     <div className="mb-6">
-                        <label className="block text-sm text-[#999] mb-1.5">Фото</label>
+                        <label className="block text-base text-[#999] mb-1.5">Фото</label>
                         {isNew ? (
-                            <p className="text-sm text-[#999] italic">Сохраните карточку, чтобы добавить фото</p>
+                            <p className="text-base text-[#999] italic">Сохраните карточку, чтобы добавить фото</p>
                         ) : (
                             <FileUpload onFile={handlePhotoUpload} disabled={uploading} />
                         )}
@@ -332,7 +332,7 @@ export default function CardEditorPage() {
                         <Field label="Дата смерти" type="date" value={info.death_date} onChange={v => updateInfo('death_date', v)} />
                     </div>
                     <div>
-                        <label className="block text-sm text-[#999] mb-1.5">Статус</label>
+                        <label className="block text-base text-[#999] mb-1.5">Статус</label>
                         <select value={status} onChange={e => setStatus(e.target.value)} className="text-input w-auto">
                             <option value="draft">Черновик</option>
                             <option value="published">Опубликована</option>
@@ -345,14 +345,14 @@ export default function CardEditorPage() {
                             )}
                         </select>
                         {!user?.tariff?.limits?.has_privacy && status === 'private' && (
-                            <p className="text-xs text-amber-600 mt-1">
+                            <p className="text-base text-amber-600 mt-1">
                                 Функция «Приватность» недоступна на вашем тарифе. 
                                 <Link to="/tariffs" className="text-[#3476f5] hover:underline ml-1">Выбрать тариф</Link>
                             </p>
                         )}
                     </div>
                     <button onClick={saveInfo} disabled={saveInfoMut.isPending}
-                            className="btn-filled text-sm mt-4">
+                            className="btn-filled text-base mt-4">
                         {saveInfoMut.isPending ? 'Сохранение...' : 'Сохранить'}
                     </button>
                 </Section>
@@ -361,16 +361,16 @@ export default function CardEditorPage() {
                 {isNew ? (
                     <>
                         <Section title="Родственники">
-                            <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить родственников</p>
+                            <p className="text-base text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить родственников</p>
                         </Section>
                         <Section title="Биография">
-                            <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить биографию</p>
+                            <p className="text-base text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить биографию</p>
                         </Section>
                         <Section title={`Галерея (0/${maxGallery})`}>
-                            <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить изображения</p>
+                            <p className="text-base text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить изображения</p>
                         </Section>
                         <Section title={`Видео (0/${maxVideos})`}>
-                            <p className="text-sm text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить видео</p>
+                            <p className="text-base text-[#999] italic py-8 text-center">Сохраните карточку, чтобы добавить видео</p>
                         </Section>
                     </>
                 ) : (
@@ -382,7 +382,7 @@ export default function CardEditorPage() {
                                         <h3 className="font-bold text-base text-[#1c2145]">
                                             {{ children: 'Дети', spouses: 'Брак', parents: 'Родители' }[type]}
                                         </h3>
-                                        <button onClick={() => addRelative(type)} className="text-[#3476f5] text-sm font-bold hover:underline">
+                                        <button onClick={() => addRelative(type)} className="text-[#3476f5] text-base font-bold hover:underline">
                                             + Добавить
                                         </button>
                                     </div>
@@ -397,7 +397,7 @@ export default function CardEditorPage() {
                                                         {item.name?.[0] || '?'}
                                                     </div>
                                                 )}
-                                                <label className="text-[10px] text-[#3476f5] cursor-pointer hover:underline">
+                                                <label className="text-xs text-[#3476f5] cursor-pointer hover:underline">
                                                     Фото
                                                     <input type="file" accept="image/*" className="hidden"
                                                         onChange={e => { const f = e.target.files?.[0]; if(f) handleRelativePhotoUpload(f, type, idx); e.target.value = ''; }} />
@@ -406,20 +406,20 @@ export default function CardEditorPage() {
                                             <div className="flex-1 space-y-2">
                                                 <input type="text" value={item.name || ''} placeholder="ФИО"
                                                        onChange={e => updateRelative(type, idx, 'name', e.target.value)}
-                                                       className="text-input text-sm" />
+                                                       className="text-input text-base" />
                                                 {type === 'spouses' && (
                                                     <div className="grid grid-cols-2 gap-2">
                                                         <div>
-                                                            <label className="block text-xs text-[#999] mb-0.5">Дата брака</label>
+                                                            <label className="block text-base text-[#999] mb-0.5">Дата брака</label>
                                                             <input type="date" value={item.marriage_start || ''}
                                                                    onChange={e => updateRelative(type, idx, 'marriage_start', e.target.value)}
-                                                                   className="text-input text-sm" />
+                                                                   className="text-input text-base" />
                                                         </div>
                                                         <div>
-                                                            <label className="block text-xs text-[#999] mb-0.5">Дата окончания</label>
+                                                            <label className="block text-base text-[#999] mb-0.5">Дата окончания</label>
                                                             <input type="date" value={item.marriage_end || ''}
                                                                    onChange={e => updateRelative(type, idx, 'marriage_end', e.target.value)}
-                                                                   className="text-input text-sm" />
+                                                                   className="text-input text-base" />
                                                         </div>
                                                     </div>
                                                 )}
@@ -434,14 +434,14 @@ export default function CardEditorPage() {
                                 </div>
                             ))}
                             <button onClick={saveInfo} disabled={saveInfoMut.isPending}
-                                    className="btn-filled text-sm mt-4">
+                                    className="btn-filled text-base mt-4">
                                 {saveInfoMut.isPending ? 'Сохранение...' : 'Сохранить родственников'}
                             </button>
                         </Section>
 
                         {/* Timeline */}
                         <Section title={`Жизненный путь (${(content.timeline || []).length} событий)`}>
-                            <p className="text-sm text-[#6c6d7e] mb-4">
+                            <p className="text-base text-[#6c6d7e] mb-4">
                                 Добавьте важные события из жизни: даты, заголовки и краткое описание. Это отобразится на странице памяти в виде хронологии.
                             </p>
 
@@ -456,7 +456,7 @@ export default function CardEditorPage() {
                                                        setContent(prev => ({ ...prev, timeline: arr }));
                                                    }}
                                                    placeholder="Год (например, 1957)"
-                                                   className="text-input text-sm" />
+                                                   className="text-input text-base" />
                                             <input type="text" value={ev.title || ''}
                                                    onChange={e => {
                                                        const arr = [...(content.timeline || [])];
@@ -464,7 +464,7 @@ export default function CardEditorPage() {
                                                        setContent(prev => ({ ...prev, timeline: arr }));
                                                    }}
                                                    placeholder="Заголовок события"
-                                                   className="text-input text-sm" />
+                                                   className="text-input text-base" />
                                         </div>
                                         <textarea rows={2} value={ev.desc || ''}
                                                   onChange={e => {
@@ -473,7 +473,7 @@ export default function CardEditorPage() {
                                                       setContent(prev => ({ ...prev, timeline: arr }));
                                                   }}
                                                   placeholder="Краткое описание события"
-                                                  className="text-input resize-none text-sm" />
+                                                  className="text-input resize-none text-base" />
                                     </div>
                                     <button onClick={() => {
                                         const arr = (content.timeline || []).filter((_, i) => i !== idx);
@@ -489,12 +489,12 @@ export default function CardEditorPage() {
                             <button onClick={() => {
                                 const arr = [...(content.timeline || []), { year: '', title: '', desc: '' }];
                                 setContent(prev => ({ ...prev, timeline: arr }));
-                            }} className="text-[#3476f5] text-sm font-bold hover:underline mb-3">
-                                + Добавить событие
+                            }} className="text-[#3476f5] text-base font-bold hover:underline mb-3">
+                                                            + Добавить событие
                             </button>
 
                             <button onClick={saveContent} disabled={saveContentMut.isPending}
-                                    className="btn-filled text-sm mt-2 block">
+                                    className="btn-filled text-base mt-2 block">
                                 {saveContentMut.isPending ? 'Сохранение...' : 'Сохранить жизненный путь'}
                             </button>
                         </Section>
@@ -535,7 +535,7 @@ export default function CardEditorPage() {
                                 </div>
                             )}
                             <button onClick={saveContent} disabled={saveContentMut.isPending}
-                                    className="btn-filled text-sm mt-4">
+                                    className="btn-filled text-base mt-4">
                                 {saveContentMut.isPending ? 'Сохранение...' : 'Сохранить галерею'}
                             </button>
                         </Section>
@@ -603,10 +603,10 @@ export default function CardEditorPage() {
                                                        placeholder="https://..." />
                                             </div>
                                             <div className="mb-3">
-                                                <label className="block text-sm text-[#999] mb-1.5">Описание видео</label>
+                                                <label className="block text-base text-[#999] mb-1.5">Описание видео</label>
                                                 <textarea value={videoForm.description} rows={2}
                                                           onChange={e => setVideoForm(prev => ({ ...prev, description: e.target.value }))}
-                                                          className="text-input resize-none text-sm" />
+                                                          className="text-input resize-none text-base" />
                                             </div>
                                         </>
                                     ) : (
@@ -616,24 +616,24 @@ export default function CardEditorPage() {
                                                     <video src={videoForm.url} controls className="w-full max-w-[400px] rounded-lg" preload="metadata">
                                                         Ваш браузер не поддерживает видео.
                                                     </video>
-                                                    <p className="text-sm text-[#1980DF] mt-1.5 truncate">{videoForm.original_name}</p>
+                                                    <p className="text-base text-[#1980DF] mt-1.5 truncate">{videoForm.original_name}</p>
                                                 </div>
                                             ) : (
                                                 <div className="mb-3">
                                                     <FileUpload onFile={handleVideoUpload} disabled={uploading} accept="video/*" />
-                                                    {uploading && <span className="text-sm text-[#999] ml-3">Загрузка...</span>}
+                                                    {uploading && <span className="text-base text-[#999] ml-3">Загрузка...</span>}
                                                 </div>
                                             )}
                                             <div className="mb-3">
-                                                <label className="block text-sm text-[#999] mb-1.5">Описание видео</label>
+                                                <label className="block text-base text-[#999] mb-1.5">Описание видео</label>
                                                 <textarea value={videoForm.description} rows={2}
                                                           onChange={e => setVideoForm(prev => ({ ...prev, description: e.target.value }))}
-                                                          className="text-input resize-none text-sm" />
+                                                          className="text-input resize-none text-base" />
                                             </div>
                                         </>
                                     )}
                                     <button onClick={addVideoItem}
-                                            className="btn-filled text-sm">
+                                            className="btn-filled text-base">
                                         Добавить видео
                                     </button>
                                 </div>
@@ -756,7 +756,7 @@ function FileUpload({ onFile, disabled, accept = 'image/*' }) {
 function Field({ label, value, onChange, placeholder, type = 'text' }) {
     return (
         <div>
-            <label className="block text-sm text-[#999] mb-1.5">{label}</label>
+            <label className="block text-base text-[#999] mb-1.5">{label}</label>
             <input type={type} value={value || ''} onChange={e => onChange(e.target.value)}
                    className="text-input" placeholder={placeholder} />
         </div>
