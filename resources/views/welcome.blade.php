@@ -18,6 +18,7 @@
     <meta name="msapplication-TileColor" content="#2d89ef">
     <meta name="msapplication-config" content="/browserconfig.xml">
     <meta name="theme-color" content="#3476F5">
+    <meta name="mailru-domain" content="sginZDRvEdC485vz" />
 
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </head>
