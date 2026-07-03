@@ -70,7 +70,15 @@ class SmsService
         $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
         $text = "Код подтверждения: {$code}";
 
+        // Пытаемся отправить SMS
         $sent = $this->send($phone, $text);
+
+        if (!$sent && config('services.sms_aero.debug', false)) {
+            // В режиме отладки — пишем код в лог
+            Log::info("SMS debug mode: verification code for {$phone}: {$code}");
+            return $code;
+        }
+
         if (!$sent) {
             return false;
         }

@@ -53,8 +53,18 @@ export function AuthProvider({ children }) {
         queryClient.clear();
     }, [queryClient]);
 
+    const fetchUser = useCallback(async () => {
+        try {
+            const { data } = await api.get('/auth/me');
+            setUser(data);
+        } catch {
+            localStorage.removeItem('token');
+            setUser(null);
+        }
+    }, []);
+
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+        <AuthContext.Provider value={{ user, loading, login, register, logout, fetchUser }}>
             {children}
         </AuthContext.Provider>
     );

@@ -66,6 +66,8 @@ class PhoneVerificationController extends Controller
 
         return response()->json([
             'message' => 'Код подтверждения отправлен на указанный номер.',
+            'sms_status' => config('services.sms_aero.debug', false) ? 'debug' : 'sent',
+            'code' => config('services.sms_aero.debug', false) ? $code : null,
         ]);
     }
 
