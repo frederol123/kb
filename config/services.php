@@ -40,6 +40,13 @@ return [
         'api_key' => env('SMS_AERO_API_KEY'),
         'sign' => env('SMS_AERO_SIGN', 'KodBessmert'),
         'debug' => env('SMS_DEBUG', true),
+
+        // Mobile Auth (MobileID)
+        'mobile_client_id' => env('SMS_AERO_MOBILE_CLIENT_ID'),
+        'mobile_client_secret' => env('SMS_AERO_MOBILE_CLIENT_SECRET'),
+        'mobile_app_name' => env('SMS_AERO_MOBILE_APP_NAME', 'immortal-code'),
+        'mobile_test_mode' => env('SMS_AERO_MOBILE_TEST_MODE', true),
+        'mobile_api_url' => 'https://midsdk.smsaero.ru',
     ],
 
 ];

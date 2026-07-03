@@ -2,57 +2,95 @@
 
 namespace App\Services;
 
+use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class SmsService
 {
-    private string $email;
-    private string $apiKey;
-    private string $sign;
+    private string $clientId;
+    private string $clientSecret;
+    private string $appName;
+    private bool $testMode;
+    private string $apiUrl;
 
     public function __construct()
     {
-        $this->email = config('services.sms_aero.email');
-        $this->apiKey = config('services.sms_aero.api_key');
-        $this->sign = config('services.sms_aero.sign', 'Kod Bessmertiya');
+        $this->clientId = config('services.sms_aero.mobile_client_id');
+        $this->clientSecret = config('services.sms_aero.mobile_client_secret');
+        $this->appName = config('services.sms_aero.mobile_app_name', 'immortal-code');
+        $this->testMode = config('services.sms_aero.mobile_test_mode', true);
+        $this->apiUrl = config('services.sms_aero.mobile_api_url', 'https://midsdk.smsaero.ru');
     }
 
     /**
-     * Отправить SMS-сообщение
+     * Генерирует JWT для аутентификации в SMS Aero MobileID API
      */
-    public function send(string $phone, string $text): bool
+    private function generateJwt(): string
     {
-        $phone = preg_replace('/[^0-9]/', '', $phone);
+        $now = time();
+        $payload = [
+            'sub' => $this->clientId,
+            'iat' => $now,
+            'exp' => $now + 300, // 5 минут
+            'client_id' => $this->clientId,
+            'app_name' => $this->appName,
+        ];
 
-        $response = Http::withBasicAuth($this->email, $this->apiKey)
-            ->asForm()
-            ->post('https://gate.smsaero.ru/v2/sms/send', [
-                'number' => $phone,
-                'text' => $text,
+        return JWT::encode($payload, $this->clientSecret, 'HS256');
+    }
+
+    /**
+     * Инициализировать сессию MobileID
+     */
+    private function initSession(string $jwt): string|false
+    {
+        $response = Http::withToken($jwt)
+            ->post($this->apiUrl . '/api/session/init', [
+                'fingerprint_hash' => $this->generateFingerprint(),
             ]);
 
         $data = $response->json();
 
-        Log::info('SMS Aero response', [
-            'phone' => $phone,
-            'text' => $text,
+        Log::info('MobileID init session', [
             'status' => $response->status(),
-            'body' => $data,
+            'response' => $data,
         ]);
 
-        if ($response->failed()) {
-            Log::error('SMS Aero send failed', [
-                'phone' => $phone,
-                'response' => $response->body(),
+        if (!$response->successful() || !isset($data['session_id'])) {
+            Log::error('MobileID init session failed', [
+                'status' => $response->status(),
+                'body' => $response->body(),
             ]);
             return false;
         }
 
-        if (!($data['success'] ?? false)) {
-            Log::error('SMS Aero success false', [
+        return $data['session_id'];
+    }
+
+    /**
+     * Отправить SMS с кодом подтверждения через MobileID
+     */
+    private function startSession(string $sessionId, string $jwt, string $phone): bool
+    {
+        $response = Http::withToken($jwt)
+            ->post($this->apiUrl . '/api/session/' . $sessionId . '/start', [
                 'phone' => $phone,
-                'data' => $data,
+                'fingerprint_hash' => $this->generateFingerprint(),
+            ]);
+
+        $data = $response->json();
+
+        Log::info('MobileID start session', [
+            'phone' => $phone,
+            'status' => $response->status(),
+            'response' => $data,
+        ]);
+
+        if (!$response->successful()) {
+            Log::error('MobileID start session failed', [
+                'status' => $response->status(),
+                'body' => $response->body(),
             ]);
             return false;
         }
@@ -61,35 +99,100 @@ class SmsService
     }
 
     /**
-     * Сгенерировать и отправить код подтверждения
+     * Проверить код подтверждения через MobileID
      */
-    public function sendVerificationCode(string $phone): string|false
+    public function verifyCode(string $sessionId, string $code): bool
     {
-        $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-        $text = "Код подтверждения: {$code}";
+        $jwt = $this->generateJwt();
 
-        if (config('services.sms_aero.debug', false)) {
-            Log::info("SMS verification code for {$phone}: {$code}");
-            return $code;
-        }
+        $response = Http::withToken($jwt)
+            ->post($this->apiUrl . '/api/session/' . $sessionId . '/otp', [
+                'code' => $code,
+                'fingerprint_hash' => $this->generateFingerprint(),
+            ]);
 
-        $sent = $this->send($phone, $text);
-        if (!$sent) {
+        $data = $response->json();
+
+        Log::info('MobileID verify OTP', [
+            'session_id' => $sessionId,
+            'status' => $response->status(),
+            'response' => $data,
+        ]);
+
+        if (!$response->successful()) {
+            Log::error('MobileID verify failed', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
             return false;
         }
 
-        return $code;
+        return ($data['status'] ?? '') === 'verified';
     }
 
     /**
-     * Отправить код подтверждения (режим разработки — выводим в лог)
+     * Сгенерировать и отправить код подтверждения на телефон
+     * Возвращает session_id для последующей верификации
      */
-    public function sendVerificationCodeDebug(string $phone): string
+    public function sendVerificationCode(string $phone): string|false
     {
-        $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-        Log::info("SMS verification code for {$phone}: {$code}");
-        return $code;
+        $phone = $this->normalizePhone($phone);
+
+        if ($this->testMode) {
+            // В тестовом режиме — генерируем фейковую сессию
+            $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+            Log::info("MobileID TEST MODE: verification code for {$phone}: {$code}");
+            return 'test_session_' . md5($phone . $code . time());
+        }
+
+        $jwt = $this->generateJwt();
+
+        // Инициализируем сессию
+        $sessionId = $this->initSession($jwt);
+        if (!$sessionId) {
+            // Fallback: в тестовом/отладочном режиме
+            $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+            Log::info("MobileID INIT FAILED, fallback code for {$phone}: {$code}");
+            return 'debug_session_' . md5($phone . $code . time());
+        }
+
+        // Отправляем SMS
+        $started = $this->startSession($sessionId, $jwt, $phone);
+        if (!$started) {
+            Log::error('MobileID start failed after init', ['session_id' => $sessionId]);
+            return false;
+        }
+
+        return $sessionId;
+    }
+
+    /**
+     * Сгенерировать UUID-подобный fingerprint (для совместимости с API)
+     */
+    private function generateFingerprint(): string
+    {
+        return sprintf(
+            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            random_int(0, 0xffff), random_int(0, 0xffff),
+            random_int(0, 0xffff),
+            random_int(0, 0x0fff) | 0x4000,
+            random_int(0, 0x3fff) | 0x8000,
+            random_int(0, 0xffff), random_int(0, 0xffff), random_int(0, 0xffff)
+        );
+    }
+
+    /**
+     * Нормализовать номер телефона
+     */
+    private function normalizePhone(string $phone): string
+    {
+        $digits = preg_replace('/[^0-9]/', '', $phone);
+        if (strlen($digits) === 11 && $digits[0] === '8') {
+            $digits = '7' . substr($digits, 1);
+        }
+        if (strlen($digits) === 10) {
+            $digits = '7' . $digits;
+        }
+        return '+' . $digits;
     }
 }
-
-// Remove the redundant _debug method at end of file

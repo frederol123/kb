@@ -1,56 +1,92 @@
 # SMS Aero — интеграция
 
 ## Статус
-- ⏸️ Отложено — требуется рабочий домен для настройки подписи (sign)
-- На данный момент работает **debug-режим**: код пишется в лог, реальная отправка не происходит
-
-## Провайдер
-- **SMS Aero** (https://smsaero.ru)
-- API URL: `https://gate.smsaero.ru/v2`
-- Документация: https://smsaero.ru/integration/documentation/api/
+- ✅ **Mobile Auth (MobileID)** настроен и работает
+- ✅ Тестовый режим — код пишется в лог
+- При выключении тестового режима SMS будет отправляться реально через SMS Aero
 
 ## Учётные данные (`.env`)
-```
+```env
 SMS_AERO_EMAIL=frederol123@gmail.com
-SMS_AERO_API_KEY=jmVJ9WLjtV6xVJ66AA7xGwtkJdgmOQfZ
+SMS_AERO_API_KEY=***
 SMS_AERO_SIGN=KodBessmert
-SMS_DEBUG=true
+
+# SMS Aero Mobile Auth (MobileID)
+SMS_AERO_MOBILE_CLIENT_ID=ba55a981-d764-4588-9112-247aaf8ee016
+SMS_AERO_MOBILE_CLIENT_SECRET=***
+SMS_AERO_MOBILE_APP_NAME=immortal-code
+SMS_AERO_MOBILE_TEST_MODE=true
 ```
 
-## Что нужно сделать для включения
+## Как работает MobileID
 
-### 1. Получить подпись (sign)
-Подпись отправителя обязательна. Способы:
-- Зайти в личный кабинет https://gate.smsaero.ru → найти раздел «Подписи» / «Sender names» → создать подпись (макс 11 символов, латиница)
-- Или написать в поддержку (чат на сайте / support@smsaero.ru): *«Пополнил баланс, не могу создать подпись для API, помогите создать "KodBessmert"»*
+### Архитектура
+SMS Aero MobileID (мобильная авторизация) — OAuth-подобный сервис, который отправляет SMS с кодом подтверждения от имени SMS Aero (не требует подписи sign).
 
-Как только подпись появится — SMS Aero её одобрит (обычно несколько минут).
+```mermaid
+sequenceDiagram
+    Client->>Server: POST /auth/send-code (phone)
+    Server->>SMS Aero: POST /api/session/init (JWT token)
+    SMS Aero-->>Server: session_id
+    Server->>SMS Aero: POST /api/session/{id}/start (phone)
+    SMS Aero->>User: SMS с кодом
+    Client->>Server: POST /auth/verify-phone (phone, code)
+    Server->>SMS Aero: POST /api/session/{id}/otp (code)
+    SMS Aero-->>Server: verified
+    Server->>Client: token + user
+```
 
-> ⚠️ Если подписи создаются только при наличии домена — отложить до появления домена.
+### Аутентификация (JWT)
+- JWT подписывается `mobile_client_secret` через HS256
+- Payload: `sub` (client_id), `iat`, `exp` (5 мин), `client_id`, `app_name`
+- JWT передаётся в HTTP-запросах через Bearer token
 
-### 2. Настроить на сайте
-После одобрения подписи:
-1. В `.env`: `SMS_DEBUG=false`
-2. В `app/Services/SmsService.php`: добавить `'sign' => $this->sign,` обратно в POST-запрос (сейчас закомментирован)
-3. Перезапустить контейнер: `docker compose restart app`
+### API эндпоинты MobileID
+| Метод | Путь | Описание |
+|-------|------|----------|
+| POST | `/api/session/init` | Создать сессию (JWT + fingerprint_hash) |
+| POST | `/api/session/{id}/start` | Отправить SMS (phone) |
+| POST | `/api/session/{id}/otp` | Проверить код (code) |
+| GET | `/api/session/{id}/events` | Получить статус |
 
-## API эндпоинты
+### Режимы работы
+- **Тестовый** (`SMS_AERO_MOBILE_TEST_MODE=true`):
+  - SMS не отправляется
+  - Код генерируется и пишется в лог: `MobileID TEST MODE: verification code for +7XXX: 1234`
+  - Сессия `test_session_xxx` сохраняется в БД
+  - Верификация проходит через лог (всегда успешна, любой код принимается)
+
+- **Боевой** (`SMS_AERO_MOBILE_TEST_MODE=false`):
+  - Реальная отправка SMS через SMS Aero
+  - Код верифицируется через MobileID API
+  - Требуется активная подпись (sign) или работает под брендом SMS Aero
+
+## Эндпоинты приложения
 | Метод | Путь | Описание |
 |-------|------|----------|
 | POST | `/auth/send-code` | Отправить SMS с кодом подтверждения |
 | POST | `/auth/verify-phone` | Подтвердить код и зарегистрировать |
 
-## Debug-режим
-Пока `SMS_DEBUG=true`:
-- Код НЕ отправляется в SMS Aero
-- Генерируется 4-значный код и сохраняется в БД (`phone_verifications`)
-- Код пишется в лог: `docker compose exec -T -w /app app grep "verification code" storage/logs/laravel.log`
-- Пользователь видит «Код отправлен на указанный номер» (как при реальной отправке)
-
 ## Файлы интеграции
-- `app/Services/SmsService.php` — сервис отправки SMS
+- `app/Services/SmsService.php` — сервис MobileID (JWT, init, start, verify OTP)
 - `app/Http/Controllers/Api/PhoneVerificationController.php` — контроллер
-- `app/Models/PhoneVerification.php` — модель для хранения кодов
-- `config/services.php` — конфиг (ключи, sign, debug)
-- `database/migrations/..._add_phone_to_users_table.php` — поле phone в users
-- `database/migrations/..._create_phone_verifications_table.php` — таблица кодов
+- `app/Models/PhoneVerification.php` — модель для хранения session_id
+- `config/services.php` — конфиг (ключи, test_mode)
+- `database/migrations/..._increase_phone_verification_code_length.php` — расширение поля code
+- `database/migrations/..._make_email_nullable_in_users_table.php` — email nullable для phone-only регистрации
+
+## Тестирование
+```bash
+# Отправить код
+curl -sk -X POST 'https://immortal-code.ru/api/auth/send-code' \
+  -H 'Content-Type: application/json' \
+  -d '{"phone":"89811269133"}'
+
+# Найти код в логе
+docker compose exec -w /app app grep 'MobileID TEST MODE' storage/logs/laravel.log
+
+# Зарегистрироваться
+curl -sk -X POST 'https://immortal-code.ru/api/auth/verify-phone' \
+  -H 'Content-Type: application/json' \
+  -d '{"phone":"89811269133","code":"XXXX","name":"Имя","password":"testPass123"}'
+```

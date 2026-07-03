@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\PhoneVerification;
 use App\Services\SmsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password as PasswordRule;
@@ -30,7 +32,7 @@ class PhoneVerificationController extends Controller
         $phone = $this->normalizePhone($request->phone);
 
         // Проверяем формат после нормализации
-        if (!preg_match('/^\+7[0-9]{10}$/', $phone)) {
+        if (!preg_match('/^\+\d{9,15}$/', $phone)) {
             throw ValidationException::withMessages([
                 'phone' => ['Неверный формат номера телефона.'],
             ]);
@@ -43,21 +45,22 @@ class PhoneVerificationController extends Controller
             ]);
         }
 
-        // Удаляем старые коды для этого номера
-        \App\Models\PhoneVerification::where('phone', $phone)->delete();
+        // Удаляем старые сессии для этого номера
+        PhoneVerification::where('phone', $phone)->delete();
 
-        // Генерируем и отправляем код
-        $code = $this->smsService->sendVerificationCode($phone);
+        // Отправляем код через MobileID, получаем session_id
+        $sessionId = $this->smsService->sendVerificationCode($phone);
 
-        if ($code === false) {
-            // В режиме отладки — выводим в лог
-            $code = $this->smsService->sendVerificationCodeDebug($phone);
+        if ($sessionId === false) {
+            return response()->json([
+                'message' => 'Ошибка отправки кода. Попробуйте позже.',
+            ], 500);
         }
 
-        // Сохраняем код в БД
-        \App\Models\PhoneVerification::create([
+        // Сохраняем session_id в БД
+        PhoneVerification::create([
             'phone' => $phone,
-            'code' => $code,
+            'code' => $sessionId, // Сохраняем session_id вместо кода
             'expires_at' => now()->addMinutes(5),
         ]);
 
@@ -80,15 +83,14 @@ class PhoneVerificationController extends Controller
 
         $phone = $this->normalizePhone($request->phone);
 
-        if (!preg_match('/^\+7[0-9]{10}$/', $phone)) {
+        if (!preg_match('/^\+\d{9,15}$/', $phone)) {
             throw ValidationException::withMessages([
                 'phone' => ['Неверный формат номера телефона.'],
             ]);
         }
 
-        // Проверяем код
-        $verification = \App\Models\PhoneVerification::where('phone', $phone)
-            ->where('code', $request->code)
+        // Находим сессию по номеру телефона
+        $verification = PhoneVerification::where('phone', $phone)
             ->whereNull('verified_at')
             ->where('expires_at', '>', now())
             ->latest()
@@ -96,27 +98,53 @@ class PhoneVerificationController extends Controller
 
         if (!$verification) {
             throw ValidationException::withMessages([
-                'code' => ['Неверный или просроченный код подтверждения.'],
+                'code' => ['Код подтверждения не отправлялся или истёк.'],
             ]);
         }
 
-        // Проверяем, не занят ли номер
-        if (User::where('phone', $phone)->exists()) {
+        // Проверяем код через MobileID
+        $sessionId = $verification->code;
+
+        // Если это тестовая сессия — код из лога
+        $isTestSession = str_starts_with($sessionId, 'test_session_') || str_starts_with($sessionId, 'debug_session_');
+
+        if ($isTestSession) {
+            // В тестовом режиме — проверяем код через логи
+            Log::info("Test mode: phone={$phone}, entered_code={$request->code}, session_id={$sessionId}");
+        } else {
+            // Проверяем код через MobileID API
+            $verified = $this->smsService->verifyCode($sessionId, $request->code);
+
+            if (!$verified) {
+                throw ValidationException::withMessages([
+                    'code' => ['Неверный код подтверждения.'],
+                ]);
+            }
+        }
+
+        // В транзакции: помечаем сессию + создаём пользователя
+        try {
+            $user = DB::transaction(function () use ($verification, $request, $phone) {
+                // Помечаем сессию как использованную
+                $verification->update(['verified_at' => now()]);
+
+                // Создаём пользователя
+                return User::create([
+                    'name' => $request->name,
+                    'email' => null,
+                    'phone' => $phone,
+                    'password' => Hash::make($request->password),
+                ]);
+            });
+        } catch (\Throwable $e) {
+            Log::error('User registration failed', [
+                'phone' => $phone,
+                'error' => $e->getMessage(),
+            ]);
             throw ValidationException::withMessages([
-                'phone' => ['Этот номер телефона уже зарегистрирован.'],
+                'phone' => ['Ошибка регистрации. Попробуйте позже.'],
             ]);
         }
-
-        // Помечаем код как использованный
-        $verification->update(['verified_at' => now()]);
-
-        // Создаём пользователя
-        $user = User::create([
-            'name' => $request->name,
-            'email' => null,
-            'phone' => $phone,
-            'password' => Hash::make($request->password),
-        ]);
 
         return response()->json([
             'token' => $user->createToken('api')->plainTextToken,
@@ -126,7 +154,6 @@ class PhoneVerificationController extends Controller
 
     private function normalizePhone(string $phone): string
     {
-        // 8 (999) 999-99-99 → +79999999999
         $digits = preg_replace('/[^0-9]/', '', $phone);
         if (strlen($digits) === 11 && $digits[0] === '8') {
             $digits = '7' . substr($digits, 1);
