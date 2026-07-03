@@ -25,16 +25,21 @@ export function AuthProvider({ children }) {
         return () => window.removeEventListener('auth:logout', handleLogout);
     }, []);
 
-    const login = useCallback(async (email, password) => {
-        const { data } = await api.post('/auth/login', { email, password });
+    const login = useCallback(async (emailOrLogin, password) => {
+        // Определяем, логин это или email
+        const isEmail = emailOrLogin.includes('@');
+        const payload = isEmail
+            ? { email: emailOrLogin, password }
+            : { login: emailOrLogin, password };
+        const { data } = await api.post('/auth/login', payload);
         localStorage.setItem('token', data.token);
         setUser(data.user);
         return data;
     }, []);
 
-    const register = useCallback(async (name, email, password, passwordConfirmation) => {
+    const register = useCallback(async (login, name, email, password, passwordConfirmation) => {
         const { data } = await api.post('/auth/register', {
-            name, email, password, password_confirmation: passwordConfirmation,
+            login, name, email, password, password_confirmation: passwordConfirmation,
         });
         localStorage.setItem('token', data.token);
         setUser(data.user);

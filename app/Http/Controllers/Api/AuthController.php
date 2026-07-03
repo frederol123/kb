@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\VerifyEmailNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,26 +17,25 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $request->validate([
-            'email' => ['required_without:phone', 'email'],
-            'phone' => ['required_without:email', 'string'],
+            'login' => ['required_without:email', 'string'],
+            'email' => ['required_without:login', 'email'],
             'password' => ['required', 'string'],
         ]);
 
         $user = null;
-        if ($request->email) {
+        $field = '';
+
+        if ($request->login) {
+            $user = User::where('login', $request->login)->first();
+            $field = 'login';
+        } elseif ($request->email) {
             $user = User::where('email', $request->email)->first();
-        } elseif ($request->phone) {
-            $phone = preg_replace('/[^0-9]/', '', $request->phone);
-            if (strlen($phone) === 11 && $phone[0] === '8') {
-                $phone = '7' . substr($phone, 1);
-            }
-            $phone = '+' . $phone;
-            $user = User::where('phone', $phone)->first();
+            $field = 'email';
         }
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Неверный email/телефон или пароль.'],
+                $field => ['Неверный логин/email или пароль.'],
             ]);
         }
 
@@ -48,29 +48,32 @@ class AuthController extends Controller
 
         return response()->json([
             'token' => $user->createToken('api')->plainTextToken,
-            'user' => $user->only(['id', 'name', 'email']),
+            'user' => $user->only(['id', 'login', 'name', 'email']),
         ]);
     }
 
     public function register(Request $request): JsonResponse
     {
         $request->validate([
+            'login' => ['required', 'string', 'max:255', 'unique:users,login'],
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'unique:users'],
-            'phone' => ['nullable', 'string', 'unique:users'],
-            'password' => ['required', 'string', PasswordRule::defaults()],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'string', PasswordRule::defaults(), 'confirmed'],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'login' => $request->login,
+            'name' => $request->name ?: $request->login,
             'email' => $request->email,
-            'phone' => $request->phone,
             'password' => $request->password,
         ]);
 
+        // Отправляем письмо с подтверждением email
+        $user->notify(new VerifyEmailNotification());
+
         return response()->json([
             'token' => $user->createToken('api')->plainTextToken,
-            'user' => $user->only(['id', 'name', 'email']),
+            'user' => $user->only(['id', 'login', 'name', 'email']),
         ], 201);
     }
 
@@ -122,7 +125,7 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $request->user()->load('tariff');
-        return response()->json($user->only(['id', 'name', 'email', 'max_gallery_images', 'max_videos', 'tariff_id']) + [
+        return response()->json($user->only(['id', 'login', 'name', 'email', 'email_verified_at', 'max_gallery_images', 'max_videos', 'tariff_id']) + [
             'tariff' => $user->tariff ? $user->tariff->only(['id', 'title', 'slug', 'price', 'limits']) : null,
         ]);
     }
@@ -148,7 +151,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Имя успешно изменено.',
-            'user' => $user->only(['id', 'name', 'email']),
+            'user' => $user->only(['id', 'login', 'name', 'email']),
         ]);
     }
 }

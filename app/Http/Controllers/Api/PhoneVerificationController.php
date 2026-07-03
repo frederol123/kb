@@ -77,6 +77,7 @@ class PhoneVerificationController extends Controller
         $request->validate([
             'phone' => ['required', 'string'],
             'code' => ['required', 'string', 'size:4'],
+            'login' => ['required', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', PasswordRule::defaults()],
         ]);
@@ -125,11 +126,19 @@ class PhoneVerificationController extends Controller
         // В транзакции: помечаем сессию + создаём пользователя
         try {
             $user = DB::transaction(function () use ($verification, $request, $phone) {
+                // Проверяем уникальность логина
+                if (User::where('login', $request->login)->exists()) {
+                    throw ValidationException::withMessages([
+                        'login' => ['Этот логин уже используется.'],
+                    ]);
+                }
+
                 // Помечаем сессию как использованную
                 $verification->update(['verified_at' => now()]);
 
                 // Создаём пользователя
                 return User::create([
+                    'login' => $request->login,
                     'name' => $request->name,
                     'email' => null,
                     'phone' => $phone,

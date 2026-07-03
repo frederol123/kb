@@ -51,6 +51,7 @@ export default function AuthModal({ open, onClose }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
+    const [loginValue, setLoginValue] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [agreed, setAgreed] = useState(true);
     const [error, setError] = useState('');
@@ -103,12 +104,16 @@ export default function AuthModal({ open, onClose }) {
             if (mode === 'login') {
                 await login(email, password);
             } else {
-                await register(name, email, password, passwordConfirmation);
+                await register(loginValue || name, name, email, password, passwordConfirmation);
             }
             onClose();
             navigate('/lk');
         } catch (err) {
-            setError(err.response?.data?.errors?.email?.[0] || err.response?.data?.message || 'Произошла ошибка');
+            const errData = err.response?.data;
+            const firstErr = errData?.errors
+                ? Object.values(errData.errors).flat()[0]
+                : null;
+            setError(firstErr || errData?.message || 'Произошла ошибка');
         }
     };
 
@@ -144,6 +149,7 @@ export default function AuthModal({ open, onClose }) {
             const { data } = await api.post('/auth/verify-phone', {
                 phone,
                 code: phoneCode,
+                login: loginValue || name,
                 name,
                 password,
             });
@@ -192,6 +198,11 @@ export default function AuthModal({ open, onClose }) {
                                     <p className="text-xs text-[#999] mt-1">Только российские почтовые сервисы</p>
                                 </div>
                                 <div>
+                                    <label className="block text-sm text-[#999] mb-1">Логин</label>
+                                    <input type="text" value={loginValue} onChange={e => setLoginValue(e.target.value)} required
+                                           className="text-input" placeholder="Ваш логин для входа" />
+                                </div>
+                                <div>
                                     <label className="block text-sm text-[#999] mb-1">Имя</label>
                                     <input type="text" value={name} onChange={e => setName(e.target.value)} required
                                            className="text-input" placeholder="Ваше имя" />
@@ -210,9 +221,9 @@ export default function AuthModal({ open, onClose }) {
                         ) : (
                             <>
                                 <div>
-                                    <label className="block text-sm text-[#999] mb-1">Имя</label>
-                                    <input type="text" value={name} onChange={e => setName(e.target.value)} required
-                                           className="text-input" placeholder="Ваше имя" />
+                                    <label className="block text-sm text-[#999] mb-1">Логин</label>
+                                    <input type="text" value={loginValue} onChange={e => setLoginValue(e.target.value)} required
+                                           className="text-input" placeholder="Ваш логин" />
                                 </div>
                                 <div>
                                     <label className="block text-sm text-[#999] mb-1">Номер телефона</label>
@@ -290,9 +301,9 @@ export default function AuthModal({ open, onClose }) {
                         <h2 className="font-extrabold text-2xl text-[#1c2145]">Авторизация</h2>
                         {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
                         <div>
-                            <label className="block text-sm text-[#999] mb-1">Email</label>
-                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
-                                   className="text-input" placeholder="email@example.com" />
+                            <label className="block text-sm text-[#999] mb-1">Логин или Email</label>
+                            <input type="text" value={email} onChange={e => setEmail(e.target.value)} required
+                                   className="text-input" placeholder="Ваш логин или email" />
                         </div>
                         <div>
                             <label className="block text-sm text-[#999] mb-1">Пароль</label>
