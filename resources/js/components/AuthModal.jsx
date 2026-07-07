@@ -138,7 +138,7 @@ export default function AuthModal({ open, onClose }) {
                     setError('Пожалуйста, пройдите проверку «Я не робот».');
                     return;
                 }
-                await register(name, email, password, passwordConfirmation, captchaTokenRef.current);
+                await register(loginValue || name, name, email, password, passwordConfirmation, captchaTokenRef.current);
             } else {
                 await register(loginValue || name, name, email, password, passwordConfirmation, captchaToken);
             }
