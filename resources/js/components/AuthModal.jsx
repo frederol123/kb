@@ -51,6 +51,7 @@ export default function AuthModal({ open, onClose }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
+    const [loginValue, setLoginValue] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [agreed, setAgreed] = useState(true);
     const [error, setError] = useState('');
@@ -62,8 +63,11 @@ export default function AuthModal({ open, onClose }) {
     const [sendingCode, setSendingCode] = useState(false);
     const [codeTimer, setCodeTimer] = useState(0);
     const [captchaToken, setCaptchaToken] = useState('');
+    const [showDebugCode, setShowDebugCode] = useState(false);
+    const [debugCode, setDebugCode] = useState('');
+    const debugTimerRef = useRef(null);
 
-    const { login, register } = useAuth();
+    const { login, register, fetchUser } = useAuth();
     const navigate = useNavigate();
     const modalRef = useRef(null);
     const mouseDownInside = useRef(false);
@@ -136,8 +140,9 @@ export default function AuthModal({ open, onClose }) {
                 }
                 await register(name, email, password, passwordConfirmation, captchaTokenRef.current);
             } else {
-                await register(name, email, password, passwordConfirmation, captchaToken);
+                await register(loginValue || name, name, email, password, passwordConfirmation, captchaToken);
             }
+            await fetchUser();
             onClose();
             navigate('/lk');
         } catch (err) {
@@ -152,10 +157,20 @@ export default function AuthModal({ open, onClose }) {
     const sendPhoneCode = async () => {
         setSendingCode(true);
         setError('');
+        setDebugCode('');
+        setShowDebugCode(false);
+        if (debugTimerRef.current) clearTimeout(debugTimerRef.current);
         try {
-            await api.post('/auth/send-code', { phone });
+            const { data } = await api.post('/auth/send-code', { phone });
             setPhoneCodeSent(true);
-            setError('Код отправлен на указанный номер.');
+            setDebugCode(data.code || '');
+            if (data.sms_status === 'debug' && data.code) {
+                setError('Код отправлен. Если SMS не пришло в течение 30 секунд — появится код ниже.');
+                // Показываем fallback код через 30 секунд
+                debugTimerRef.current = setTimeout(() => setShowDebugCode(true), 30000);
+            } else {
+                setError('Код отправлен на указанный номер.');
+            }
             // Таймер 60 секунд
             setCodeTimer(60);
             const interval = setInterval(() => {
@@ -181,10 +196,12 @@ export default function AuthModal({ open, onClose }) {
             const { data } = await api.post('/auth/verify-phone', {
                 phone,
                 code: phoneCode,
+                login: loginValue || name,
                 name,
                 password,
             });
             localStorage.setItem('token', data.token);
+            await fetchUser();
             onClose();
             navigate('/lk');
         } catch (err) {
@@ -229,6 +246,11 @@ export default function AuthModal({ open, onClose }) {
                                     <p className="text-xs text-[#999] mt-1">Только российские почтовые сервисы</p>
                                 </div>
                                 <div>
+                                    <label className="block text-sm text-[#999] mb-1">Логин</label>
+                                    <input type="text" value={loginValue} onChange={e => setLoginValue(e.target.value)} required
+                                           className="text-input" placeholder="Ваш логин для входа" />
+                                </div>
+                                <div>
                                     <label className="block text-sm text-[#999] mb-1">Имя</label>
                                     <input type="text" value={name} onChange={e => setName(e.target.value)} required
                                            className="text-input" placeholder="Ваше имя" />
@@ -247,6 +269,11 @@ export default function AuthModal({ open, onClose }) {
                         ) : (
                             <>
                                 <div>
+                                    <label className="block text-sm text-[#999] mb-1">Логин</label>
+                                    <input type="text" value={loginValue} onChange={e => setLoginValue(e.target.value)} required
+                                           className="text-input" placeholder="Ваш логин" />
+                                </div>
+                                <div>
                                     <label className="block text-sm text-[#999] mb-1">Имя</label>
                                     <input type="text" value={name} onChange={e => setName(e.target.value)} required
                                            className="text-input" placeholder="Ваше имя" />
@@ -260,14 +287,24 @@ export default function AuthModal({ open, onClose }) {
                                 {phoneCodeSent && (
                                     <div>
                                         <label className="block text-sm text-[#999] mb-1">Код из SMS</label>
-                                        <input type="text" value={phoneCode} onChange={e => setPhoneCode(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                                        <input type="text" value={phoneCode} onChange={e => setPhoneCode(e.target.value.replace(/\\D/g, '').slice(0, 4))}
                                                className="text-input" placeholder="0000" maxLength={4} required />
+                                        {showDebugCode && debugCode && (
+                                            <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg mt-1">
+                                                ⚠️ Если SMS не пришло — используйте код: <strong>{debugCode}</strong>
+                                            </p>
+                                        )}
                                     </div>
                                 )}
                                 <div>
                                     <label className="block text-sm text-[#999] mb-1">Пароль</label>
                                     <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={8}
                                            className="text-input" placeholder="Не менее 8 символов" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-[#999] mb-1">Подтверждение пароля</label>
+                                    <input type="password" value={passwordConfirmation} onChange={e => setPasswordConfirmation(e.target.value)} required
+                                           className="text-input" placeholder="Повторите пароль" />
                                 </div>
                             </>
                         )}
@@ -296,7 +333,7 @@ export default function AuthModal({ open, onClose }) {
                         )}
 
                         {regType === 'phone' && phoneCodeSent && (
-                            <button type="button" onClick={() => { setPhoneCodeSent(false); setPhoneCode(''); setError(''); }}
+                            <button type="button" onClick={() => { setPhoneCodeSent(false); setPhoneCode(''); setError(''); if (debugTimerRef.current) clearTimeout(debugTimerRef.current); }}
                                     className="w-full text-sm text-[#999] hover:text-[#1e79d0] transition-colors">
                                 ← Изменить номер
                             </button>
@@ -330,9 +367,9 @@ export default function AuthModal({ open, onClose }) {
                         <h2 className="font-extrabold text-2xl text-[#1c2145]">Авторизация</h2>
                         {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
                         <div>
-                            <label className="block text-sm text-[#999] mb-1">Email или телефон</label>
+                            <label className="block text-sm text-[#999] mb-1">Логин или Email</label>
                             <input type="text" value={email} onChange={e => setEmail(e.target.value)} required
-                                   className="text-input" placeholder="email@example.com или +7 (999) 999-99-99" />
+                                   className="text-input" placeholder="Ваш логин или email" />
                         </div>
                         <div>
                             <label className="block text-sm text-[#999] mb-1">Пароль</label>

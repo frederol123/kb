@@ -45,27 +45,29 @@ class PhoneVerificationController extends Controller
             ]);
         }
 
-        // Удаляем старые сессии для этого номера
+        // Удаляем старые коды для этого номера
         PhoneVerification::where('phone', $phone)->delete();
 
-        // Отправляем код через MobileID, получаем session_id
-        $sessionId = $this->smsService->sendVerificationCode($phone);
+        // Генерируем и отправляем код
+        $code = $this->smsService->sendVerificationCode($phone);
 
-        if ($sessionId === false) {
+        if ($code === false) {
             return response()->json([
                 'message' => 'Ошибка отправки кода. Попробуйте позже.',
             ], 500);
         }
 
-        // Сохраняем session_id в БД
+        // Сохраняем код в БД
         PhoneVerification::create([
             'phone' => $phone,
-            'code' => $sessionId, // Сохраняем session_id вместо кода
+            'code' => $code,
             'expires_at' => now()->addMinutes(5),
         ]);
 
         return response()->json([
             'message' => 'Код подтверждения отправлен на указанный номер.',
+            'sms_status' => config('services.sms_aero.debug', false) ? 'debug' : 'sent',
+            'code' => config('services.sms_aero.debug', false) ? $code : null,
         ]);
     }
 
@@ -77,6 +79,7 @@ class PhoneVerificationController extends Controller
         $request->validate([
             'phone' => ['required', 'string'],
             'code' => ['required', 'string', 'size:4'],
+            'login' => ['required', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', PasswordRule::defaults()],
         ]);
@@ -89,8 +92,9 @@ class PhoneVerificationController extends Controller
             ]);
         }
 
-        // Находим сессию по номеру телефона
+        // Находим код по номеру телефона
         $verification = PhoneVerification::where('phone', $phone)
+            ->where('code', $request->code)
             ->whereNull('verified_at')
             ->where('expires_at', '>', now())
             ->latest()
@@ -98,44 +102,34 @@ class PhoneVerificationController extends Controller
 
         if (!$verification) {
             throw ValidationException::withMessages([
-                'code' => ['Код подтверждения не отправлялся или истёк.'],
+                'code' => ['Неверный или просроченный код подтверждения.'],
             ]);
         }
 
-        // Проверяем код через MobileID
-        $sessionId = $verification->code;
-
-        // Если это тестовая сессия — код из лога
-        $isTestSession = str_starts_with($sessionId, 'test_session_') || str_starts_with($sessionId, 'debug_session_');
-
-        if ($isTestSession) {
-            // В тестовом режиме — проверяем код через логи
-            Log::info("Test mode: phone={$phone}, entered_code={$request->code}, session_id={$sessionId}");
-        } else {
-            // Проверяем код через MobileID API
-            $verified = $this->smsService->verifyCode($sessionId, $request->code);
-
-            if (!$verified) {
-                throw ValidationException::withMessages([
-                    'code' => ['Неверный код подтверждения.'],
-                ]);
-            }
-        }
-
-        // В транзакции: помечаем сессию + создаём пользователя
+        // В транзакции: помечаем код + создаём пользователя
         try {
             $user = DB::transaction(function () use ($verification, $request, $phone) {
-                // Помечаем сессию как использованную
+                // Проверяем уникальность логина
+                if (User::where('login', $request->login)->exists()) {
+                    throw ValidationException::withMessages([
+                        'login' => ['Этот логин уже используется.'],
+                    ]);
+                }
+
+                // Помечаем код как использованный
                 $verification->update(['verified_at' => now()]);
 
                 // Создаём пользователя
                 return User::create([
+                    'login' => $request->login,
                     'name' => $request->name,
                     'email' => null,
                     'phone' => $phone,
                     'password' => Hash::make($request->password),
                 ]);
             });
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             Log::error('User registration failed', [
                 'phone' => $phone,
@@ -148,7 +142,7 @@ class PhoneVerificationController extends Controller
 
         return response()->json([
             'token' => $user->createToken('api')->plainTextToken,
-            'user' => $user->only(['id', 'name', 'phone']),
+            'user' => $user->only(['id', 'login', 'name', 'phone']),
         ], 201);
     }
 

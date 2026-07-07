@@ -15,6 +15,23 @@ Route::middleware('throttle:10,1')->group(function () {
     Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
 
+    // Подтверждение email
+    Route::get('/auth/verify-email/{id}/{hash}', function ($id, $hash) {
+        $user = \App\Models\User::findOrFail($id);
+
+        if (sha1($user->getEmailForVerification()) !== $hash) {
+            abort(403, 'Неверная ссылка подтверждения.');
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect('https://immortal-code.ru/lk');
+        }
+
+        $user->markEmailAsVerified();
+
+        return redirect('https://immortal-code.ru/lk?verified=1');
+    })->name('auth.verify-email');
+
     // Регистрация по телефону
     Route::post('/auth/send-code', [PhoneVerificationController::class, 'sendCode']);
     Route::post('/auth/verify-phone', [PhoneVerificationController::class, 'verifyAndRegister']);
