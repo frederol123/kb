@@ -49,4 +49,9 @@ return [
         'mobile_api_url' => 'https://midsdk.smsaero.ru',
     ],
 
+
+    'yandex_captcha' => [
+        'site_key' => env('YANDEX_CAPTCHA_SITE_KEY'),
+        'server_key' => env('YANDEX_CAPTCHA_SERVER_KEY'),
+    ],
 ];

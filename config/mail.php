@@ -49,6 +49,13 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
+        'unisender' => [
+            'transport' => 'unisender',
+            'key' => env('UNISENDER_API_KEY'),
+            'sender_email' => env('MAIL_FROM_ADDRESS'),
+            'sender_name' => env('MAIL_FROM_NAME'),
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],

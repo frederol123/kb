@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
@@ -61,11 +61,38 @@ export default function AuthModal({ open, onClose }) {
     const [phoneCodeSent, setPhoneCodeSent] = useState(false);
     const [sendingCode, setSendingCode] = useState(false);
     const [codeTimer, setCodeTimer] = useState(0);
+    const [captchaToken, setCaptchaToken] = useState('');
 
     const { login, register } = useAuth();
     const navigate = useNavigate();
     const modalRef = useRef(null);
     const mouseDownInside = useRef(false);
+    const captchaContainerRef = useRef(null);
+    const captchaWidgetRef = useRef(null);
+    const captchaTokenRef = useRef('');
+
+    // Инициализация Yandex SmartCaptcha
+    useEffect(() => {
+        if (mode !== 'register') return;
+
+        const timer = setTimeout(() => {
+            if (window.smartCaptcha && captchaContainerRef.current) {
+                const widgetId = window.smartCaptcha.render(captchaContainerRef.current, {
+                    sitekey: 'ysc1_UNKkYAoe8225FmLJznELyjVQf7nxz22EYSgG0vT594a6310b',
+                    callback: (token) => {
+                        captchaTokenRef.current = token;
+                    },
+                });
+                captchaWidgetRef.current = widgetId;
+            }
+        }, 300);
+
+        return () => {
+            clearTimeout(timer);
+            captchaTokenRef.current = '';
+            captchaWidgetRef.current = null;
+        };
+    }, [mode]);
 
     if (!open) return null;
 
@@ -102,13 +129,23 @@ export default function AuthModal({ open, onClose }) {
         try {
             if (mode === 'login') {
                 await login(email, password);
+            } else if (mode === 'register' && regType === 'email') {
+                if (!captchaTokenRef.current) {
+                    setError('Пожалуйста, пройдите проверку «Я не робот».');
+                    return;
+                }
+                await register(name, email, password, passwordConfirmation, captchaTokenRef.current);
             } else {
-                await register(name, email, password, passwordConfirmation);
+                await register(name, email, password, passwordConfirmation, captchaToken);
             }
             onClose();
             navigate('/lk');
         } catch (err) {
-            setError(err.response?.data?.errors?.email?.[0] || err.response?.data?.message || 'Произошла ошибка');
+            const errData = err.response?.data;
+            const firstErr = errData?.errors
+                ? Object.values(errData.errors).flat()[0]
+                : null;
+            setError(firstErr || errData?.message || 'Произошла ошибка');
         }
     };
 
@@ -252,7 +289,10 @@ export default function AuthModal({ open, onClose }) {
                                 {sendingCode ? 'Отправка...' : codeTimer > 0 ? `Отправить повторно (${codeTimer}с)` : 'Получить код'}
                             </button>
                         ) : (
-                            <button type="submit" className="button button--filled w-full">Зарегистрироваться</button>
+                            <>
+                                <div ref={captchaContainerRef} id="captcha-container" className="smart-captcha" style={{ height: 100 }}></div>
+                                <button type="submit" className="button button--filled w-full">Зарегистрироваться</button>
+                            </>
                         )}
 
                         {regType === 'phone' && phoneCodeSent && (
@@ -290,9 +330,9 @@ export default function AuthModal({ open, onClose }) {
                         <h2 className="font-extrabold text-2xl text-[#1c2145]">Авторизация</h2>
                         {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
                         <div>
-                            <label className="block text-sm text-[#999] mb-1">Email</label>
-                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
-                                   className="text-input" placeholder="email@example.com" />
+                            <label className="block text-sm text-[#999] mb-1">Email или телефон</label>
+                            <input type="text" value={email} onChange={e => setEmail(e.target.value)} required
+                                   className="text-input" placeholder="email@example.com или +7 (999) 999-99-99" />
                         </div>
                         <div>
                             <label className="block text-sm text-[#999] mb-1">Пароль</label>

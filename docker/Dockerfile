@@ -11,6 +11,7 @@ RUN apk add --no-cache \
     libwebp-dev \
     imagemagick-dev \
     imagemagick-libs \
+    msmtp \
     $PHPIZE_DEPS
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \

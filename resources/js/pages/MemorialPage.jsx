@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { Shield, MapPin, Briefcase, Share2 } from 'lucide-react';
+import { Shield, MapPin, Briefcase, Cross, Share2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useRef, useEffect } from 'react';
 import api from '../lib/api';
@@ -91,6 +91,12 @@ function MemorialHero({ info, fio, dates, card }) {
                                     <Briefcase className="w-4 h-4 text-blue-500" />
                                     <span>Место смерти: <span className="text-gray-700 font-medium">{deathplace}</span></span>
                                 </div>
+                            </div>
+                        )}
+                        {info.burial_plot?.address && (
+                            <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-6">
+                                <Cross className="w-4 h-4 text-blue-500" />
+                                <span>Место захоронения: <span className="text-gray-700 font-medium">{info.burial_plot.address}</span></span>
                             </div>
                         )}
 

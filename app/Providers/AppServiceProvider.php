@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Mail\UnisenderTransport;
 use App\Services\PhpassPasswordHasher;
 use Illuminate\Hashing\BcryptHasher;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,5 +30,14 @@ class AppServiceProvider extends ServiceProvider
                     || $request->user()?->email === 'admin@example.com';
             });
         }
+
+        Mail::extend("unisender", function (array $config) {
+            return new UnisenderTransport(
+                apiKey: $config["key"] ?? "",
+                senderEmail: $config["sender_email"] ?? null,
+                senderName: $config["sender_name"] ?? null,
+            );
+        });
+
     }
 }

@@ -59,12 +59,30 @@ class AuthController extends Controller
             'email' => ['nullable', 'email', 'unique:users'],
             'phone' => ['nullable', 'string', 'unique:users'],
             'password' => ['required', 'string', PasswordRule::defaults()],
+            'captcha_token' => ['required', 'string'],
         ]);
+
+        // Проверяем Yandex SmartCaptcha
+        $captchaResponse = \Illuminate\Support\Facades\Http::asForm()->post(
+            'https://smartcaptcha.yandexcloud.net/validate',
+            [
+                'secret' => config('services.yandex_captcha.server_key'),
+                'token' => $request->captcha_token,
+            ]
+        );
+
+        $captchaResult = $captchaResponse->json();
+        if (($captchaResult['status'] ?? '') !== 'ok') {
+            throw ValidationException::withMessages([
+                'captcha_token' => ['Неверная капча. Попробуйте ещё раз.'],
+            ]);
+        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
+            'login' => $request->input('login') ?: explode('@', $request->email)[0],
             'password' => $request->password,
         ]);
 

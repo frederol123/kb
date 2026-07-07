@@ -9,6 +9,18 @@ if [ -f /app/.env ]; then
     set +a
 fi
 
+# Конфигурация msmtp для отправки почты через Postfix на хосте
+cat > /etc/msmtprc << 'MSMTPEOF'
+defaults
+auth            off
+tls             off
+
+account         default
+host            172.18.0.1
+port            25
+from            i.sales@immortal-code.ru
+MSMTPEOF
+
 # Ожидание PostgreSQL
 echo "Waiting for PostgreSQL at ${DB_HOST:-kod-postgres}:${DB_PORT:-5432}..."
 MAX_RETRIES=30
