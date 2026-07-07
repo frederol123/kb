@@ -1,10 +1,18 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 
 export default function OfferPage() {
+    const location = useLocation();
+
+    useEffect(() => {
+        const el = document.getElementById('offer-title');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, [location]);
+
     return (
         <section className="single-content">
             <div className="container">
-                <h1 className="single-content__title">Публичная оферта</h1>
+                <h1 id="offer-title" className="single-content__title">Публичная оферта</h1>
                 <div className="single-content__body">
                     <p>Настоящий документ является публичной офертой (далее — «Оферта») Индивидуального предпринимателя [ФИО/Наименование], именуемого в дальнейшем «Исполнитель», и содержит все существенные условия оказания услуг по созданию и размещению цифровых страниц памяти в сети Интернет.</p>
 
