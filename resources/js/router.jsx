@@ -9,6 +9,7 @@ import TariffsPage from './pages/TariffsPage';
 import QrInstallPage from './pages/QrInstallPage';
 import OrderStepsPage from './pages/OrderStepsPage';
 import OfferPage from './pages/OfferPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import FAQPage from './pages/FAQPage';
 import DashboardLayout from './pages/Cabinet/DashboardLayout';
 import MyCardsPage from './pages/Cabinet/MyAnketsPage';
@@ -43,6 +44,7 @@ export default function App() {
                             <Route path="/tarif" element={<TariffsPage />} />
                             <Route path="/faq" element={<FAQPage />} />
                             <Route path="/order-steps" element={<OrderStepsPage />} />
+                            <Route path="/privacy" element={<PrivacyPolicyPage />} />
                             <Route path="/qr-install" element={<QrInstallPage />} />
                             <Route path="/offer" element={<OfferPage />} />
                             <Route path="/news" element={<EmptyPage title="Новости" />} />

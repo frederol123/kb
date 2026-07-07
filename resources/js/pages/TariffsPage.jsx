@@ -476,7 +476,7 @@ function TariffDetailPage({ tariff, index }) {
                             <div className="form__footer">
                                 <button type="submit" className="form__submit">Отправить</button>
                                 <div className="form__terms" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                                    Нажимая кнопку «Отправить» Вы соглашаетесь с условиями <a href="#">политики конфиденциальности</a>.
+                                    Нажимая кнопку «Отправить» Вы соглашаетесь с условиями <Link to="/privacy">политики конфиденциальности</Link>.
                                 </div>
                             </div>
                         </div>
@@ -533,7 +533,7 @@ export default function TariffsPage() {
                             <div className="form__footer">
                                 <button type="submit" className="form__submit">Отправить</button>
                                 <div className="form__terms" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                                    Нажимая кнопку «Отправить» Вы соглашаетесь с условиями <a href="#">политики конфиденциальности</a>.
+                                    Нажимая кнопку «Отправить» Вы соглашаетесь с условиями <Link to="/privacy">политики конфиденциальности</Link>.
                                 </div>
                             </div>
                         </div>

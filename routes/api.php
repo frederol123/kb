@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\Api\PhoneVerificationController;
 use App\Http\Controllers\Api\AnketController;
 use App\Http\Controllers\Api\QrController;
@@ -35,6 +36,9 @@ Route::middleware('throttle:10,1')->group(function () {
     // Регистрация по телефону
     Route::post('/auth/send-code', [PhoneVerificationController::class, 'sendCode']);
     Route::post('/auth/verify-phone', [PhoneVerificationController::class, 'verifyAndRegister']);
+
+    // Обратная связь
+    Route::post('/feedback', [FeedbackController::class, 'send']);
 });
 
 Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {

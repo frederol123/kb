@@ -83,6 +83,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => $request->password,
             'login' => $request->login,
+        ]);
 
         // Отправляем письмо с подтверждением email
         $user->notify(new VerifyEmailNotification());

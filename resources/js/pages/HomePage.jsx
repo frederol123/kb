@@ -3,6 +3,21 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../lib/api';
 import { useState } from 'react';
 
+function formatPhone(value) {
+    const digits = value.replace(/\D/g, '');
+    let num = digits;
+    if (num.startsWith('8')) num = '7' + num.slice(1);
+    if (num.startsWith('7')) num = num.slice(1);
+
+    let result = '+7';
+    if (num.length > 0) result += ' (' + num.slice(0, 3);
+    if (num.length > 3) result += ') ' + num.slice(3, 6);
+    if (num.length > 6) result += '-' + num.slice(6, 8);
+    if (num.length > 8) result += '-' + num.slice(8, 10);
+
+    return result;
+}
+
 export default function HomePage() {
     return (
         <>
@@ -469,20 +484,58 @@ function TestimonialsSection() {
 /* ======== ЕСТЬ ВОПРОСЫ ======== */
 
 function HaveQuestionsSection() {
+    const [hqName, setHqName] = useState('');
+    const [hqPhone, setHqPhone] = useState('');
+    const [hqLoading, setHqLoading] = useState(false);
+    const [hqSent, setHqSent] = useState(false);
+    const [hqError, setHqError] = useState('');
+
+    const handleHqSubmit = async (e) => {
+        e.preventDefault();
+        setHqError('');
+        setHqLoading(true);
+        try {
+            await api.post('/feedback', { name: hqName, phone: hqPhone });
+            setHqSent(true);
+        } catch (err) {
+            const msg = err.response?.data?.message || 'Ошибка отправки';
+            setHqError(msg);
+        } finally {
+            setHqLoading(false);
+        }
+    };
+
+    if (hqSent) {
+        return (
+            <section className="have-questions">
+                <div className="container have-questions__inner">
+                    <div className="have-questions__content">
+                        <span className="form__title">Спасибо!</span>
+                        <span className="form__desc">Мы свяжемся с вами в ближайшее время.</span>
+                        <button type="button" className="form__submit" style={{ marginTop: 16 }} onClick={() => { setHqSent(false); setHqName(''); setHqPhone(''); }}>← Назад</button>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className="have-questions">
             <div className="container have-questions__inner">
                 <div className="have-questions__content">
                     <span className="form__title">Мы рядом, чтобы помочь</span>
                     <span className="form__desc">Создание цифрового мемориала — дело бережное. Оставьте контактные данные, и мы с теплотой ответим на все вопросы.</span>
-                    <div className="form__fields">
-                        <label className="form__field"><input type="text" className="text-input" placeholder="Ваше имя" /></label>
-                        <label className="form__field"><input type="text" className="text-input" placeholder="Телефон" /></label>
-                    </div>
-                    <div className="form__footer">
-                        <button type="submit" className="form__submit">Отправить</button>
-                        <div className="form__terms">Нажимая кнопку «Отправить» Вы соглашаетесь с условиями <a href="#">политики конфиденциальности</a>.</div>
-                    </div>
+                    <form onSubmit={handleHqSubmit}>
+                        <div className="form__fields">
+                            <label className="form__field"><input type="text" className="text-input" placeholder="Ваше имя" value={hqName} onChange={e => setHqName(e.target.value)} required /></label>
+                            <label className="form__field"><input type="tel" className="text-input" placeholder="+7 (999) 999-99-99" value={hqPhone} onChange={e => setHqPhone(formatPhone(e.target.value))} required /></label>
+                        </div>
+                        {hqError && <p className="text-red-500 text-sm mb-2">{hqError}</p>}
+                        <div className="form__footer">
+                            <button type="submit" className="form__submit" disabled={hqLoading}>{hqLoading ? 'Отправка...' : 'Отправить'}</button>
+                            <div className="form__terms">Нажимая кнопку «Отправить» Вы соглашаетесь с условиями <Link to="/privacy">политики конфиденциальности</Link>.</div>
+                        </div>
+                    </form>
                 </div>
                 <div className="have-questions__preview">
                     <img src="/uploads/2024/02/have-questions.svg" alt="" className="have-questions__image" />
@@ -495,6 +548,43 @@ function HaveQuestionsSection() {
 /* ======== ПОМОЖЕМ СОХРАНИТЬ ПАМЯТЬ ======== */
 
 function CallbackSection() {
+    const [cbName, setCbName] = useState('');
+    const [cbPhone, setCbPhone] = useState('');
+    const [cbLoading, setCbLoading] = useState(false);
+    const [cbSent, setCbSent] = useState(false);
+    const [cbError, setCbError] = useState('');
+
+    const handleCbSubmit = async (e) => {
+        e.preventDefault();
+        setCbError('');
+        setCbLoading(true);
+        try {
+            await api.post('/feedback', { name: cbName, phone: cbPhone });
+            setCbSent(true);
+        } catch (err) {
+            const msg = err.response?.data?.message || 'Ошибка отправки';
+            setCbError(msg);
+        } finally {
+            setCbLoading(false);
+        }
+    };
+
+    if (cbSent) {
+        return (
+            <section className="callback">
+                <div className="container">
+                    <div className="callback__form">
+                        <div className="form__column">
+                            <span className="form__title">Спасибо!</span>
+                            <span className="form__desc">Мы свяжемся с вами в ближайшее время.</span>
+                            <button type="button" className="form__submit" style={{ marginTop: 16 }} onClick={() => { setCbSent(false); setCbName(''); setCbPhone(''); }}>← Назад</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className="callback">
             <div className="container">
@@ -509,16 +599,19 @@ function CallbackSection() {
                         </div>
                     </div>
                     <div className="form__column">
-                        <div className="form__fields" style={{ gridTemplateColumns: '1fr' }}>
-                            <label className="form__field"><input type="text" className="text-input" placeholder="Ваше имя" /></label>
-                            <label className="form__field"><input type="text" className="text-input" placeholder="Телефон" /></label>
-                        </div>
-                        <div className="form__footer">
-                            <button type="submit" className="form__submit">Отправить</button>
-                            <div className="form__terms" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                                Нажимая кнопку «Отправить» Вы соглашаетесь с условиями <a href="#">политики конфиденциальности</a>.
+                        <form onSubmit={handleCbSubmit}>
+                            <div className="form__fields" style={{ gridTemplateColumns: '1fr' }}>
+                                <label className="form__field"><input type="text" className="text-input" placeholder="Ваше имя" value={cbName} onChange={e => setCbName(e.target.value)} required /></label>
+                                <label className="form__field"><input type="tel" className="text-input" placeholder="+7 (999) 999-99-99" value={cbPhone} onChange={e => setCbPhone(formatPhone(e.target.value))} required /></label>
                             </div>
-                        </div>
+                            {cbError && <p className="text-red-500 text-sm mb-2">{cbError}</p>}
+                            <div className="form__footer">
+                                <button type="submit" className="form__submit" disabled={cbLoading}>{cbLoading ? 'Отправка...' : 'Отправить'}</button>
+                                <div className="form__terms" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                                    Нажимая кнопку «Отправить» Вы соглашаетесь с условиями <Link to="/privacy">политики конфиденциальности</Link>.
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
