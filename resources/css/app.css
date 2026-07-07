@@ -517,6 +517,16 @@
         color: #1c2145;
         margin-bottom: 16px;
     }
+    .single-content__body li {
+        font-size: 16px;
+        line-height: 1.8;
+        color: #1c2145;
+        margin-bottom: 8px;
+        list-style: none;
+    }
+    .single-content__body li::before {
+        content: "- ";
+    }
     .single-content__body h2 {
         font-size: 22px;
         font-weight: 700;
