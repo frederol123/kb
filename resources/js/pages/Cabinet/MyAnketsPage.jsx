@@ -27,7 +27,6 @@ export default function MyCardsPage() {
                     Мои карточки ({cards.length})
                 </h1>
                 <div className="flex gap-3">
-                    <Link to="/tariffs" className="btn-outline text-base">Добавить карточки</Link>
                     <Link to="/lk/cards/new/edit" className="btn-filled text-base">Создать карточку</Link>
                 </div>
             </div>
@@ -52,7 +51,11 @@ export default function MyCardsPage() {
             ) : cards.length === 0 ? (
                 <div className="bg-white rounded-2xl p-10 text-center shadow-sm">
                     <p className="text-[#6c6d7e] mb-4">У вас пока нет карточек</p>
-                    <Link to="/tariffs" className="btn-filled text-base inline-flex">Выбрать тариф</Link>
+                    {user?.tariff ? (
+                        <Link to="/lk/cards/new/edit" className="btn-filled text-base inline-flex">Создать карточку</Link>
+                    ) : (
+                        <Link to="/tariffs" className="btn-filled text-base inline-flex">Выбрать тариф</Link>
+                    )}
                 </div>
             ) : (
                 <div className="bg-white rounded-2xl overflow-hidden shadow-sm">

@@ -66,6 +66,15 @@ export default function CardEditorPage() {
         };
     }, [id, isNew]);
 
+    // Автосохранение при первом заходе на новую карточку
+    const autoSaved = useRef(false);
+    useEffect(() => {
+        if (isNew && !autoSaved.current) {
+            autoSaved.current = true;
+            saveInfo();
+        }
+    }, [isNew]);
+
     const saveInfoMut = useMutation({
         mutationFn: (payload) => {
             if (isNew) return api.post('/ankets', payload);
