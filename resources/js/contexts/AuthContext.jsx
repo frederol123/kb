@@ -21,8 +21,13 @@ export function AuthProvider({ children }) {
         }
 
         const handleLogout = () => setUser(null);
+        const handleNameChanged = () => fetchUser();
         window.addEventListener('auth:logout', handleLogout);
-        return () => window.removeEventListener('auth:logout', handleLogout);
+        window.addEventListener('auth:name-changed', handleNameChanged);
+        return () => {
+            window.removeEventListener('auth:logout', handleLogout);
+            window.removeEventListener('auth:name-changed', handleNameChanged);
+        };
     }, []);
 
     const login = useCallback(async (emailOrLogin, password) => {

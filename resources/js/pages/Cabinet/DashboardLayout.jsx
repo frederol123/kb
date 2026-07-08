@@ -15,6 +15,13 @@ export default function DashboardLayout() {
         { to: '/lk/settings', icon: '/images/icons/profile-settings.svg', label: 'Настройки' },
     ];
 
+    const roles = user?.roles || [];
+    const isStaff = roles.includes('admin') || roles.includes('manager');
+
+    if (isStaff) {
+        links.push({ to: '/lk/manager-panel', icon: '/images/icons/profile-tree.svg', label: 'Панель менеджера' });
+    }
+
     return (
         <div className="bg-[#f8f8f8] min-h-screen">
             <div className="max-w-[1433px] mx-auto px-4 lg:px-[34px] py-8">

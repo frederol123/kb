@@ -68,7 +68,7 @@ class AnketTest extends TestCase
 
         $response = $this->actingAs($this->user, 'sanctum')
             ->putJson("/api/ankets/{$anket->id}", [
-                'info' => ['first_name' => 'Пётр', 'last_name' => 'Сидоров'],
+                'info' => ['first_name' => 'Пётр', 'last_name' => 'Сидоров', 'contact' => 'test@test.com'],
                 'status' => 'published',
             ]);
 
@@ -106,7 +106,7 @@ class AnketTest extends TestCase
             'status' => 'published',
         ]);
 
-        $response = $this->getJson("/api/ankets/{$anket->id}");
+        $response = $this->getJson("/api/m/{$anket->slug}");
 
         $response->assertStatus(200)
             ->assertJsonPath('slug', $anket->slug);
@@ -119,7 +119,7 @@ class AnketTest extends TestCase
             'status' => 'draft',
         ]);
 
-        $response = $this->getJson("/api/ankets/{$anket->id}");
+        $response = $this->getJson("/api/m/{$anket->slug}");
 
         $response->assertStatus(404);
     }

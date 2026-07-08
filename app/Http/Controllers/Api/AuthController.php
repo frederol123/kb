@@ -144,6 +144,7 @@ class AuthController extends Controller
         $user = $request->user()->load('tariff');
         return response()->json($user->only(['id', 'login', 'name', 'email', 'email_verified_at', 'max_gallery_images', 'max_videos', 'tariff_id']) + [
             'tariff' => $user->tariff ? $user->tariff->only(['id', 'title', 'slug', 'price', 'limits']) : null,
+            'roles' => $user->getRoleNames(),
         ]);
     }
 

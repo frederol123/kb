@@ -93,10 +93,18 @@ function MemorialHero({ info, fio, dates, card }) {
                                 </div>
                             </div>
                         )}
-                        {info.burial_plot?.address && (
+                        {info.burial_address && (
                             <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-6">
                                 <Cross className="w-4 h-4 text-blue-500" />
-                                <span>Место захоронения: <span className="text-gray-700 font-medium">{info.burial_plot.address}</span></span>
+                                <span>Место захоронения: <span className="text-gray-700 font-medium">{info.burial_address}{info.burial_plot ? `, уч. ${info.burial_plot}` : ''}</span></span>
+                            </div>
+                        )}
+                        {info.contact && (
+                            <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-6">
+                                <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                <span>Контакты: <span className="text-gray-700 font-medium">{info.contact}</span></span>
                             </div>
                         )}
 
@@ -759,6 +767,7 @@ function MemorialCondolences({ card }) {
 
 function MemorialBurial({ info }) {
     const address = info?.burial_address;
+    const plot = info?.burial_plot;
     const mapImage = info?.burial_map_image;
 
     if (!address && !mapImage) return null;
@@ -768,7 +777,7 @@ function MemorialBurial({ info }) {
             <div className={SECTION}>
                 <h2 className="memorial-section__title mb-6">Место захоронения</h2>
                 {address && (
-                    <p className="memorial-burial__address">{address}</p>
+                    <p className="memorial-burial__address">{address}{plot ? `, уч. ${plot}` : ''}</p>
                 )}
                 {mapImage && (
                     <div className="memorial-burial__map">

@@ -16,6 +16,7 @@ import MyCardsPage from './pages/Cabinet/MyAnketsPage';
 import CardEditorPage from './pages/Cabinet/AnketEditorPage';
 import PurchaseHistoryPage from './pages/Cabinet/PurchaseHistoryPage';
 import SettingsPage from './pages/Cabinet/SettingsPage';
+import ManagerPanel from './pages/Cabinet/ManagerPanel';
 
 const queryClient = new QueryClient({
     defaultOptions: { queries: { staleTime: 1000 * 60, retry: 1 } },
@@ -54,6 +55,7 @@ export default function App() {
                                 <Route path="settings" element={<SettingsPage />} />
                                 <Route path="cards/new/edit" element={<CardEditorPage />} />
                                 <Route path="cards/:id/edit" element={<CardEditorPage />} />
+                                <Route path="manager-panel" element={<ManagerPanel />} />
                             </Route>
                         </Route>
                     </Routes>

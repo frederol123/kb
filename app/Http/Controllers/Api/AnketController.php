@@ -73,10 +73,13 @@ class AnketController extends Controller
         $request->validate([
             'status' => ['string', 'in:draft,published,private'],
             'info' => ['array'],
+            'info.contact' => ['required', 'string', 'max:255'],
             'family' => ['array', 'nullable'],
             'content' => ['nullable', 'array'],
             'content.gallery' => ['nullable', 'array', 'max:' . $request->user()->max_gallery_images],
             'content.videos' => ['nullable', 'array', 'max:' . $request->user()->max_videos],
+        ], [
+            'info.contact.required' => 'Заполните контакты для связи',
         ]);
 
         if ($request->input('status') === 'private' && !($request->user()->tariff?->limits['has_privacy'] ?? false)) {

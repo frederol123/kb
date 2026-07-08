@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['user_id', 'slug', 'status', 'info', 'content', 'family'])]
+#[Fillable(['user_id', 'slug', 'status', 'manager_checked', 'info', 'content', 'family'])]
 class Anket extends Model
 {
     /** @use HasFactory<AnketFactory> */
@@ -22,6 +22,7 @@ class Anket extends Model
             'info' => 'json',
             'content' => 'json',
             'family' => 'json',
+            'manager_checked' => 'boolean',
         ];
     }
 

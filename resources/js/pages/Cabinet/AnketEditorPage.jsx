@@ -3,11 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useRef } from 'react';
 import Cropper from 'react-easy-crop';
 import RichTextEditor from '../../components/RichTextEditor';
+import YandexMapWidget from '../../components/YandexMapWidget';
 import api from '../../lib/api';
 import { useToast } from '../../contexts/ToastContext';
 import { useAuth } from '../../contexts/AuthContext';
 
-const emptyInfo = { last_name: '', first_name: '', middle_name: '', birth_date: '', death_date: '', birthplace: '', deathplace: '', photo: '' };
+const emptyInfo = { last_name: '', first_name: '', middle_name: '', birth_date: '', death_date: '', birthplace: '', deathplace: '', photo: '', contact: '', burial_address: '', burial_map_image: '', burial_plot: '' };
 const emptyContent = { biography: '', gallery: [], videos: [], timeline: [] };
 
 export default function CardEditorPage() {
@@ -86,8 +87,10 @@ export default function CardEditorPage() {
             if (isNew) navigate(`/lk/cards/${res.data.id}/edit`, { replace: true });
         },
         onError: (err) => {
-            const msg = err.response?.data?.message || err.message || 'Ошибка при сохранении';
-            toast('Ошибка: ' + msg);
+            const errors = err.response?.data?.errors;
+            const firstError = errors ? Object.values(errors).flat().join('; ') : null;
+            const msg = firstError || err.response?.data?.message || err.message || 'Ошибка при сохранении';
+            toast('Ошибка: ' + msg, 'error');
         },
     });
 
@@ -157,7 +160,7 @@ export default function CardEditorPage() {
                 || err.response?.data?.message
                 || err.message;
             console.error('Upload error:', err);
-            toast('Ошибка: ' + msg);
+            toast('Ошибка: ' + msg, 'error');
             setCropOpen(false);
             setCropFile(null);
         } finally {
@@ -187,7 +190,7 @@ export default function CardEditorPage() {
             toast('Фото загружено — не забудьте сохранить родственников');
         } catch (err) {
             const msg = err.response?.data?.message || err.message;
-            toast('Ошибка: ' + msg);
+            toast('Ошибка: ' + msg, 'error');
         } finally {
             setUploading(false);
             setCropRelativeFile(null);
@@ -311,6 +314,16 @@ export default function CardEditorPage() {
             )}
             
             <div className="space-y-6">
+                {/* Контакты для связи */}
+                <Section title="Контакты для связи">
+                    <div className="mb-6">
+                        <input type="text" value={info.contact || ''}
+                               onChange={e => updateInfo('contact', e.target.value)}
+                               placeholder="Телефон, email или соцсети"
+                               className="text-input text-base" required />
+                    </div>
+                </Section>
+
                 {/* Info */}
                 <Section title="Информация о человеке">
                     {info.photo && (
@@ -359,6 +372,27 @@ export default function CardEditorPage() {
                                 <Link to="/tariffs" className="text-[#3476f5] hover:underline ml-1">Выбрать тариф</Link>
                             </p>
                         )}
+                    </div>
+                    <button onClick={saveInfo} disabled={saveInfoMut.isPending}
+                            className="btn-filled text-base mt-4">
+                        {saveInfoMut.isPending ? 'Сохранение...' : 'Сохранить'}
+                    </button>
+                </Section>
+
+                {/* Место захоронения */}
+                <Section title="Место захоронения">
+                    <YandexMapWidget
+                        address={info.burial_address}
+                        mapImage={info.burial_map_image}
+                        onAddressChange={v => updateInfo('burial_address', v)}
+                        onMapImageChange={v => updateInfo('burial_map_image', v)}
+                    />
+                    <div className="mt-4">
+                        <label className="block text-base text-[#999] mb-1.5">Участок</label>
+                        <input type="text" value={info.burial_plot || ''}
+                               onChange={e => updateInfo('burial_plot', e.target.value)}
+                               placeholder="Номер участка, ряда, могилы"
+                               className="text-input text-base" />
                     </div>
                     <button onClick={saveInfo} disabled={saveInfoMut.isPending}
                             className="btn-filled text-base mt-4">
@@ -445,66 +479,6 @@ export default function CardEditorPage() {
                             <button onClick={saveInfo} disabled={saveInfoMut.isPending}
                                     className="btn-filled text-base mt-4">
                                 {saveInfoMut.isPending ? 'Сохранение...' : 'Сохранить родственников'}
-                            </button>
-                        </Section>
-
-                        {/* Timeline */}
-                        <Section title={`Жизненный путь (${(content.timeline || []).length} событий)`}>
-                            <p className="text-base text-[#6c6d7e] mb-4">
-                                Добавьте важные события из жизни: даты, заголовки и краткое описание. Это отобразится на странице памяти в виде хронологии.
-                            </p>
-
-                            {(content.timeline || []).map((ev, idx) => (
-                                <div key={idx} className="flex items-start gap-3 mb-3 p-3 bg-[#f8f8f8] rounded-lg border-l-4 border-[#1e79d0]">
-                                    <div className="flex-1 space-y-2">
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <input type="text" value={ev.year || ''}
-                                                   onChange={e => {
-                                                       const arr = [...(content.timeline || [])];
-                                                       arr[idx] = { ...arr[idx], year: e.target.value };
-                                                       setContent(prev => ({ ...prev, timeline: arr }));
-                                                   }}
-                                                   placeholder="Год (например, 1957)"
-                                                   className="text-input text-base" />
-                                            <input type="text" value={ev.title || ''}
-                                                   onChange={e => {
-                                                       const arr = [...(content.timeline || [])];
-                                                       arr[idx] = { ...arr[idx], title: e.target.value };
-                                                       setContent(prev => ({ ...prev, timeline: arr }));
-                                                   }}
-                                                   placeholder="Заголовок события"
-                                                   className="text-input text-base" />
-                                        </div>
-                                        <textarea rows={2} value={ev.desc || ''}
-                                                  onChange={e => {
-                                                      const arr = [...(content.timeline || [])];
-                                                      arr[idx] = { ...arr[idx], desc: e.target.value };
-                                                      setContent(prev => ({ ...prev, timeline: arr }));
-                                                  }}
-                                                  placeholder="Краткое описание события"
-                                                  className="text-input resize-none text-base" />
-                                    </div>
-                                    <button onClick={() => {
-                                        const arr = (content.timeline || []).filter((_, i) => i !== idx);
-                                        setContent(prev => ({ ...prev, timeline: arr }));
-                                    }} className="text-red-400 hover:text-red-600 mt-2 flex-shrink-0">
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            ))}
-
-                            <button onClick={() => {
-                                const arr = [...(content.timeline || []), { year: '', title: '', desc: '' }];
-                                setContent(prev => ({ ...prev, timeline: arr }));
-                            }} className="text-[#3476f5] text-base font-bold hover:underline mb-3">
-                                                            + Добавить событие
-                            </button>
-
-                            <button onClick={saveContent} disabled={saveContentMut.isPending}
-                                    className="btn-filled text-base mt-2 block">
-                                {saveContentMut.isPending ? 'Сохранение...' : 'Сохранить жизненный путь'}
                             </button>
                         </Section>
 

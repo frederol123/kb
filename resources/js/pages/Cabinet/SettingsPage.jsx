@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
@@ -7,6 +7,10 @@ export default function SettingsPage() {
     const { user } = useAuth();
     const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', newPasswordConfirmation: '' });
     const [nameForm, setNameForm] = useState({ name: user?.name || '' });
+
+    useEffect(() => {
+        setNameForm(prev => prev.name !== user?.name ? { name: user?.name || '' } : prev);
+    }, [user?.name]);
     const [status, setStatus] = useState(null);
     const [nameStatus, setNameStatus] = useState(null);
     const [loading, setLoading] = useState(false);

@@ -94,7 +94,7 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::prefix('ankets')->group(function () {
         Route::get('/', [AnketController::class, 'index']);
         Route::post('/', [AnketController::class, 'store']);
-        Route::get('/{anket}', [AnketController::class, 'show'])->withoutMiddleware('auth:sanctum');
+        Route::get('/{anket}', [AnketController::class, 'show']);
         Route::put('/{anket}', [AnketController::class, 'updateInfo']);
         Route::put('/{anket}/content', [AnketController::class, 'updateContent']);
         Route::delete('/{anket}', [AnketController::class, 'destroy']);
@@ -157,6 +157,12 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
                 'mime_type' => $request->file('file')->getMimeType(),
             ], 201);
         });
+    });
+
+    // Менеджер/админ панель
+    Route::middleware('role:admin|manager')->prefix('manager')->group(function () {
+        Route::get('/ankets', [\App\Http\Controllers\Api\ManagerController::class, 'ankets']);
+        Route::put('/ankets/{anket}/toggle-check', [\App\Http\Controllers\Api\ManagerController::class, 'toggleCheck']);
     });
 });
 
