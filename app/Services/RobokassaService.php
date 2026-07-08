@@ -43,23 +43,12 @@ class RobokassaService
         $invId = $transaction->id;
         $outSum = number_format((float) $amount, 2, '.', '');
 
-        // Формируем Receipt для фискализации (54-ФЗ)
-        $receipt = $this->buildReceipt($tariff->title, $amount);
-
-        $url = $this->generatePaymentUrl($outSum, $invId, $tariff->title, $successUrl, $failUrl, $receipt);
+        $url = $this->generatePaymentUrl($outSum, $invId, $tariff->title, $successUrl, $failUrl);
 
         return [
             'payment_url' => $url,
             'transaction_id' => $transaction->id,
         ];
-    }
-
-    /**
-     * Сформировать JSON для параметра Receipt (номенклатура по 54-ФЗ).
-     */
-    private function buildReceipt(string $name, float $amount): string
-    {
-        return '';
     }
 
     /**
@@ -70,12 +59,10 @@ class RobokassaService
         int $invId,
         string $description,
         string $successUrl,
-        string $failUrl,
-        string $receipt = ''
+        string $failUrl
     ): string {
-        // Receipt участвует в подписи — URL-кодируем его
-        $receiptEncoded = $receipt !== '' ? urlencode($receipt) : '';
-        $signature = $this->makeSignature($this->password1, $outSum, $invId, $receiptEncoded);
+        // Payment URL — старый формат подписи (с MerchantLogin)
+        $signature = $this->makeSignatureLegacy($this->password1, $outSum, $invId);
 
         $params = [
             'MerchantLogin'  => $this->merchantLogin,
@@ -87,10 +74,6 @@ class RobokassaService
             'FailURL'        => $failUrl,
         ];
 
-        if ($receipt !== '') {
-            $params['Receipt'] = $receipt;
-        }
-
         if ($this->testMode) {
             $params['IsTest'] = 1;
         }
@@ -100,7 +83,7 @@ class RobokassaService
 
     /**
      * Проверить подпись из Result URL (вебхук от Robokassa).
-     * Возвращает true если подпись верна.
+     * Новый формат: OutSum:InvId:Password (без MerchantLogin).
      */
     public function validateResult(string $outSum, int $invId, string $signature): bool
     {
@@ -110,29 +93,27 @@ class RobokassaService
 
     /**
      * Проверить подпись из Success URL.
+     * Старый формат: MerchantLogin:OutSum:InvId:Password.
      */
     public function validateSuccess(string $outSum, int $invId, string $signature): bool
     {
-        $expected = $this->makeSignature($this->password1, $outSum, $invId);
+        $expected = $this->makeSignatureLegacy($this->password1, $outSum, $invId);
         return strtolower($signature) === strtolower($expected);
     }
 
     /**
-     * Сформировать MD5-подпись по формату Robokassa.
-     *
-     * Формат: OutSum:InvId[:Receipt]:Password
-     * Receipt — URL-encoded JSON, передаётся только если есть номенклатура.
+     * Новый формат подписи (для Result URL): OutSum:InvId:Password.
      */
-    private function makeSignature(string $password, string $outSum, int $invId, string $receipt = ''): string
+    private function makeSignature(string $password, string $outSum, int $invId): string
     {
-        $parts = [$outSum, (string) $invId];
+        return md5("{$outSum}:{$invId}:{$password}");
+    }
 
-        if ($receipt !== '') {
-            $parts[] = $receipt;
-        }
-
-        $parts[] = $password;
-
-        return md5(implode(':', $parts));
+    /**
+     * Старый формат подписи (для Payment URL, Success URL): MerchantLogin:OutSum:InvId:Password.
+     */
+    private function makeSignatureLegacy(string $password, string $outSum, int $invId): string
+    {
+        return md5("{$this->merchantLogin}:{$outSum}:{$invId}:{$password}");
     }
 }
