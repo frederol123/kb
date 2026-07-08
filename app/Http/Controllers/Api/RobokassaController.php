@@ -37,7 +37,7 @@ class RobokassaController extends Controller
         $result = $this->robokassa->createPayment(
             userId: $user->id,
             tariffId: $tariffId,
-            successUrl: route('robokassa.success', ['tariff_id' => $tariffId]),
+            successUrl: route('robokassa.success'),
             failUrl: route('robokassa.fail'),
             discountedAmount: $discountedAmount,
         );
@@ -95,8 +95,6 @@ class RobokassaController extends Controller
      */
     public function success(Request $request)
     {
-        $tariffId = $request->input('tariff_id');
-
         return redirect(config('robokassa.success_url'))
             ->with('success', 'Оплата прошла успешно! Тариф активирован.');
     }
