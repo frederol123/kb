@@ -32,3 +32,12 @@ Thumbs.db
 /plan.md
 /netsh-cmd.bat
 /opencode.json
+.env.new
+/app/Mail/UnisenderTransport.php
+assign_tariff.php
+composer
+/docker/nginx/ssl/
+test_mail.php
+test_mobileid.php
+test_smtp.php
+/lang/
