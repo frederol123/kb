@@ -59,7 +59,7 @@ class RobokassaService
      */
     private function buildReceipt(string $name, float $amount): string
     {
-        $sum = number_format($amount, 2, '.', '');
+        $sum = round($amount, 2);
 
         $data = [
             'items' => [
