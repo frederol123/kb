@@ -104,6 +104,6 @@ class RobokassaService
      */
     private function makeSignature(string $password, string $outSum, int $invId): string
     {
-        return md5("{$this->merchantLogin}:{$outSum}:{$invId}:{$password}");
+        return md5("{$outSum}:{$invId}:{$password}");
     }
 }
