@@ -46,6 +46,20 @@ class RobokassaController extends Controller
             return response()->json(['message' => $result['error']], 500);
         }
 
+        // Возвращаем URL и параметры для POST-формы
+        $tariff = Tariff::findOrFail($tariffId);
+        $outSum = number_format((float) ($discountedAmount ?? $tariff->price), 2, '.', '');
+        $receipt = $this->robokassa->buildReceipt($tariff->title, (float) ($discountedAmount ?? $tariff->price));
+
+        $result['params'] = $this->robokassa->getPaymentParams(
+            outSum: $outSum,
+            invId: $result['transaction_id'],
+            description: $tariff->title,
+            successUrl: route('robokassa.success'),
+            failUrl: route('robokassa.fail'),
+            receipt: $receipt,
+        );
+
         return response()->json($result);
     }
 

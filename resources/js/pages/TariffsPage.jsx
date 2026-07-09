@@ -266,7 +266,20 @@ function TariffCard({ tariff, index, detailed }) {
                 ...(hasDiscount ? { discounted_amount: discountedPrice } : {}),
             });
             if (data.payment_url) {
-                window.location.href = data.payment_url;
+                // POST-форма вместо GET-редиректа (для передачи Receipt)
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'https://auth.robokassa.ru/Merchant/Index.aspx';
+                form.style.display = 'none';
+                for (const [key, value] of Object.entries(data.params || {})) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = value;
+                    form.appendChild(input);
+                }
+                document.body.appendChild(form);
+                form.submit();
             }
         } catch (err) {
             const msg = err.response?.data?.message || 'Ошибка при создании платежа';

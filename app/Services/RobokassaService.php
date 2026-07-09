@@ -57,7 +57,7 @@ class RobokassaService
     /**
      * Сформировать JSON для параметра Receipt (номенклатура по 54-ФЗ).
      */
-    private function buildReceipt(string $name, float $amount): string
+    public function buildReceipt(string $name, float $amount): string
     {
         $sum = round($amount, 2);
 
@@ -78,7 +78,38 @@ class RobokassaService
     }
 
     /**
-     * Сгенерировать полный URL для редиректа на Robokassa.
+     * Получить параметры для POST-формы (редирект через POST на Robokassa).
+     */
+    public function getPaymentParams(string $outSum, int $invId, string $description, string $successUrl, string $failUrl, string $receipt = ''): array
+    {
+        $receiptEncoded = $receipt !== '' ? urlencode($receipt) : '';
+
+        $signature = $this->makeSignatureLegacy($this->password1, $outSum, $invId, $receiptEncoded);
+
+        $params = [
+            'MerchantLogin'  => $this->merchantLogin,
+            'OutSum'         => $outSum,
+            'InvId'          => $invId,
+            'Description'    => $description,
+            'SignatureValue' => $signature,
+            'SuccessURL'     => $successUrl,
+            'FailURL'        => $failUrl,
+        ];
+
+        if ($receipt !== '') {
+            $params['Receipt'] = $receipt;
+        }
+
+        if ($this->testMode) {
+            $params['IsTest'] = 1;
+        }
+
+        return $params;
+    }
+
+    /**
+     * Сгенерировать полный URL для редиректа на Robokassa (GET).
+     * Без Receipt — только для случаев без номенклатуры.
      */
     public function generatePaymentUrl(
         string $outSum,
