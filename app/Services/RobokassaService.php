@@ -59,7 +59,23 @@ class RobokassaService
      */
     private function buildReceipt(string $name, float $amount): string
     {
-        return '';
+        $sum = number_format($amount, 2, '.', '');
+
+        $data = [
+            'items' => [
+                [
+                    'name'           => $name,
+                    'quantity'       => 1,
+                    'sum'            => $sum,
+                    'cost'           => $sum,
+                    'payment_method' => 'full_payment',
+                    'payment_object' => 'service',
+                    'tax'            => 'none',
+                ],
+            ],
+        ];
+
+        return json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     /**
