@@ -62,7 +62,6 @@ class RobokassaService
         $sum = round($amount, 2);
 
         $data = [
-            'sno' => 'usn_income',
             'items' => [
                 [
                     'name'           => $name,
