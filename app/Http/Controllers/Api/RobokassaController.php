@@ -50,13 +50,17 @@ class RobokassaController extends Controller
         $tariff = Tariff::findOrFail($tariffId);
         $outSum = number_format((float) ($discountedAmount ?? $tariff->price), 2, '.', '');
 
-        // Receipt временно отключён — номенклатура не передаётся
+        // Номенклатура (54-ФЗ)
+        $amount = $discountedAmount ?? (float) $tariff->price;
+        $receipt = $this->robokassa->buildReceipt($tariff->title, $amount);
+
         $result['params'] = $this->robokassa->getPaymentParams(
             outSum: $outSum,
             invId: $result['transaction_id'],
             description: $tariff->title,
             successUrl: route('robokassa.success'),
             failUrl: route('robokassa.fail'),
+            receipt: $receipt,
         );
 
         return response()->json($result);
