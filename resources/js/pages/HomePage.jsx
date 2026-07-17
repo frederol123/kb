@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../lib/api';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+const tariffSlugs = ['basic', 'extended', 'special', 'pet'];
 
 function formatPhone(value) {
     const digits = value.replace(/\D/g, '');
@@ -19,6 +21,12 @@ function formatPhone(value) {
 }
 
 export default function HomePage() {
+    const { fetchUser } = useAuth();
+
+    useEffect(() => {
+        fetchUser();
+    }, [fetchUser]);
+
     return (
         <>
             <HeroSection />
@@ -197,13 +205,14 @@ function PricesSection() {
 function PlanCard({ title, price, desc, features, highlighted, badge, index }) {
     const { user } = useAuth();
     const [buyLoading, setBuyLoading] = useState(false);
+    const isCurrentTariff = user?.tariff?.slug === tariffSlugs[index];
 
     // tariff_id в БД: basic=1, extended=2, special=3, pet=4
     const tariffId = index + 1;
 
     const userPrice = parseFloat(user?.tariff?.price || 0);
     const cardPrice = parseFloat(price);
-    const hasDiscount = userPrice > 0 && cardPrice > userPrice;
+    const hasDiscount = !isCurrentTariff && userPrice > 0 && cardPrice > userPrice;
     const discountedPrice = hasDiscount ? cardPrice - userPrice : null;
 
     const handleBuy = async () => {
@@ -243,7 +252,8 @@ function PlanCard({ title, price, desc, features, highlighted, badge, index }) {
     };
 
     return (
-        <div className={`plan-card ${highlighted ? 'plan-card--highlighted' : ''}`}>
+        <div className={`plan-card ${highlighted ? 'plan-card--highlighted' : ''} ${isCurrentTariff ? 'plan-card--current' : ''}`}>
+            {isCurrentTariff && <span className="plan-card__current-badge">Текущий тариф</span>}
             {badge && <div className="plan-card__badges"><img src={`/uploads/2024/02/${badge}`} alt="" className="plan-card__badge" /></div>}
             {highlighted && <span className="plan-card__label">Оптимальный выбор</span>}
             <span className="plan-card__title">{title}</span>
@@ -271,9 +281,9 @@ function PlanCard({ title, price, desc, features, highlighted, badge, index }) {
             </span>
             <div className="plan-card__actions">
                 <Link to="/tariffs" className={`button plan-card__btn ${highlighted ? 'button--filled' : ''}`}>Подробнее</Link>
-                <button onClick={handleBuy} disabled={buyLoading}
+                <button onClick={handleBuy} disabled={buyLoading || isCurrentTariff}
                         className="button plan-card__btn plan-card__btn--buy">
-                    {buyLoading ? 'Оплата...' : 'Купить'}
+                    {buyLoading ? 'Оплата...' : isCurrentTariff ? 'Куплено' : 'Купить'}
                 </button>
             </div>
             <span className="plan-card__under-note">После оплаты анкеты сразу появятся в вашем Личном кабинете</span>
