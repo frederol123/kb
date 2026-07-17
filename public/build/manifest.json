@@ -35,7 +35,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-BtJGy3AG.css",
+    "file": "assets/app-CHkzYxQV.css",
     "name": "app",
     "names": [
       "app.css"
@@ -44,7 +44,7 @@
     "isEntry": true
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-BdZmzWWD.js",
+    "file": "assets/app-0EcL4Qi1.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
@@ -56,7 +56,7 @@
       "_vendor-react-BHBxGUNQ.js"
     ],
     "css": [
-      "assets/app-BtJGy3AG.css"
+      "assets/app-CHkzYxQV.css"
     ]
   }
 }
