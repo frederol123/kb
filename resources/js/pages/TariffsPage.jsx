@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../lib/api';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Маппинг позиции в массиве → slug тарифа в БД
 const tariffSlugs = ['basic', 'extended', 'special', 'pet'];
@@ -349,8 +349,12 @@ function SvgIcon({ svg }) {
 
 function TariffDetailPage({ tariff, index }) {
     const detail = tariffDetails[index] || tariffDetails[0];
-    const { user } = useAuth();
+    const { user, fetchUser } = useAuth();
     const isCurrentTariff = user?.tariff?.slug === tariffSlugs[index];
+
+    useEffect(() => {
+        fetchUser();
+    }, [fetchUser]);
 
     const userPrice = parseFloat(user?.tariff?.price || 0);
     const cardPrice = parseFloat(tariff.price);
@@ -501,10 +505,15 @@ function TariffDetailPage({ tariff, index }) {
 }
 
 export default function TariffsPage() {
+    const { fetchUser } = useAuth();
     const [searchParams] = useSearchParams();
     const countParam = searchParams.get('count');
     const selectedIndex = countParam !== null ? parseInt(countParam, 10) : null;
     const tariff = selectedIndex !== null ? tariffs[selectedIndex] : null;
+
+    useEffect(() => {
+        fetchUser();
+    }, [fetchUser]);
 
     if (tariff) {
         return <TariffDetailPage tariff={tariff} index={selectedIndex} />;
