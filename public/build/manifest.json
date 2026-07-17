@@ -1,0 +1,62 @@
+{
+  "_rolldown-runtime-QTnfLwEv.js": {
+    "file": "assets/rolldown-runtime-QTnfLwEv.js",
+    "name": "rolldown-runtime"
+  },
+  "_vendor-Y4PwjZPt.js": {
+    "file": "assets/vendor-Y4PwjZPt.js",
+    "name": "vendor",
+    "imports": [
+      "_rolldown-runtime-QTnfLwEv.js"
+    ]
+  },
+  "_vendor-query-BA8NPzDu.js": {
+    "file": "assets/vendor-query-BA8NPzDu.js",
+    "name": "vendor-query",
+    "imports": [
+      "_rolldown-runtime-QTnfLwEv.js",
+      "_vendor-Y4PwjZPt.js"
+    ]
+  },
+  "_vendor-react-BHBxGUNQ.js": {
+    "file": "assets/vendor-react-BHBxGUNQ.js",
+    "name": "vendor-react",
+    "imports": [
+      "_rolldown-runtime-QTnfLwEv.js",
+      "_vendor-Y4PwjZPt.js"
+    ]
+  },
+  "_vendor-router-EbfhQrgq.js": {
+    "file": "assets/vendor-router-EbfhQrgq.js",
+    "name": "vendor-router",
+    "imports": [
+      "_rolldown-runtime-QTnfLwEv.js",
+      "_vendor-Y4PwjZPt.js"
+    ]
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-BtJGy3AG.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.jsx": {
+    "file": "assets/app-BdZmzWWD.js",
+    "name": "app",
+    "src": "resources/js/app.jsx",
+    "isEntry": true,
+    "imports": [
+      "_rolldown-runtime-QTnfLwEv.js",
+      "_vendor-router-EbfhQrgq.js",
+      "_vendor-query-BA8NPzDu.js",
+      "_vendor-Y4PwjZPt.js",
+      "_vendor-react-BHBxGUNQ.js"
+    ],
+    "css": [
+      "assets/app-BtJGy3AG.css"
+    ]
+  }
+}
