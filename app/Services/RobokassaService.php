@@ -43,8 +43,8 @@ class RobokassaService
         $invId = $transaction->id;
         $outSum = number_format((float) $amount, 2, '.', '');
 
-        // Receipt (номенклатура 54-ФЗ) временно отключён — вызывает ошибки при оплате
-        $receipt = '';
+        // Receipt (номенклатура по 54-ФЗ)
+        $receipt = $this->buildReceipt($tariff->title, $amount);
 
         $url = $this->generatePaymentUrl($outSum, $invId, $tariff->title, $successUrl, $failUrl, $receipt);
 
