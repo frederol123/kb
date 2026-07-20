@@ -9,7 +9,7 @@ const tariffSlugs = ['basic', 'extended', 'special', 'pet'];
 const tariffs = [
     {
         title: 'Базовая страница',
-        price: '6800',
+        price: '3400',
         features: [
             { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },
             { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
@@ -19,7 +19,7 @@ const tariffs = [
     },
     {
         title: 'Расширенная страница',
-        price: '16500',
+        price: '8250',
         highlighted: true,
         desc: '<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации <strong>3 QR-кода</strong>. Возможность генерации QR-кода со скидкой 20% на следующие 3 анкеты.</p>',
         features: [
@@ -31,7 +31,7 @@ const tariffs = [
     },
     {
         title: 'Особая страница',
-        price: '27500',
+        price: '13750',
         badge: 'badge-special.svg',
         desc: '<p>Включает в себя все возможности <strong>расширенной страницы,</strong> с учетом генерации <strong>5 QR-кода</strong>. Возможность генерации QR-кода со скидкой 20% на все следующие анкеты.</p>',
         features: [
@@ -41,7 +41,7 @@ const tariffs = [
     },
     {
         title: 'Страница питомца',
-        price: '4400',
+        price: '2200',
         badge: 'badge-pet.svg',
         features: [
             { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },

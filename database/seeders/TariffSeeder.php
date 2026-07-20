@@ -12,7 +12,7 @@ class TariffSeeder extends Seeder
         Tariff::create([
             'title' => 'Базовая страница',
             'slug' => 'basic',
-            'price' => 6800,
+            'price' => 3400,
             'description' => 'Металлическая табличка с QR-кодом, биография, фото, видео и аудио.',
             'features' => [
                 ['icon' => 'icon-list-qr.svg', 'text' => 'Табличка с QR-кодом в футляре'],
@@ -34,7 +34,7 @@ class TariffSeeder extends Seeder
         Tariff::create([
             'title' => 'Расширенная страница',
             'slug' => 'extended',
-            'price' => 16500,
+            'price' => 8250,
             'description' => 'Всё из базового тарифа + 3 QR-кода, установка за счёт компании, приватность, обслуживание.',
             'features' => [
                 ['icon' => 'icon-list-picture.svg', 'text' => 'Добавление фото, видео и аудио'],
@@ -57,7 +57,7 @@ class TariffSeeder extends Seeder
         Tariff::create([
             'title' => 'Особая страница',
             'slug' => 'special',
-            'price' => 27500,
+            'price' => 13750,
             'description' => 'Максимальный тариф: 5 QR-кодов, видеоролик, генеалогическое древо, всё включено.',
             'features' => [
                 ['icon' => 'icon-list-tree.svg', 'text' => 'Создание генеалогического древа в профиле пользователя.'],
@@ -77,7 +77,7 @@ class TariffSeeder extends Seeder
         Tariff::create([
             'title' => 'Страница питомца',
             'slug' => 'pet',
-            'price' => 4400,
+            'price' => 2200,
             'description' => 'Табличка с QR-кодом, биография питомца, фото, видео и аудио.',
             'features' => [
                 ['icon' => 'icon-list-qr.svg', 'text' => 'Табличка с QR-кодом в футляре'],
