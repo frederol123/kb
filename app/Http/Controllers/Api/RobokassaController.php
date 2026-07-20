@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tariff;
 use App\Models\Transaction;
 use App\Services\RobokassaService;
 use Illuminate\Http\JsonResponse;
@@ -45,23 +44,6 @@ class RobokassaController extends Controller
         if (isset($result['error'])) {
             return response()->json(['message' => $result['error']], 500);
         }
-
-        // Возвращаем URL и параметры для POST-формы
-        $tariff = Tariff::findOrFail($tariffId);
-        $outSum = number_format((float) ($discountedAmount ?? $tariff->price), 2, '.', '');
-
-        // Номенклатура (54-ФЗ)
-        $amount = $discountedAmount ?? (float) $tariff->price;
-        $receipt = $this->robokassa->buildReceipt($tariff->title, $amount);
-
-        $result['params'] = $this->robokassa->getPaymentParams(
-            outSum: $outSum,
-            invId: $result['transaction_id'],
-            description: $tariff->title,
-            successUrl: route('robokassa.success'),
-            failUrl: route('robokassa.fail'),
-            receipt: $receipt,
-        );
 
         return response()->json($result);
     }
