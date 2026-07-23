@@ -59,7 +59,7 @@ class AnketController extends Controller
 
     public function public(string $slug): JsonResponse
     {
-        $anket = Anket::where('slug', $slug)->where('status', 'published')->firstOrFail();
+        $anket = Anket::where('slug', $slug)->whereIn('status', ['published', 'private'])->firstOrFail();
 
         return response()->json($anket->load('condolences.user:id,name'));
     }
