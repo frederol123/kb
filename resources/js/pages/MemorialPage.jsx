@@ -10,12 +10,24 @@ const SECTION = 'container mx-auto px-4';
 
 export default function MemorialPage() {
     const { slug } = useParams();
-    const { data: card, isLoading } = useQuery({
+    const { data: card, isLoading, error } = useQuery({
         queryKey: ['memorial', slug],
         queryFn: () => api.get(`/m/${slug}`).then(r => r.data),
+        retry: false,
     });
 
     if (isLoading) return <MemorialSkeleton />;
+
+    if (error) {
+        const status = error.response?.status;
+        const message = error.response?.data?.message;
+
+        if (status === 403 && message) {
+            return <MemorialNotAvailable message={message} />;
+        }
+        return <MemorialNotFound />;
+    }
+
     if (!card) return <MemorialNotFound />;
 
     const info = card.info || {};
@@ -862,6 +874,23 @@ function MemorialNotFound() {
         <div className="memorial-page min-h-screen flex items-center justify-center">
             <div className="text-center py-40">
                 <h2 className="memorial-section__title mb-4">Страница не найдена</h2>
+                <Link to="/" className="memorial-bottom__callback">На главную</Link>
+            </div>
+        </div>
+    );
+}
+
+function MemorialNotAvailable({ message }) {
+    return (
+        <div className="memorial-page min-h-screen flex items-center justify-center">
+            <div className="text-center py-40 max-w-md mx-auto px-4">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-amber-100 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                </div>
+                <h2 className="memorial-section__title mb-3">Просмотр недоступен</h2>
+                <p className="text-[#6c6d7e] text-base leading-relaxed mb-8">{message}</p>
                 <Link to="/" className="memorial-bottom__callback">На главную</Link>
             </div>
         </div>

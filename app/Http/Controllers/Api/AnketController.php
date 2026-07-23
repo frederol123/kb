@@ -59,7 +59,17 @@ class AnketController extends Controller
 
     public function public(string $slug): JsonResponse
     {
-        $anket = Anket::where('slug', $slug)->whereIn('status', ['published', 'private'])->firstOrFail();
+        $anket = Anket::where('slug', $slug)->first();
+
+        if (! $anket) {
+            abort(404);
+        }
+
+        if ($anket->status === 'draft') {
+            return response()->json([
+                'message' => 'Просмотр доступен только при статусе «Приватный» или «Опубликованный».',
+            ], 403);
+        }
 
         return response()->json($anket->load('condolences.user:id,name'));
     }
