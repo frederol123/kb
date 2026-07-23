@@ -299,6 +299,7 @@ export default function CardEditorPage() {
                             {qrDownloading ? 'Загрузка...' : 'Скачать QR-код'}
                         </button>
                     </div>
+                    <p className="text-sm text-[#999] mb-4">💡 QR-код станет доступен для скачивания после публикации анкеты</p>
                     {/* Информация о тарифе и лимитах */}
                     {user?.tariff && (
                         <div className="bg-[#f0fdf4] border border-[#22c55e]/30 rounded-xl p-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">

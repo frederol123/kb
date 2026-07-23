@@ -189,13 +189,6 @@ function PricesSection() {
                             { icon: 'icon-list-qr.svg', text: '5 генераций QR-кода' },
                             { icon: 'icon-list-support.svg', text: 'Приоритетная поддержка 24/7' },
                         ]} />
-                    <PlanCard title="Страница питомца" price="2200" badge="badge-pet.svg" index={3}
-                        features={[
-                            { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },
-                            { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
-                            { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
-                            { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
-                        ]} />
                 </div>
             </div>
         </section>
