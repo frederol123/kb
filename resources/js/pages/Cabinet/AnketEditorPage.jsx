@@ -35,6 +35,7 @@ export default function CardEditorPage() {
     const [qrSrc, setQrSrc] = useState(null);
     const [cropRelativeFile, setCropRelativeFile] = useState(null);
     const [cropRelativeTarget, setCropRelativeTarget] = useState(null); // {type, idx}
+    const [cropGalleryFile, setCropGalleryFile] = useState(null);
 
     const { data: card } = useQuery({
         queryKey: ['card', id],
@@ -199,15 +200,28 @@ export default function CardEditorPage() {
         }
     };
 
-    const handleGalleryUpload = async (file) => {
+    const handleGalleryUpload = (file) => {
         if (!file || !id || isNew) return;
         if ((content.gallery || []).length >= maxGallery) return toast(`Достигнут лимит (${maxGallery} изображений)`);
+        setCropGalleryFile(file);
+    };
+
+    const handleGalleryCropComplete = async (croppedBlob) => {
+        if (!croppedBlob || !id) {
+            setCropGalleryFile(null);
+            return;
+        }
         setUploading(true);
         const form = new FormData();
-        form.append('file', file);
+        form.append('file', croppedBlob, 'gallery.jpg');
         try {
             const { data } = await api.post(`/ankets/${id}/upload`, form);
             setContent(prev => ({ ...prev, gallery: [...(prev.gallery || []), { url: data.url, text: '' }] }));
+            setCropGalleryFile(null);
+        } catch (err) {
+            const msg = err.response?.data?.message || err.message;
+            toast('Ошибка: ' + msg, 'error');
+            setCropGalleryFile(null);
         } finally { setUploading(false); }
     };
 
@@ -695,6 +709,15 @@ export default function CardEditorPage() {
                     cropShape="round"
                     onCrop={handleRelativeCropComplete}
                     onClose={() => { setCropRelativeFile(null); setCropRelativeTarget(null); }}
+                />
+            )}
+
+            {cropGalleryFile && (
+                <ImageCropModal
+                    file={cropGalleryFile}
+                    aspect={16 / 10}
+                    onCrop={handleGalleryCropComplete}
+                    onClose={() => setCropGalleryFile(null)}
                 />
             )}
         </div>
