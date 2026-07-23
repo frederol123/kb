@@ -861,7 +861,7 @@ function ImageCropModal({ file, aspect, cropShape = 'rect', onCrop, onClose }) {
         try {
             const blob = await getCroppedBlob();
             if (blob) {
-                onCrop(blob);
+                await onCrop(blob);
             } else {
                 // Если blob = null — вероятно, croppedAreaPixels не установлен
                 onClose();
@@ -876,6 +876,12 @@ function ImageCropModal({ file, aspect, cropShape = 'rect', onCrop, onClose }) {
     return (
         // Полный экран — гарантированные размеры, никаких flex-проблем
         <div className="fixed inset-0 z-50 bg-black flex flex-col">
+            {saving && (
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
+                    <div className="w-10 h-10 border-4 border-[#1e79d0] border-t-transparent rounded-full animate-spin mb-3" />
+                    <span className="text-white text-sm font-medium">Сохранение...</span>
+                </div>
+            )}
             <div className="flex items-center justify-between px-6 py-3 bg-black/80 flex-shrink-0">
                 <h3 className="text-white font-semibold text-lg">Кадрирование фото</h3>
                 <button onClick={onClose} className="text-white/70 hover:text-white text-2xl leading-none">&times;</button>
