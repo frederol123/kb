@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Cropper from 'react-easy-crop';
 import RichTextEditor from '../../components/RichTextEditor';
 import YandexMapWidget from '../../components/YandexMapWidget';
+import LocationAutocomplete from '../../components/LocationAutocomplete';
 import api from '../../lib/api';
 import { useToast } from '../../contexts/ToastContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -346,11 +347,11 @@ export default function CardEditorPage() {
                         <Field label="Отчество" value={info.middle_name} onChange={v => updateInfo('middle_name', v)} placeholder="Отчество" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <Field label="Место рождения" value={info.birthplace} onChange={v => updateInfo('birthplace', v)} placeholder="Страна, город" />
+                        <LocationAutocomplete value={info.birthplace} onChange={v => updateInfo('birthplace', v)} placeholder="Место рождения" />
                         <Field label="Дата рождения" type="date" value={info.birth_date} onChange={v => updateInfo('birth_date', v)} />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <Field label="Место смерти" value={info.deathplace} onChange={v => updateInfo('deathplace', v)} placeholder="Страна, город" />
+                        <LocationAutocomplete value={info.deathplace} onChange={v => updateInfo('deathplace', v)} placeholder="Место смерти" />
                         <Field label="Дата смерти" type="date" value={info.death_date} onChange={v => updateInfo('death_date', v)} />
                     </div>
                     <div>
