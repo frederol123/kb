@@ -541,7 +541,7 @@
     .plan-prices { padding-top: 80px; padding-bottom: 80px; }
     .prices-cards {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(3, 1fr);
         gap: 50px;
     }
     .plan-card {

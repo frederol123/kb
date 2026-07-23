@@ -4,7 +4,7 @@ import api from '../lib/api';
 import { useState, useEffect } from 'react';
 
 // Маппинг позиции в массиве → slug тарифа в БД
-const tariffSlugs = ['basic', 'extended', 'special', 'pet'];
+const tariffSlugs = ['basic', 'extended', 'special'];
 
 const tariffs = [
     {
@@ -37,17 +37,6 @@ const tariffs = [
         features: [
             { icon: 'icon-list-qr.svg', text: '5 генераций QR-кода' },
             { icon: 'icon-list-support.svg', text: 'Приоритетная поддержка 24/7' },
-        ],
-    },
-    {
-        title: 'Страница питомца',
-        price: '2200',
-        badge: 'badge-pet.svg',
-        features: [
-            { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },
-            { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
-            { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
-            { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
         ],
     },
 ];
@@ -195,46 +184,6 @@ const tariffDetails = [
             { iconSvg: '<path d="M12 22V12l4-3 4 3v10M14 22v-6h4v6" stroke="#1e79d0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>', text: 'Установка за счёт компании' },
             { iconSvg: '<circle cx="16" cy="16" r="8" stroke="#1e79d0" strokeWidth="1.5" fill="none"/><path d="M12 16l3 3 5-5" stroke="#1e79d0" strokeWidth="1.5" strokeLinecap="round"/>', text: 'Приватность профиля' },
             { iconSvg: '<path d="M20 12c0 3-4 5-4 5s-4-2-4-5a4 4 0 118 0z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/><circle cx="16" cy="12" r="1.5" fill="#1e79d0"/>', text: 'Обслуживание страницы' },
-        ],
-    },
-    // 3 — Страница питомца
-    {
-        heroSubtitle: 'Увековечьте память о вашем любимце: металлическая табличка с QR-кодом, биография, фото, видео и аудио — всё, чтобы сохранить тёплые воспоминания.',
-        heroVisualIcon: '/uploads/2024/02/badge-pet.svg',
-        heroVisualLabel: '<strong>1 генерация QR-кода</strong>',
-        sections: [
-            {
-                icon: '/uploads/2024/02/icon-list-qr.svg',
-                title: 'Металлическая табличка с QR-кодом',
-                text: 'Вы получаете металлическое изделие — табличку с нанесённым высокоточным лазером QR-кодом. При сканировании (наведении камеры телефона) вы попадаете в профиль вашего питомца. Тариф включает 1 генерацию QR-кода. Оплата производится на сайте компании, после чего генерируется код.',
-            },
-            {
-                icon: '/uploads/2024/02/icon-list-note.svg',
-                title: 'Биография питомца',
-                text: 'Создайте трогательную страницу памяти вашего любимца: расскажите его историю, укажите породу, любимые занятия, забавные привычки и памятные моменты. Эта биография навсегда сохранит тёплые воспоминания о вашем друге.',
-            },
-            {
-                icon: '/uploads/2024/02/icon-list-picture.svg',
-                title: 'Фото, видео и аудио',
-                text: 'Добавляйте фотографии, видеозаписи и аудиофайлы, связанные с вашим питомцем. Загрузите его смешные видео, любимые звуки или просто трогательные фото — всё это будет бережно храниться в цифровом профиле.',
-            },
-            {
-                icon: null,
-                svg: '<rect width="40" height="40" rx="8" fill="#E8F4FD"/><path d="M12 28V16l8-6 8 6v12H12z" stroke="#1e79d0" strokeWidth="2" fill="none"/><path d="M16 28v-8h8v8" stroke="#1e79d0" strokeWidth="2" fill="none"/>',
-                title: 'Прочная металлическая конструкция',
-                text: 'Табличка выполнена из металла. Ей не страшны погодные условия, а также она весьма стойка к любым механическим повреждениям.',
-            },
-            {
-                icon: null,
-                svg: '<rect width="40" height="40" rx="8" fill="#E8F4FD"/><circle cx="20" cy="20" r="8" stroke="#1e79d0" strokeWidth="2" fill="none"/><path d="M20 16v4l3 3" stroke="#1e79d0" strokeWidth="2" strokeLinecap="round"/>',
-                title: 'Установка',
-                text: 'Установка таблички производится самостоятельно. В наборе с изделием мы присылаем специальный стикер с промышленным клеем для крепления на поверхность. Мы также можем установить табличку самостоятельно — укажите это менеджеру в заказе.',
-            },
-        ],
-        extraAdvantages: [
-            { iconSvg: '<path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" fill="#1e79d0" opacity="0.2"/><path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/>', text: '<strong>1 генерация QR-кода</strong>' },
-            { iconSvg: '<path d="M8 14h16M8 14v10a2 2 0 002 2h12a2 2 0 002-2V14M12 14V10a4 4 0 018 0v4" stroke="#1e79d0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>', text: 'Металлическая табличка в футляре' },
-            { iconSvg: '<path d="M18 8C14 8 8 12 8 16c0 4 4 8 10 12 6-4 10-8 10-12 0-4-6-8-10-8z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/><circle cx="18" cy="15" r="1.5" fill="#1e79d0"/>', text: 'Память о любимце' },
         ],
     },
 ];
