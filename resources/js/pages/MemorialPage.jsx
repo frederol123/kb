@@ -802,97 +802,22 @@ function MemorialBurial({ info }) {
     );
 }
 
-const LEAFLET_CSS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-const LEAFLET_JS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-
 function BurialMap({ address }) {
-    const mapRef = useRef(null);
-    const containerRef = useRef(null);
-    const [loaded, setLoaded] = useState(false);
+    if (!address) return null;
 
-    // Загружаем Leaflet один раз
-    useEffect(() => {
-        if (document.querySelector('[data-leaflet-css]')) {
-            if (window.L) { setLoaded(true); }
-            return;
-        }
-
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = LEAFLET_CSS;
-        link.setAttribute('data-leaflet-css', '');
-        document.head.appendChild(link);
-
-        const script = document.createElement('script');
-        script.src = LEAFLET_JS;
-        script.async = true;
-        script.onload = () => {
-            setTimeout(() => {
-                delete window.L.Icon.Default.prototype._getIconUrl;
-                window.L.Icon.Default.mergeOptions({
-                    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-                    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-                    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-                });
-                setLoaded(true);
-            }, 100);
-        };
-        document.body.appendChild(script);
-
-        return () => {};
-    }, []);
-
-    // Геокодируем адрес и показываем на карте
-    useEffect(() => {
-        if (!loaded || !containerRef.current) return;
-        if (mapRef.current) return; // уже создана
-
-        const L = window.L;
-        const defaultCoords = [55.751574, 37.573856]; // Москва
-
-        const map = L.map(containerRef.current).setView(defaultCoords, 10);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://openstreetmap.org">OSM</a>',
-            maxZoom: 19,
-        }).addTo(map);
-
-        const marker = L.marker(defaultCoords).addTo(map);
-        mapRef.current = map;
-
-        // Геокодируем адрес
-        if (address) {
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&accept-language=ru`, {
-                headers: { 'User-Agent': 'KodBessmertiya/1.0' }
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.length > 0) {
-                        const lat = parseFloat(data[0].lat);
-                        const lon = parseFloat(data[0].lon);
-                        map.setView([lat, lon], 16);
-                        marker.setLatLng([lat, lon]);
-                    }
-                })
-                .catch(err => console.error('Geocode error:', err));
-        }
-
-        return () => {
-            map.remove();
-            mapRef.current = null;
-        };
-    }, [loaded, address]);
+    const mapUrl = `https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(address)}&z=16&lang=ru_RU`;
 
     return (
-        <div
-            ref={containerRef}
-            className="w-full rounded-xl overflow-hidden border border-gray-200"
-            style={{ height: '300px', zIndex: 1 }}
-        >
-            {!loaded && (
-                <div className="flex items-center justify-center h-full bg-gray-50 text-[#6c6d7e] text-sm">
-                    Загрузка карты...
-                </div>
-            )}
+        <div className="w-full rounded-xl overflow-hidden border border-gray-200" style={{ height: '300px' }}>
+            <iframe
+                src={mapUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0, display: 'block' }}
+                allowFullScreen
+                loading="lazy"
+                title="Яндекс.Карта — место захоронения"
+            />
         </div>
     );
 }
