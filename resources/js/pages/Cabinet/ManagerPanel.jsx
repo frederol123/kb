@@ -69,7 +69,7 @@ export default function ManagerPanel() {
                                                 <Link to={`/lk/cards/${a.id}/edit`} className="font-bold text-[#3476f5] hover:underline">{a.user?.name || '—'}</Link>
                                                 {fio && <div className="text-xs text-[#6c6d7e] mt-0.5">{fio}</div>}
                                             </td>
-                                            <td className="px-4 py-3 text-[#6c6d7e]">{a.user?.phone || a.info?.contact || '—'}</td>
+                                            <td className="px-4 py-3 text-[#6c6d7e]">{a.info?.contact || '—'}</td>
                                             <td className="px-4 py-3 text-[#6c6d7e]">{a.info?.burial_plot || '—'}</td>
                                             <td className="px-4 py-3 text-[#6c6d7e]">
                                                 {a.info?.burial_address ? (

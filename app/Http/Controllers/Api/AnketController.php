@@ -50,8 +50,12 @@ class AnketController extends Controller
 
     public function show(Anket $anket): JsonResponse
     {
-        if (! in_array($anket->status, ['published']) && $anket->user_id !== auth()->id()) {
-            abort(404);
+        $user = auth()->user();
+
+        if (! in_array($anket->status, ['published']) && $anket->user_id !== $user->id) {
+            if (! $user->hasAnyRole(['admin', 'manager'])) {
+                abort(404);
+            }
         }
 
         return response()->json($anket->load('condolences.user:id,name'));
@@ -77,7 +81,9 @@ class AnketController extends Controller
     public function updateInfo(Request $request, Anket $anket): JsonResponse
     {
         if ($anket->user_id !== $request->user()->id) {
-            abort(403);
+            if (! $request->user()->hasAnyRole(['admin', 'manager'])) {
+                abort(403);
+            }
         }
 
         $request->validate([
@@ -110,7 +116,9 @@ class AnketController extends Controller
     public function updateContent(Request $request, Anket $anket): JsonResponse
     {
         if ($anket->user_id !== $request->user()->id) {
-            abort(403);
+            if (! $request->user()->hasAnyRole(['admin', 'manager'])) {
+                abort(403);
+            }
         }
 
         $request->validate([
