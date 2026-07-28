@@ -43,7 +43,10 @@ class RobokassaService
         $invId = $transaction->id;
         $outSum = number_format((float) $amount, 2, '.', '');
 
-        $url = $this->generatePaymentUrl($outSum, $invId, $tariff->title, $successUrl, $failUrl);
+        // Формируем номенклатуру для фискализации
+        $receipt = $this->buildReceipt($tariff->title, (float) $amount);
+
+        $url = $this->generatePaymentUrl($outSum, $invId, $tariff->title, $successUrl, $failUrl, $receipt);
 
         return [
             'payment_url' => $url,
