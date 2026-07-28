@@ -62,6 +62,7 @@ class RobokassaService
         $sum = number_format($amount, 2, '.', '');
 
         $data = [
+            'sno' => 'usn_income',  // Система налогообложения (обязательное поле для Robokassa)
             'items' => [
                 [
                     'name'           => $name,
