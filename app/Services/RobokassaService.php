@@ -82,9 +82,8 @@ class RobokassaService
      */
     public function getPaymentParams(string $outSum, int $invId, string $description, string $successUrl, string $failUrl, string $receipt = ''): array
     {
-        $receiptEncoded = $receipt !== '' ? urlencode($receipt) : '';
-
-        $signature = $this->makeSignatureLegacy($this->password1, $outSum, $invId, $receiptEncoded);
+        // Receipt в подпись идет БЕЗ кодирования (просто JSON)
+        $signature = $this->makeSignatureLegacy($this->password1, $outSum, $invId, $receipt);
 
         $params = [
             'MerchantLogin'  => $this->merchantLogin,
@@ -119,11 +118,8 @@ class RobokassaService
         string $failUrl,
         string $receipt = ''
     ): string {
-        // Receipt участвует в подписи — URL-кодируем его
-        $receiptEncoded = $receipt !== '' ? urlencode($receipt) : '';
-
-        // Payment URL — старый формат подписи (с MerchantLogin)
-        $signature = $this->makeSignatureLegacy($this->password1, $outSum, $invId, $receiptEncoded);
+        // Receipt в подпись идет БЕЗ кодирования (просто JSON)
+        $signature = $this->makeSignatureLegacy($this->password1, $outSum, $invId, $receipt);
 
         $params = [
             'MerchantLogin'  => $this->merchantLogin,
