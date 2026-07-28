@@ -62,7 +62,7 @@ class RobokassaService
         $sum = number_format($amount, 2, '.', '');
 
         $data = [
-            'sno' => '',  // Система налогообложения (обязательное поле для Robokassa)
+            'sno' => 'npd',  // Система налогообложения (обязательное поле для Robokassa)
             'items' => [
                 [
                     'name'           => $name,
@@ -119,15 +119,15 @@ class RobokassaService
         string $failUrl,
         string $receipt = ''
     ): string {
-        // Подпись БЕЗ Receipt (Receipt передается отдельным параметром, не участвует в подписи)
-        $signature = $this->makeSignatureLegacy($this->password1, $outSum, $invId, '');
+        // ТЕПЕРЬ ПЕРЕДАЕМ $receipt ВНУТРЬ МЕТОДА ПОДПИСИ
+        $signature = $this->makeSignatureLegacy($this->password1, $outSum, $invId, $receipt);
 
         $params = [
             'MerchantLogin'  => $this->merchantLogin,
             'OutSum'         => $outSum,
             'InvId'          => $invId,
             'Description'    => $description,
-            'SignatureValue'  => $signature,
+            'SignatureValue' => $signature,
             'SuccessURL'     => $successUrl,
             'FailURL'        => $failUrl,
         ];
@@ -150,16 +150,6 @@ class RobokassaService
     public function validateResult(string $outSum, int $invId, string $signature): bool
     {
         $expected = $this->makeSignature($this->password2, $outSum, $invId);
-        return strtolower($signature) === strtolower($expected);
-    }
-
-    /**
-     * Проверить подпись из Success URL.
-     * Старый формат: MerchantLogin:OutSum:InvId:Password.
-     */
-    public function validateSuccess(string $outSum, int $invId, string $signature): bool
-    {
-        $expected = $this->makeSignatureLegacy($this->password1, $outSum, $invId);
         return strtolower($signature) === strtolower($expected);
     }
 
