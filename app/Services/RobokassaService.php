@@ -44,7 +44,9 @@ class RobokassaService
         $outSum = number_format((float) $amount, 2, '.', '');
 
         // Формируем номенклатуру для фискализации
-        $receipt = $this->buildReceipt($tariff->title, (float) $amount);
+        $receipt = $this->buildReceipt("Доступ к сервису (Тариф " . $tariff->title . ")", (float) $amount);
+
+        Log::info('Robokassa receipt', ['receipt' => $receipt, 'amount' => $amount, 'title' => $tariff->title]);
 
         $url = $this->generatePaymentUrl($outSum, $invId, $tariff->title, $successUrl, $failUrl, $receipt);
 
@@ -139,6 +141,16 @@ class RobokassaService
         if ($this->testMode) {
             $params['IsTest'] = 1;
         }
+
+        Log::info('Robokassa payment URL params', [
+            'MerchantLogin' => $params['MerchantLogin'],
+            'OutSum' => $params['OutSum'],
+            'InvId' => $params['InvId'],
+            'Description' => $params['Description'],
+            'SignatureValue' => $params['SignatureValue'],
+            'Receipt' => $params['Receipt'] ?? 'NOT_SET',
+            'IsTest' => $params['IsTest'] ?? 0,
+        ]);
 
         return 'https://auth.robokassa.ru/Merchant/Index.aspx?' . http_build_query($params);
     }
