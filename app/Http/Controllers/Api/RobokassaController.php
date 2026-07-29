@@ -29,6 +29,17 @@ class RobokassaController extends Controller
         $tariffId = $request->input('tariff_id');
         $discountedAmount = $request->input('discounted_amount');
 
+        // Проверка апгрейда — нельзя купить тариф младше или равный текущему
+        $tariff = \App\Models\Tariff::find($tariffId);
+        if (!$tariff) {
+            return response()->json(['message' => 'Тариф не найден'], 404);
+        }
+        if ($user->tariff && (float) $user->tariff->price >= (float) $tariff->price) {
+            return response()->json([
+                'message' => 'Этот тариф недоступен для покупки. Вы уже используете тариф такого же или более высокого уровня.',
+            ], 422);
+        }
+
         if ($discountedAmount !== null) {
             $discountedAmount = (float) $discountedAmount;
         }

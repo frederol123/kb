@@ -168,25 +168,26 @@ function PricesSection() {
                     <p>Каждая история заслуживает достойного обрамления. Мы предлагаем несколько форматов цифрового мемориала — от базовой страницы до полноценного семейного древа с фотографиями и видео.</p>
                 </span>
                 <div className="prices-cards">
-                    <PlanCard title="Базовая страница" price="3400" index={0}
+                    <PlanCard title="Базовая страница" price="500" index={0}
                         features={[
                             { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },
-                            { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
                             { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
                             { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
                         ]} />
-                    <PlanCard title="Расширенная страница" price="8250" highlighted index={1}
-                        desc='<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации <strong>3 QR-кода</strong>. Возможность генерации QR-кода со скидкой 20% на следующие 3 анкеты.</p>'
+                    <PlanCard title="Расширенная страница" price="6250" highlighted index={1}
+                        desc='<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации <strong>3 QR-кода</strong>. Металлическая табличка с QR-кодом в футляре 1 шт.</p>'
                         features={[
-                            { icon: 'icon-list-qr.svg', text: '3 генерации QR-кода' },
+                            { icon: 'icon-list-qr.svg', text: '1 металлическая табличка с QR-кодом в футляре' },
                             { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
-                            { icon: 'icon-list-mount.svg', text: 'Установка за счёт компании' },
+                            { icon: 'icon-list-qr.svg', text: '3 генерации QR-кода' },
                             { icon: 'icon-list-privacy.svg', text: 'Приватность' },
                         ]} />
                     <PlanCard title="Особая страница" price="13750" badge="badge-special.svg" index={2}
-                        desc='<p>Включает в себя все возможности <strong>расширенной страницы,</strong> с учетом генерации <strong>5 QR-кода</strong>. Возможность генерации QR-кода со скидкой 20% на все следующие анкеты.</p>'
+                        desc='<p>Включает в себя все возможности <strong>расширенной страницы,</strong> с учетом генерации <strong>5 QR-кода</strong>.</p>'
                         features={[
+                            { icon: 'icon-list-qr.svg', text: '2 металлические таблички с QR-кодом в футляре' },
                             { icon: 'icon-list-qr.svg', text: '5 генераций QR-кода' },
+                            { icon: 'icon-list-support.svg', text: 'Создание видеоролика' },
                             { icon: 'icon-list-support.svg', text: 'Приоритетная поддержка 24/7' },
                         ]} />
                 </div>
@@ -206,6 +207,7 @@ function PlanCard({ title, price, desc, features, highlighted, badge, index }) {
     const userPrice = parseFloat(user?.tariff?.price || 0);
     const cardPrice = parseFloat(price);
     const hasDiscount = !isCurrentTariff && userPrice > 0 && cardPrice > userPrice;
+    const isDowngrade = !isCurrentTariff && user?.tariff && cardPrice <= userPrice;
     const discountedPrice = hasDiscount ? cardPrice - userPrice : null;
 
     const handleBuy = async () => {
@@ -213,6 +215,7 @@ function PlanCard({ title, price, desc, features, highlighted, badge, index }) {
             window.dispatchEvent(new CustomEvent('auth:open'));
             return;
         }
+        if (isDowngrade) return;
 
         setBuyLoading(true);
         try {
@@ -260,10 +263,10 @@ function PlanCard({ title, price, desc, features, highlighted, badge, index }) {
                 )}
             </span>
             <div className="plan-card__actions">
-                <Link to="/tariffs" className={`button plan-card__btn ${highlighted ? 'button--filled' : ''}`}>Подробнее</Link>
-                <button onClick={handleBuy} disabled={buyLoading || isCurrentTariff}
-                        className="button plan-card__btn plan-card__btn--buy">
-                    {buyLoading ? 'Оплата...' : isCurrentTariff ? 'Куплено' : 'Купить'}
+                <Link to={`/tarif?count=${index}`} className="button button--filled plan-card__btn">Подробнее</Link>
+                <button onClick={handleBuy} disabled={buyLoading || isCurrentTariff || isDowngrade}
+                        className={`button plan-card__btn plan-card__btn--buy${isDowngrade ? ' plan-card__btn--downgrade' : ''}`}>
+                    {buyLoading ? 'Оплата...' : isCurrentTariff ? 'Куплено' : isDowngrade ? 'Недоступно' : 'Купить'}
                 </button>
             </div>
             <span className="plan-card__under-note">После оплаты анкеты сразу появятся в вашем Личном кабинете</span>

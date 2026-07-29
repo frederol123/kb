@@ -629,6 +629,16 @@
         background: #63bc18;
         border-color: #63bc18;
     }
+    .plan-card__btn--buy:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .plan-card__btn--downgrade:disabled {
+        background: #ef4444;
+        color: #fff !important;
+        border-color: #ef4444;
+        opacity: 1;
+    }
     .plan-card__under-note {
         display: block;
         margin-top: 8px;

@@ -9,23 +9,22 @@ const tariffSlugs = ['basic', 'extended', 'special'];
 const tariffs = [
     {
         title: 'Базовая страница',
-        price: '3400',
+        price: '500',
         features: [
             { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },
-            { icon: 'icon-list-qr.svg', text: 'Табличка с QR-кодом в футляре' },
             { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
             { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
         ],
     },
     {
         title: 'Расширенная страница',
-        price: '8250',
+        price: '6250',
         highlighted: true,
-        desc: '<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации <strong>3 QR-кода</strong>. Возможность генерации QR-кода со скидкой 20% на следующие 3 анкеты.</p>',
+        desc: '<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации <strong>3 QR-кода</strong>. Металлическая табличка с QR-кодом в футляре 1 шт.</p>',
         features: [
-            { icon: 'icon-list-qr.svg', text: '3 генерации QR-кода' },
+            { icon: 'icon-list-qr.svg', text: '1 металлическая табличка с QR-кодом в футляре' },
             { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
-            { icon: 'icon-list-mount.svg', text: 'Установка за счёт компании' },
+            { icon: 'icon-list-qr.svg', text: '3 генерации QR-кода' },
             { icon: 'icon-list-privacy.svg', text: 'Приватность' },
         ],
     },
@@ -33,9 +32,11 @@ const tariffs = [
         title: 'Особая страница',
         price: '13750',
         badge: 'badge-special.svg',
-        desc: '<p>Включает в себя все возможности <strong>расширенной страницы,</strong> с учетом генерации <strong>5 QR-кода</strong>. Возможность генерации QR-кода со скидкой 20% на все следующие анкеты.</p>',
+        desc: '<p>Включает в себя все возможности <strong>расширенной страницы,</strong> с учетом генерации <strong>5 QR-кода</strong>.</p>',
         features: [
+            { icon: 'icon-list-qr.svg', text: '2 металлические таблички с QR-кодом в футляре' },
             { icon: 'icon-list-qr.svg', text: '5 генераций QR-кода' },
+            { icon: 'icon-list-support.svg', text: 'Создание видеоролика' },
             { icon: 'icon-list-support.svg', text: 'Приоритетная поддержка 24/7' },
         ],
     },
@@ -44,58 +45,35 @@ const tariffs = [
 const tariffDetails = [
     // 0 — Базовая страница
     {
-        heroSubtitle: 'Вы получаете металлическую табличку с нанесённым высокоточным лазером QR-кодом, по которому при сканировании вы попадаете в профиль пользователя.',
+        heroSubtitle: 'Цифровой профиль памяти с возможностью генерации QR-кода для быстрого доступа к странице.',
         heroVisualIcon: '/uploads/2024/02/icon-list-qr.svg',
         heroVisualLabel: '<strong>1 генерация QR-кода</strong>',
         sections: [
             {
-                icon: '/uploads/2024/02/icon-list-qr.svg',
-                title: 'Металлическая табличка с QR-кодом',
-                text: 'Вы получаете металлическое изделие — табличку с нанесённым высокоточным лазером QR-кодом. При сканировании (наведении камеры телефона) вы попадаете в профиль человека, цифровую память которого хотите сохранить. Оплата производится на сайте компании, после чего генерируется QR-код. Базовый тариф включает 1 генерацию кода.',
-            },
-            {
                 icon: '/uploads/2024/02/icon-list-picture.svg',
                 title: 'Цифровой профиль памяти',
-                text: 'В профиле пользователя вы самостоятельно сможете создать анкету, добавить фото и видеоматериалы, аудиофайлы, а также описать памятные и дорогие вашему сердцу моменты. Или мы можем сделать это за вас, создав видеоролик по вашим пожеланиям.',
-            },
-            {
-                icon: null,
-                svg: '<rect width="40" height="40" rx="8" fill="#E8F4FD"/><path d="M12 28V16l8-6 8 6v12H12z" stroke="#1e79d0" strokeWidth="2" fill="none"/><path d="M16 28v-8h8v8" stroke="#1e79d0" strokeWidth="2" fill="none"/>',
-                title: 'Прочная металлическая конструкция',
-                text: 'Табличка выполнена из металла. Ей не страшны погодные условия, а также она весьма стойка к любым механическим повреждениям.',
-            },
-            {
-                icon: null,
-                svg: '<rect width="40" height="40" rx="8" fill="#E8F4FD"/><circle cx="20" cy="20" r="8" stroke="#1e79d0" strokeWidth="2" fill="none"/><path d="M20 16v4l3 3" stroke="#1e79d0" strokeWidth="2" strokeLinecap="round"/>',
-                title: 'Установка',
-                text: 'Установка таблички на памятник производится самостоятельно. В наборе с изделием мы присылаем специальный стикер с промышленным клеем для крепления на памятник или другую поверхность. Мы также можем установить табличку самостоятельно — укажите это менеджеру в заказе. Стоимость установки зависит от города и удалённости места погребения.',
+                text: 'Вы самостоятельно сможете создать анкету, добавить фото и видеоматериалы, аудиофайлы, а также описать памятные и дорогие вашему сердцу моменты. Или мы можем сделать это за вас, создав видеоролик по вашим пожеланиям.',
             },
         ],
         extraAdvantages: [
             { iconSvg: '<path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" fill="#1e79d0" opacity="0.2"/><path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/>', text: '<strong>1 генерация QR-кода</strong>' },
-            { iconSvg: '<rect x="4" y="8" width="24" height="18" rx="3" stroke="#1e79d0" strokeWidth="1.5" fill="none"/><path d="M12 8V6a2 2 0 012-2h4a2 2 0 012 2v2" stroke="#1e79d0" strokeWidth="1.5" fill="none"/><path d="M10 14h12M10 18h8" stroke="#1e79d0" strokeWidth="1.5" strokeLinecap="round"/>', text: 'Металлическая табличка в футляре' },
         ],
     },
     // 1 — Расширенная страница
     {
-        heroSubtitle: 'Всё, что в базовом тарифе, плюс установка за счёт компании, приватность и обслуживание страницы. 3 генерации QR-кода со скидкой 20% на следующие анкеты.',
-        heroVisualIcon: '/uploads/2024/02/icon-list-mount.svg',
-        heroVisualLabel: '<strong>3 генерации QR-кода</strong> + установка',
+        heroSubtitle: 'Всё, что в базовом тарифе, плюс металлическая табличка с QR-кодом в футляре, приватность и обслуживание страницы.',
+        heroVisualIcon: '/uploads/2024/02/icon-list-qr.svg',
+        heroVisualLabel: '<strong>3 генерации QR-кода</strong> + табличка в футляре',
         sections: [
             {
                 icon: '/uploads/2024/02/icon-list-qr.svg',
                 title: 'Металлическая табличка с QR-кодом',
-                text: 'Вы получаете металлическое изделие — табличку с нанесённым высокоточным лазером QR-кодом. При сканировании (наведении камеры телефона) вы попадаете в профиль человека, цифровую память которого хотите сохранить. Расширенный тариф включает 3 генерации QR-кода, а также скидку 20% на следующие 3 анкеты.',
+                text: 'Вы получаете металлическую табличку с нанесённым высокоточным лазером QR-кодом в футляре. При сканировании (наведении камеры телефона) вы попадаете в профиль человека, цифровую память которого хотите сохранить. В комплекте 1 табличка.',
             },
             {
                 icon: '/uploads/2024/02/icon-list-picture.svg',
                 title: 'Цифровой профиль памяти',
                 text: 'В профиле пользователя вы самостоятельно сможете создать анкету, добавить фото и видеоматериалы, аудиофайлы, а также описать памятные и дорогие вашему сердцу моменты. Или мы можем сделать это за вас, создав видеоролик по вашим пожеланиям.',
-            },
-            {
-                icon: '/uploads/2024/02/icon-list-mount.svg',
-                title: 'Установка за счёт компании',
-                text: 'В отличие от базового тарифа, установка металлической таблички на памятник производится за счёт компании. Наши сотрудники приедут и профессионально закрепят табличку, чтобы она служила долгие годы.',
             },
             {
                 icon: '/uploads/2024/02/icon-list-privacy.svg',
@@ -107,31 +85,24 @@ const tariffDetails = [
                 title: 'Обслуживание страницы',
                 text: 'Мы берём на себя техническое обслуживание страницы: актуализация информации, поддержка загрузки новых материалов и круглосуточная работа цифрового профиля памяти.',
             },
-            {
-                icon: null,
-                svg: '<rect width="40" height="40" rx="8" fill="#E8F4FD"/><path d="M12 28V16l8-6 8 6v12H12z" stroke="#1e79d0" strokeWidth="2" fill="none"/><path d="M16 28v-8h8v8" stroke="#1e79d0" strokeWidth="2" fill="none"/>',
-                title: 'Прочная металлическая конструкция',
-                text: 'Табличка выполнена из металла. Ей не страшны погодные условия, а также она весьма стойка к любым механическим повреждениям.',
-            },
         ],
         extraAdvantages: [
             { iconSvg: '<path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" fill="#1e79d0" opacity="0.2"/><path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/>', text: '<strong>3 генерации QR-кода</strong>' },
             { iconSvg: '<path d="M8 14h16M8 14v10a2 2 0 002 2h12a2 2 0 002-2V14M12 14V10a4 4 0 018 0v4" stroke="#1e79d0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>', text: 'Металлическая табличка в футляре' },
-            { iconSvg: '<path d="M12 22V12l4-3 4 3v10M14 22v-6h4v6" stroke="#1e79d0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>', text: 'Установка за счёт компании' },
             { iconSvg: '<circle cx="16" cy="16" r="8" stroke="#1e79d0" strokeWidth="1.5" fill="none"/><path d="M12 16l3 3 5-5" stroke="#1e79d0" strokeWidth="1.5" strokeLinecap="round"/>', text: 'Приватность профиля' },
             { iconSvg: '<path d="M20 12c0 3-4 5-4 5s-4-2-4-5a4 4 0 118 0z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/><circle cx="16" cy="12" r="1.5" fill="#1e79d0"/>', text: 'Обслуживание страницы' },
         ],
     },
     // 2 — Особая страница
     {
-        heroSubtitle: 'Максимальный тариф: всё, что в расширенном, плюс 5 генераций QR-кода со скидкой 20% на все последующие анкеты.',
+        heroSubtitle: 'Максимальный тариф: всё, что в расширенном, плюс 5 генераций QR-кода, 2 металлические таблички с QR-кодом в футляре и создание видеоролика.',
         heroVisualIcon: '/uploads/2024/02/icon-list-tree.svg',
-        heroVisualLabel: '<strong>5 генераций QR-кода</strong> + всё включено',
+        heroVisualLabel: '<strong>5 генераций QR-кода</strong> + 2 таблички + видеоролик',
         sections: [
             {
                 icon: '/uploads/2024/02/icon-list-qr.svg',
                 title: 'Металлическая табличка с QR-кодом',
-                text: 'Вы получаете металлическое изделие — табличку с нанесённым высокоточным лазером QR-кодом. При сканировании (наведении камеры телефона) вы попадаете в профиль человека, цифровую память которого хотите сохранить. Особый тариф включает 5 генераций QR-кода, а также скидку 20% на все последующие анкеты.',
+                text: 'Вы получаете 2 металлические таблички с нанесённым высокоточным лазером QR-кодом в футляре. При сканировании (наведении камеры телефона) вы попадаете в профиль человека, цифровую память которого хотите сохранить. Особый тариф включает 5 генераций QR-кода.',
             },
             {
                 icon: '/uploads/2024/02/icon-list-picture.svg',
@@ -179,7 +150,7 @@ const tariffDetails = [
         ],
         extraAdvantages: [
             { iconSvg: '<path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" fill="#1e79d0" opacity="0.2"/><path d="M16 4L20 12h8l-6 6 2 8-8-4-8 4 2-8-6-6h8L16 4z" stroke="#1e79d0" strokeWidth="1.5" fill="none"/>', text: '<strong>5 генераций QR-кода</strong>' },
-            { iconSvg: '<path d="M8 14h16M8 14v10a2 2 0 002 2h12a2 2 0 002-2V14M12 14V10a4 4 0 018 0v4" stroke="#1e79d0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>', text: 'Металлическая табличка в футляре' },
+            { iconSvg: '<path d="M8 14h16M8 14v10a2 2 0 002 2h12a2 2 0 002-2V14M12 14V10a4 4 0 018 0v4" stroke="#1e79d0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>', text: '2 металлические таблички в футляре' },
             { iconSvg: '<rect width="40" height="40" rx="8" fill="#E8F4FD"/><path d="M6 12h28M6 12v20a2 2 0 002 2h24a2 2 0 002-2V12M14 12V8a4 4 0 014-4h4a4 4 0 014 4v4" stroke="#1e79d0" strokeWidth="2" fill="none"/><circle cx="20" cy="18" r="3" stroke="#1e79d0" strokeWidth="2" fill="none"/><path d="M14 28h12" stroke="#1e79d0" strokeWidth="2" strokeLinecap="round"/>', text: 'Создание видеоролика' },
             { iconSvg: '<path d="M12 22V12l4-3 4 3v10M14 22v-6h4v6" stroke="#1e79d0" strokeWidth="1.5" fill="none" strokeLinecap="round"/>', text: 'Установка за счёт компании' },
             { iconSvg: '<circle cx="16" cy="16" r="8" stroke="#1e79d0" strokeWidth="1.5" fill="none"/><path d="M12 16l3 3 5-5" stroke="#1e79d0" strokeWidth="1.5" strokeLinecap="round"/>', text: 'Приватность профиля' },
@@ -199,6 +170,7 @@ function TariffCard({ tariff, index, detailed }) {
     const userPrice = parseFloat(user?.tariff?.price || 0);
     const cardPrice = parseFloat(tariff.price);
     const hasDiscount = !isCurrentTariff && userPrice > 0 && cardPrice > userPrice;
+    const isDowngrade = !isCurrentTariff && user?.tariff && cardPrice <= userPrice;
     const discountedPrice = hasDiscount ? cardPrice - userPrice : null;
 
     const handleBuy = async () => {
@@ -207,6 +179,7 @@ function TariffCard({ tariff, index, detailed }) {
             return;
         }
         if (isCurrentTariff) return;
+        if (isDowngrade) return;
 
         setBuyLoading(true);
         try {
@@ -261,12 +234,12 @@ function TariffCard({ tariff, index, detailed }) {
                 <Link to="/tariffs" className="button plan-card__btn">← Назад к тарифам</Link>
             ) : (
                 <div className="plan-card__actions">
-                    <Link to={`/tarif?count=${index}`} className={`button plan-card__btn ${tariff.highlighted ? 'button--filled' : ''}`}>
+                    <Link to={`/tarif?count=${index}`} className="button button--filled plan-card__btn">
                         Подробнее
                     </Link>
-                    <button onClick={handleBuy} disabled={buyLoading || isCurrentTariff}
-                            className="button plan-card__btn plan-card__btn--buy">
-                        {buyLoading ? 'Оплата...' : isCurrentTariff ? 'Куплено' : 'Купить'}
+                    <button onClick={handleBuy} disabled={buyLoading || isCurrentTariff || isDowngrade}
+                            className={`button plan-card__btn plan-card__btn--buy${isDowngrade ? ' plan-card__btn--downgrade' : ''}`}>
+                        {buyLoading ? 'Оплата...' : isCurrentTariff ? 'Куплено' : isDowngrade ? 'Недоступно' : 'Купить'}
                     </button>
                 </div>
             )}
@@ -290,11 +263,13 @@ function TariffDetailPage({ tariff, index }) {
 
     useEffect(() => {
         fetchUser();
+        window.scrollTo(0, 0);
     }, [fetchUser]);
 
     const userPrice = parseFloat(user?.tariff?.price || 0);
     const cardPrice = parseFloat(tariff.price);
     const hasDiscount = !isCurrentTariff && userPrice > 0 && cardPrice > userPrice;
+    const isDowngrade = !isCurrentTariff && user?.tariff && cardPrice <= userPrice;
     const discountedPrice = hasDiscount ? cardPrice - userPrice : null;
 
     return (
@@ -449,6 +424,7 @@ export default function TariffsPage() {
 
     useEffect(() => {
         fetchUser();
+        window.scrollTo(0, 0);
     }, [fetchUser]);
 
     if (tariff) {
