@@ -163,6 +163,58 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::middleware('role:admin|manager')->prefix('manager')->group(function () {
         Route::get('/ankets', [\App\Http\Controllers\Api\ManagerController::class, 'ankets']);
         Route::put('/ankets/{anket}/toggle-check', [\App\Http\Controllers\Api\ManagerController::class, 'toggleCheck']);
+
+        Route::get('/logs', function (\Illuminate\Http\Request $request) {
+            $logPath = storage_path('logs/laravel.log');
+
+            if (!file_exists($logPath)) {
+                return response()->json(['entries' => [], 'total_lines' => 0]);
+            }
+
+            $content = file_get_contents($logPath);
+            $lines = explode("\n", $content);
+
+            // Разбираем записи — каждая начинается с [YYYY-MM-DD HH:MM:SS]
+            $entries = [];
+            $current = null;
+
+            foreach ($lines as $line) {
+                if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] (\w+\.\w+): (.+)$/', $line, $m)) {
+                    if ($current !== null) {
+                        $entries[] = $current;
+                    }
+                    $current = [
+                        'timestamp' => $m[1],
+                        'level' => $m[2],
+                        'message' => $m[3],
+                        'stacktrace' => '',
+                    ];
+                } elseif ($current !== null) {
+                    $current['stacktrace'] .= $line . "\n";
+                }
+            }
+            if ($current !== null) {
+                $entries[] = $current;
+            }
+
+            // С конца — свежие записи первыми
+            $entries = array_reverse($entries);
+
+            $perPage = min((int) $request->input('per_page', 50), 200);
+            $page = max((int) $request->input('page', 1), 1);
+            $total = count($entries);
+            $lastPage = max((int) ceil($total / $perPage), 1);
+            $offset = ($page - 1) * $perPage;
+            $items = array_slice($entries, $offset, $perPage);
+
+            return response()->json([
+                'entries' => array_values($items),
+                'total' => $total,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'last_page' => $lastPage,
+            ]);
+        });
     });
 });
 
