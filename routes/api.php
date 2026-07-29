@@ -215,6 +215,12 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
                 'last_page' => $lastPage,
             ]);
         });
+
+        // Управление пользователями
+        Route::get('/users', [\App\Http\Controllers\Api\ManagerController::class, 'users']);
+        Route::put('/users/{user}', [\App\Http\Controllers\Api\ManagerController::class, 'updateUser']);
+        Route::delete('/users/{user}', [\App\Http\Controllers\Api\ManagerController::class, 'deleteUser']);
+        Route::post('/users/{user}/login-as', [\App\Http\Controllers\Api\ManagerController::class, 'loginAsUser']);
     });
 });
 

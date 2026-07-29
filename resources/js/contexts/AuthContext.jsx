@@ -11,6 +11,21 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
+
+        // Если в URL есть login_as_token — сохраняем и используем
+        const params = new URLSearchParams(window.location.search);
+        const loginAsToken = params.get('login_as_token');
+        if (loginAsToken) {
+            localStorage.setItem('token', loginAsToken);
+            // Убираем параметр из URL без перезагрузки
+            window.history.replaceState({}, '', window.location.pathname);
+            api.get('/auth/me')
+                .then(({ data }) => setUser(data))
+                .catch(() => localStorage.removeItem('token'))
+                .finally(() => setLoading(false));
+            return;
+        }
+
         if (token) {
             api.get('/auth/me')
                 .then(({ data }) => setUser(data))

@@ -21,6 +21,7 @@ export default function DashboardLayout() {
     if (isStaff) {
         links.push({ to: '/lk/manager-panel', icon: '/images/icons/profile-tree.svg', label: 'Панель менеджера' });
         links.push({ to: '/lk/logs', icon: '/images/icons/profile-tree.svg', label: 'Логи' });
+        links.push({ to: '/lk/users', icon: '/images/icons/profile-tree.svg', label: 'Пользователи' });
     }
 
     return (
