@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import MemorialPage from './pages/MemorialPage';
 import TariffsPage from './pages/TariffsPage';
 import QrInstallPage from './pages/QrInstallPage';
+import DeliveryPage from './pages/DeliveryPage';
 import OrderStepsPage from './pages/OrderStepsPage';
 import OfferPage from './pages/OfferPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
@@ -49,6 +50,7 @@ export default function App() {
                             <Route path="/order-steps" element={<OrderStepsPage />} />
                             <Route path="/privacy" element={<PrivacyPolicyPage />} />
                             <Route path="/qr-install" element={<QrInstallPage />} />
+                            <Route path="/delivery" element={<DeliveryPage />} />
                             <Route path="/offer" element={<OfferPage />} />
                             <Route path="/news" element={<EmptyPage title="Новости" />} />
                             <Route path="/lk" element={<DashboardLayout />}>

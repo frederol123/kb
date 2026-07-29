@@ -7,7 +7,7 @@ export default function Footer() {
                 <div className="footer__inner">
                     <nav className="footer__menu">
                         <ul>
-                            <li><Link to="/qr-install">Варианты установки QR</Link></li>
+                            <li><Link to="/delivery">Доставка</Link></li>
                             <li><Link to="/tariffs">Цены</Link></li>
                             <li><Link to="/order-steps">Как заказать</Link></li>
                             <li><Link to="/offer">Публичная оферта</Link></li>

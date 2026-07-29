@@ -23,7 +23,7 @@ export default function Header({ user, onAuthOpen, onLogout }) {
                     <div className={`header__mobile ${menuOpen ? 'header__mobile--open' : ''}`}>
                         <nav className="header__menu">
                             <ul>
-                                <li><Link to="/qr-install" onClick={closeMenu}>Варианты установки QR</Link></li>
+                                <li><Link to="/delivery" onClick={closeMenu}>Доставка</Link></li>
                                 <li><Link to="/tariffs" onClick={closeMenu}>Цены</Link></li>
                                 <li><Link to="/order-steps" onClick={closeMenu}>Как заказать</Link></li>
                                 <li><Link to="/faq" onClick={closeMenu}>Частые вопросы</Link></li>
