@@ -257,6 +257,9 @@
     }
     .header__user-icon {
         flex-shrink: 0;
+        border: 2px solid #1e79d0;
+        border-radius: 50%;
+        padding: 3px;
     }
 
     .header__phone {
