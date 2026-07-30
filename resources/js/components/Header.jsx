@@ -34,8 +34,12 @@ export default function Header({ user, onAuthOpen, onLogout }) {
                     <a href="tel:+79513132182" className="contact-link header__phone">7 951 313-21-82</a>
                     <div className="header__user">
                         {user ? (
-                            <Link to="/lk" className="contact-link" style={{ fontWeight: 700, fontSize: 16 }}>
-                                {user.name}
+                            <Link to="/lk" className="contact-link header__user-link">
+                                <svg className="header__user-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                                <span className="header__user-name">{user.name}</span>
                             </Link>
                         ) : (
                             <button onClick={onAuthOpen} className="button button--filled header__login">Войти</button>

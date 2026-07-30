@@ -250,6 +250,15 @@
     }
     .contact-link:hover { opacity: 0.8; }
 
+    .header__user-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .header__user-icon {
+        flex-shrink: 0;
+    }
+
     .header__phone {
         color: #1c2145;
         font-size: 18px;
@@ -1311,6 +1320,7 @@
         .header { position: fixed; top: 0; left: 0; width: 100%; background: #fff; z-index: 15; box-shadow: 0px 0px 5px 0px rgb(224 224 224); }
         .header__mobile { display: none; }
         .header__phone-mobile, .header__user-mobile { display: block; }
+        .header__user-name { display: none; }
         .menu-toggle { display: block; }
         .header__mobile {
             position: fixed;
