@@ -78,7 +78,7 @@ class AnketController extends Controller
 
             // private — только авторизованный владелец
             if ($anket->status === 'private') {
-                $user = auth()->user();
+                $user = auth('sanctum')->user();
 
                 if (! $user || $anket->user_id !== $user->id) {
                     abort(404);
