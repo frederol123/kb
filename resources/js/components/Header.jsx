@@ -29,9 +29,9 @@ export default function Header({ user, onAuthOpen, onLogout }) {
                                 <li><Link to="/faq" onClick={closeMenu}>Частые вопросы</Link></li>
                             </ul>
                         </nav>
-                        <a href="tel:+79211834782" className="contact-link header__phone-mobile">7 921 183-47-82</a>
+                        <a href="tel:+79513132182" className="contact-link header__phone-mobile">7 951 313-21-82</a>
                     </div>
-                    <a href="tel:+79211834782" className="contact-link header__phone">7 921 183-47-82</a>
+                    <a href="tel:+79513132182" className="contact-link header__phone">7 951 313-21-82</a>
                     <div className="header__user">
                         {user ? (
                             <Link to="/lk" className="contact-link" style={{ fontWeight: 700, fontSize: 16 }}>

@@ -1,2 +1,4 @@
 User-agent: *
 Disallow:
+
+Sitemap: https://immortal-code.ru/sitemap.xml

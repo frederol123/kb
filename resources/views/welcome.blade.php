@@ -20,6 +20,45 @@
     <meta name="theme-color" content="#3476F5">
     <meta name="mailru-domain" content="sginZDRvEdC485vz" />
 
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <script type="application/ld+json">
+    <?php echo json_encode([
+        '@context' => 'https://schema.org',
+        '@graph' => [
+            [
+                '@type' => 'Organization',
+                '@id' => 'https://immortal-code.ru/#organization',
+                'name' => 'Код бессмертия',
+                'url' => 'https://immortal-code.ru',
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => 'https://immortal-code.ru/images/logo.svg',
+                ],
+                'description' => 'Цифровой мемориал и QR-код на памятник. Сохраните историю жизни близких навсегда.',
+                'foundingDate' => '2025',
+                'contactPoint' => [
+                    '@type' => 'ContactPoint',
+                    'telephone' => '+7-951-313-21-82',
+                    'contactType' => 'customer service',
+                    'availableLanguage' => ['Russian'],
+                ],
+            ],
+            [
+                '@type' => 'WebSite',
+                '@id' => 'https://immortal-code.ru/#website',
+                'url' => 'https://immortal-code.ru',
+                'name' => 'Код бессмертия',
+                'description' => 'Создайте вечную память о близких с помощью цифрового мемориала. QR-код на памятнике, фотографии, история жизни, видео, книга соболезнований.',
+                'inLanguage' => 'ru',
+                'publisher' => [
+                    '@id' => 'https://immortal-code.ru/#organization',
+                ],
+            ],
+        ],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>
+    </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
     <script src="https://smartcaptcha.yandexcloud.net/captcha.js" defer></script>
 </head>
