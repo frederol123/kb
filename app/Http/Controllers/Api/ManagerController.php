@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class ManagerController extends Controller
@@ -71,6 +72,13 @@ class ManagerController extends Controller
 
     public function loginAsUser(Request $request, User $user): JsonResponse
     {
+        Log::info('Manager login-as', [
+            'manager_id' => $request->user()->id,
+            'manager_name' => $request->user()->name,
+            'target_user_id' => $user->id,
+            'target_user_login' => $user->login,
+        ]);
+
         $token = $user->createToken('manager-login-as', ['*'], Carbon::now()->addHour())->plainTextToken;
 
         return response()->json([

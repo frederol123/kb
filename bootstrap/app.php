@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'verify-yookassa' => \App\Http\Middleware\VerifyYooKassaSignature::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

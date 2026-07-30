@@ -13,8 +13,10 @@ use Illuminate\Support\Str;
 Route::middleware('throttle:10,1')->group(function () {
     Route::post('/auth/login', [AuthController::class, 'login']);
     Route::post('/auth/register', [AuthController::class, 'register']);
+});
+
+Route::middleware('throttle:30,1')->group(function () {
     Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
-    Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
 
     // Подтверждение email
     Route::get('/auth/verify-email/{id}/{hash}', function ($id, $hash) {
@@ -43,6 +45,7 @@ Route::middleware('throttle:10,1')->group(function () {
 
 Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
     Route::post('/auth/change-name', [AuthController::class, 'changeName']);
     Route::get('/auth/me', [AuthController::class, 'me']);
 
@@ -261,7 +264,7 @@ Route::get('/m/news', function () {
 });
 
 Route::post('/payments/callback', [App\Http\Controllers\Api\PaymentController::class, 'callback'])
-    ->middleware('throttle:10,1');
+    ->middleware(['verify-yookassa', 'throttle:10,1']);
 
 Route::get('/m/{anket:slug}', [AnketController::class, 'public']);
 

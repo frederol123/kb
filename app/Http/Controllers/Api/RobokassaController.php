@@ -42,6 +42,12 @@ class RobokassaController extends Controller
 
         if ($discountedAmount !== null) {
             $discountedAmount = (float) $discountedAmount;
+
+            // Ниже 50% от цены тарифа — только с подтверждённой скидкой из БД
+            $minPrice = (float) $tariff->price * 0.5;
+            if ($discountedAmount < $minPrice) {
+                return response()->json(['message' => 'Слишком большая скидка'], 422);
+            }
         }
 
         $result = $this->robokassa->createPayment(

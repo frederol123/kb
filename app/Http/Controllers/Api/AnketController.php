@@ -69,10 +69,21 @@ class AnketController extends Controller
             abort(404);
         }
 
-        if ($anket->status === 'draft') {
-            return response()->json([
-                'message' => 'Просмотр доступен только при статусе «Приватный» или «Опубликованный».',
-            ], 403);
+        if ($anket->status !== 'published') {
+            if ($anket->status === 'draft') {
+                return response()->json([
+                    'message' => 'Просмотр доступен только при статусе «Приватный» или «Опубликованный».',
+                ], 403);
+            }
+
+            // private — только авторизованный владелец
+            if ($anket->status === 'private') {
+                $user = auth()->user();
+
+                if (! $user || $anket->user_id !== $user->id) {
+                    abort(404);
+                }
+            }
         }
 
         return response()->json($anket->load('condolences.user:id,name'));
