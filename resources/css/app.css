@@ -1324,6 +1324,7 @@
         .header__mobile { display: none; }
         .header__phone-mobile, .header__user-mobile { display: block; }
         .header__user-name { display: none; }
+        .header__user-icon { width: 32px; height: 32px; }
         .menu-toggle { display: block; }
         .header__mobile {
             position: fixed;
@@ -1359,7 +1360,8 @@
         }
         .header__close-overlay--open { pointer-events: all; opacity: 0.5; }
         .header__menu { flex: 1; overflow-y: auto; border-bottom: 2px solid #e9f0ff; }
-        .header__menu ul { flex-direction: column; align-items: flex-start; gap: 12px; padding-bottom: 40px; }
+        .header__menu ul { flex-direction: column; align-items: flex-start; gap: 24px; padding-bottom: 40px; }
+        .header__menu a { font-size: 29px; color: #1e79d0; }
         .header__right { gap: 33px; }
         .hero__inner { grid-template-columns: 1fr; gap: 33px; }
         .hero__content { padding-top: 0; }
@@ -1566,7 +1568,7 @@
         .memorial-hero__condolence-btn { padding: 14px 32px !important; font-size: 15px !important; }
         
         /* Relatives mobile */
-        .memorial-relatives { padding-top: 763px !important; gap: 20px; }
+        .memorial-relatives { padding-top: 40px !important; gap: 20px; }
         .memorial-relative-card { flex: 0 0 200px !important; padding: 18px 14px; }
         .memorial-relative-card__avatar, 
         .memorial-relative-card__avatar-placeholder { width: 100px !important; height: 100px !important; font-size: 24px !important; margin-bottom: 10px; }
