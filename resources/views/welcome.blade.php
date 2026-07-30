@@ -19,6 +19,7 @@
     <meta name="msapplication-config" content="/browserconfig.xml">
     <meta name="theme-color" content="#3476F5">
     <meta name="mailru-domain" content="sginZDRvEdC485vz" />
+    <meta name="yandex-verification" content="a522f66ffba243c9" />
 
     <link rel="canonical" href="{{ url()->current() }}">
 
