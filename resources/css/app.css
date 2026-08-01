@@ -556,6 +556,8 @@
         grid-template-columns: repeat(3, 1fr);
         gap: 50px;
     }
+    .prices-cards > .reveal { display: flex; }
+    .prices-cards .plan-card { flex: 1; }
     .plan-card {
         box-sizing: border-box;
         position: relative;
