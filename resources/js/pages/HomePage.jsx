@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../lib/api';
 import { useState, useEffect } from 'react';
+import Reveal from '../components/Reveal';
 
 const tariffSlugs = ['basic', 'extended', 'special', 'pet'];
 
@@ -48,14 +49,14 @@ function HeroSection() {
         <section className="hero">
             <div className="container hero__inner">
                 <div className="hero__content">
-                    <h1 className="hero__title">Каждая жизнь — это история, достойная вечности</h1>
-                    <div className="hero__desc">
+                    <h1 className="hero__title animate-onload" style={{ '--onload-delay': '100ms' }}>Каждая жизнь — это история, достойная вечности</h1>
+                    <div className="hero__desc animate-onload" style={{ '--onload-delay': '250ms' }}>
                         <p><strong>Код Бессмертия</strong> — это цифровой мемориал, где память о ваших близких живёт с теплотой и заботой. Мы бережно сохраняем всё самое важное: детство, семью, достижения, увлечения — всё то, что делает каждую жизнь уникальной.</p>
                         <p>Создайте вечную память для детей, внуков и будущих поколений. Разместите QR-код на памятнике — и каждый, кто придёт, сможет узнать историю человека, которого вы любите.</p>
                     </div>
-                    <Link to="/tariffs" className="button button--filled hero__btn">Создать мемориал</Link>
+                    <Link to="/tariffs" className="button button--filled hero__btn animate-onload" style={{ '--onload-delay': '400ms' }}>Создать мемориал</Link>
                 </div>
-                <div className="hero__preview">
+                <div className="hero__preview animate-onload animate-onload--zoom" style={{ '--onload-delay': '300ms' }}>
                     <img src="/uploads/2024/02/logo.jpg" alt="" className="hero__image" />
                 </div>
             </div>
@@ -119,37 +120,42 @@ function FeaturesSection() {
     return (
         <section className="py-20 md:py-28 bg-white">
             <div className="container mx-auto px-6 max-w-7xl">
-                <div className="text-center mb-16">
+                <Reveal className="text-center mb-16">
                     <h2 className="text-[40px] md:text-[48px] font-extrabold text-[#1c2145] leading-tight mb-4">
                         Всё, чтобы сохранить память
                     </h2>
                     <p className="text-[#6c6d7e] text-lg max-w-2xl mx-auto">
                         Цифровой мемориал объединяет технологии и душевную теплоту, чтобы история жизни осталась навсегда
                     </p>
-                </div>
+                </Reveal>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                     {features.map((f, i) => (
-                        <div
+                        <Reveal
                             key={i}
-                            className={`rounded-[24px] p-8 transition-all duration-300 hover:-translate-y-1 ${
-                                f.accent
-                                    ? 'bg-gradient-to-br from-[#eef4ff] to-[#e6f0ff] border border-[#1e79d0]/20 shadow-[0_4px_24px_-4px_rgba(30,121,208,0.15)]'
-                                    : 'bg-white border border-[#e9f0ff] shadow-[0_2px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_32px_-8px_rgba(30,121,208,0.10)]'
-                            }`}
+                            delay={i * 100}
+                            direction={i % 2 === 0 ? 'left' : 'right'}
                         >
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 ${
-                                f.accent ? 'bg-[#1e79d0]/10' : 'bg-[#f0f4ff]'
-                            }`}>
-                                {f.icon}
+                            <div
+                                className={`rounded-[24px] p-8 transition-all duration-300 hover:-translate-y-1 h-full ${
+                                    f.accent
+                                        ? 'bg-gradient-to-br from-[#eef4ff] to-[#e6f0ff] border border-[#1e79d0]/20 shadow-[0_4px_24px_-4px_rgba(30,121,208,0.15)]'
+                                        : 'bg-white border border-[#e9f0ff] shadow-[0_2px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_32px_-8px_rgba(30,121,208,0.10)]'
+                                }`}
+                            >
+                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 ${
+                                    f.accent ? 'bg-[#1e79d0]/10' : 'bg-[#f0f4ff]'
+                                }`}>
+                                    {f.icon}
+                                </div>
+                                <h3 className={`text-xl font-bold mb-3 ${f.accent ? 'text-[#1e79d0]' : 'text-[#1c2145]'}`}>
+                                    {f.title}
+                                </h3>
+                                <p className="text-[#6c6d7e] text-base leading-relaxed">
+                                    {f.desc}
+                                </p>
                             </div>
-                            <h3 className={`text-xl font-bold mb-3 ${f.accent ? 'text-[#1e79d0]' : 'text-[#1c2145]'}`}>
-                                {f.title}
-                            </h3>
-                            <p className="text-[#6c6d7e] text-base leading-relaxed">
-                                {f.desc}
-                            </p>
-                        </div>
+                        </Reveal>
                     ))}
                 </div>
             </div>
@@ -163,33 +169,41 @@ function PricesSection() {
     return (
         <section className="plan-prices">
             <div className="container">
-                <h2 className="section-title" style={{ textAlign: 'center' }}>Выберите формат памяти</h2>
-                <span className="section-desc" style={{ textAlign: 'center', margin: '0 auto 50px auto' }}>
-                    <p>Каждая история заслуживает достойного обрамления. Мы предлагаем несколько форматов цифрового мемориала — от базовой страницы до полноценного семейного древа с фотографиями и видео.</p>
-                </span>
+                <Reveal>
+                    <h2 className="section-title" style={{ textAlign: 'center' }}>Выберите формат памяти</h2>
+                    <span className="section-desc" style={{ textAlign: 'center', margin: '0 auto 50px auto' }}>
+                        <p>Каждая история заслуживает достойного обрамления. Мы предлагаем несколько форматов цифрового мемориала — от базовой страницы до полноценного семейного древа с фотографиями и видео.</p>
+                    </span>
+                </Reveal>
                 <div className="prices-cards">
-                    <PlanCard title="Базовая страница" price="500" index={0}
-                        features={[
-                            { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },
-                            { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
-                            { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
-                        ]} />
-                    <PlanCard title="Расширенная страница" price="6250" highlighted index={1}
-                        desc='<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации <strong>3 QR-кода</strong>. Металлическая табличка с QR-кодом в футляре 1 шт.</p>'
-                        features={[
-                            { icon: 'icon-list-qr.svg', text: '1 металлическая табличка с QR-кодом в футляре' },
-                            { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
-                            { icon: 'icon-list-qr.svg', text: '3 генерации QR-кода' },
-                            { icon: 'icon-list-privacy.svg', text: 'Приватность' },
-                        ]} />
-                    <PlanCard title="Особая страница" price="13750" badge="badge-special.svg" index={2}
-                        desc='<p>Включает в себя все возможности <strong>расширенной страницы,</strong> с учетом генерации <strong>5 QR-кода</strong>.</p>'
-                        features={[
-                            { icon: 'icon-list-qr.svg', text: '2 металлические таблички с QR-кодом в футляре' },
-                            { icon: 'icon-list-qr.svg', text: '5 генераций QR-кода' },
-                            { icon: 'icon-list-support.svg', text: 'Создание видеоролика' },
-                            { icon: 'icon-list-support.svg', text: 'Приоритетная поддержка 24/7' },
-                        ]} />
+                    <Reveal delay={0} direction="up">
+                        <PlanCard title="Базовая страница" price="500" index={0}
+                            features={[
+                                { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },
+                                { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
+                                { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
+                            ]} />
+                    </Reveal>
+                    <Reveal delay={120} direction="up">
+                        <PlanCard title="Расширенная страница" price="6250" highlighted index={1}
+                            desc='<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации <strong>3 QR-кода</strong>. Металлическая табличка с QR-кодом в футляре 1 шт.</p>'
+                            features={[
+                                { icon: 'icon-list-qr.svg', text: '1 металлическая табличка с QR-кодом в футляре' },
+                                { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
+                                { icon: 'icon-list-qr.svg', text: '3 генерации QR-кода' },
+                                { icon: 'icon-list-privacy.svg', text: 'Приватность' },
+                            ]} />
+                    </Reveal>
+                    <Reveal delay={240} direction="up">
+                        <PlanCard title="Особая страница" price="13750" badge="badge-special.svg" index={2}
+                            desc='<p>Включает в себя все возможности <strong>расширенной страницы,</strong> с учетом генерации <strong>5 QR-кода</strong>.</p>'
+                            features={[
+                                { icon: 'icon-list-qr.svg', text: '2 металлические таблички с QR-кодом в футляре' },
+                                { icon: 'icon-list-qr.svg', text: '5 генераций QR-кода' },
+                                { icon: 'icon-list-support.svg', text: 'Создание видеоролика' },
+                                { icon: 'icon-list-support.svg', text: 'Приоритетная поддержка 24/7' },
+                            ]} />
+                    </Reveal>
                 </div>
             </div>
         </section>
@@ -305,49 +319,51 @@ function HowItWorksSection() {
             <div className="absolute bottom-[-80px] left-[-80px] w-[250px] h-[250px] rounded-full bg-[#74d41d]/5 blur-[80px]" />
 
             <div className="container mx-auto px-6 max-w-7xl relative z-[1]">
-                <div className="text-center mb-16">
+                <Reveal className="text-center mb-16">
                     <h2 className="text-[40px] md:text-[48px] font-extrabold text-[#1c2145] leading-tight mb-4">
                         Как это работает
                     </h2>
                     <p className="text-[#6c6d7e] text-lg max-w-2xl mx-auto">
                         Всего три простых шага, чтобы память о близком человеке жила вечно
                     </p>
-                </div>
+                </Reveal>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {steps.map((s, i) => (
-                        <div key={i} className="relative bg-white rounded-[24px] p-8 pt-12 shadow-[0_4px_20px_-4px_rgba(30,121,208,0.06)] border border-[#e9f0ff]">
-                            {/* номер шага */}
-                            <div className="absolute -top-4 left-8 w-10 h-10 rounded-full bg-[#74d41d] text-white font-extrabold text-lg flex items-center justify-center shadow-[0_4px_12px_rgba(116,212,29,0.3)]" style={{ transform: 'rotate(-3deg)' }}>
-                                {s.num}
+                        <Reveal key={i} delay={i * 150}>
+                            <div className="relative bg-white rounded-[24px] p-8 pt-12 shadow-[0_4px_20px_-4px_rgba(30,121,208,0.06)] border border-[#e9f0ff] h-full">
+                                {/* номер шага */}
+                                <div className="absolute -top-4 left-8 w-10 h-10 rounded-full bg-[#74d41d] text-white font-extrabold text-lg flex items-center justify-center shadow-[0_4px_12px_rgba(116,212,29,0.3)]" style={{ transform: 'rotate(-3deg)' }}>
+                                    {s.num}
+                                </div>
+
+                                <span className="text-[#74d41d] text-[13px] font-bold uppercase tracking-[1.5px] block mb-1">
+                                    {s.label}
+                                </span>
+                                <h3 className="text-[#1c2145] text-xl font-extrabold mb-4">
+                                    {s.heading}
+                                </h3>
+                                <p className="text-[#6c6d7e] text-base leading-relaxed">
+                                    {s.body}
+                                </p>
+
+                                {/* соединительная линия между шагами */}
+                                {i < steps.length - 1 && (
+                                    <div className="hidden md:block absolute top-1/2 -right-4 w-8 h-[2px] bg-[#1e79d0]/20" />
+                                )}
                             </div>
-
-                            <span className="text-[#74d41d] text-[13px] font-bold uppercase tracking-[1.5px] block mb-1">
-                                {s.label}
-                            </span>
-                            <h3 className="text-[#1c2145] text-xl font-extrabold mb-4">
-                                {s.heading}
-                            </h3>
-                            <p className="text-[#6c6d7e] text-base leading-relaxed">
-                                {s.body}
-                            </p>
-
-                            {/* соединительная линия между шагами */}
-                            {i < steps.length - 1 && (
-                                <div className="hidden md:block absolute top-1/2 -right-4 w-8 h-[2px] bg-[#1e79d0]/20" />
-                            )}
-                        </div>
+                        </Reveal>
                     ))}
                 </div>
 
-                <div className="mt-12 text-center">
+                <Reveal delay={200} className="mt-12 text-center">
                     <Link to="/order-steps" className="inline-flex items-center gap-2 text-[#1e79d0] font-bold hover:underline text-lg">
                         Подробнее о процессе оформления
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M5 12h14" /><polyline points="12 5 19 12 12 19" />
                         </svg>
                     </Link>
-                </div>
+                </Reveal>
             </div>
         </section>
     );
@@ -368,14 +384,14 @@ function TimelineSection() {
     return (
         <section className="py-20 md:py-28 bg-white">
             <div className="container mx-auto px-6 max-w-7xl">
-                <div className="text-center mb-16">
+                <Reveal className="text-center mb-16">
                     <h2 className="text-[40px] md:text-[48px] font-extrabold text-[#1c2145] leading-tight mb-4">
                         Жизненный путь
                     </h2>
                     <p className="text-[#6c6d7e] text-lg max-w-2xl mx-auto">
                         Каждая жизнь — это череда событий, моментов и встреч. Вот как может выглядеть хронология на странице памяти
                     </p>
-                </div>
+                </Reveal>
 
                 <div className="relative">
                     {/* вертикальная линия */}
@@ -396,15 +412,19 @@ function TimelineSection() {
                                     </div>
 
                                     {/* контент */}
-                                    <div className={`flex-1 md:w-[calc(50%-40px)] ${
-                                        isLeft ? 'md:pr-16 md:text-right' : 'md:pl-16'
-                                    }`}>
+                                    <Reveal
+                                        direction={isLeft ? 'left' : 'right'}
+                                        delay={i * 80}
+                                        className={`flex-1 md:w-[calc(50%-40px)] ${
+                                            isLeft ? 'md:pr-16 md:text-right' : 'md:pl-16'
+                                        }`}
+                                    >
                                         <div className="bg-[#f7fbff] rounded-[20px] p-6 border border-[#e9f0ff] hover:shadow-[0_4px_20px_-4px_rgba(30,121,208,0.10)] transition-shadow">
                                             <span className="text-[#1e79d0] font-extrabold text-2xl block mb-1">{e.year}</span>
                                             <h3 className="text-[#1c2145] font-bold text-lg mb-2">{e.title}</h3>
                                             <p className="text-[#6c6d7e] text-sm leading-relaxed">{e.desc}</p>
                                         </div>
-                                    </div>
+                                    </Reveal>
 
                                     {/* пустой блок для выравнивания на десктопе */}
                                     <div className="hidden md:block md:w-[calc(50%-40px)]" />
@@ -445,41 +465,43 @@ function TestimonialsSection() {
     return (
         <section className="py-20 md:py-28 bg-[#f7fbff]">
             <div className="container mx-auto px-6 max-w-7xl">
-                <div className="text-center mb-16">
+                <Reveal className="text-center mb-16">
                     <h2 className="text-[40px] md:text-[48px] font-extrabold text-[#1c2145] leading-tight mb-4">
                         С благодарностью вспоминают
                     </h2>
                     <p className="text-[#6c6d7e] text-lg max-w-2xl mx-auto">
                         Историями делятся те, кто уже сохранил память о своих близких с помощью цифрового мемориала
                     </p>
-                </div>
+                </Reveal>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                     {testimonials.map((t, i) => (
-                        <div key={i} className="bg-white rounded-[20px] p-8 border border-[#e9f0ff] shadow-[0_2px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_32px_-8px_rgba(30,121,208,0.10)] transition-all duration-300 hover:-translate-y-1">
-                            {/* звёзды */}
-                            <div className="flex gap-1 mb-5">
-                                {Array.from({ length: t.rating }).map((_, si) => (
-                                    <svg key={si} width="18" height="18" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="2">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                    </svg>
-                                ))}
-                            </div>
-
-                            <p className="text-[#6c6d7e] text-[15px] leading-relaxed mb-6 italic">
-                                «{t.text}»
-                            </p>
-
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-[#1e79d0]/10 flex items-center justify-center text-[#1e79d0] font-bold text-sm">
-                                    {t.name[0]}
+                        <Reveal key={i} delay={i * 150}>
+                            <div className="bg-white rounded-[20px] p-8 border border-[#e9f0ff] shadow-[0_2px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_32px_-8px_rgba(30,121,208,0.10)] transition-all duration-300 hover:-translate-y-1 h-full">
+                                {/* звёзды */}
+                                <div className="flex gap-1 mb-5">
+                                    {Array.from({ length: t.rating }).map((_, si) => (
+                                        <svg key={si} width="18" height="18" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="2">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                        </svg>
+                                    ))}
                                 </div>
-                                <div>
-                                    <div className="text-[#1c2145] font-bold text-sm">{t.name}</div>
-                                    <div className="text-[#6c6d7e] text-xs">{t.role}</div>
+
+                                <p className="text-[#6c6d7e] text-[15px] leading-relaxed mb-6 italic">
+                                    «{t.text}»
+                                </p>
+
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-[#1e79d0]/10 flex items-center justify-center text-[#1e79d0] font-bold text-sm">
+                                        {t.name[0]}
+                                    </div>
+                                    <div>
+                                        <div className="text-[#1c2145] font-bold text-sm">{t.name}</div>
+                                        <div className="text-[#6c6d7e] text-xs">{t.role}</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </Reveal>
                     ))}
                 </div>
             </div>
@@ -528,7 +550,7 @@ function HaveQuestionsSection() {
     return (
         <section className="have-questions">
             <div className="container have-questions__inner">
-                <div className="have-questions__content">
+                <Reveal direction="left" className="have-questions__content">
                     <span className="form__title">Мы рядом, чтобы помочь</span>
                     <span className="form__desc">Создание цифрового мемориала — дело бережное. Оставьте контактные данные, и мы с теплотой ответим на все вопросы.</span>
                     <form onSubmit={handleHqSubmit}>
@@ -542,10 +564,10 @@ function HaveQuestionsSection() {
                             <div className="form__terms">Нажимая кнопку «Отправить» Вы соглашаетесь с условиями <Link to="/privacy">политики конфиденциальности</Link>.</div>
                         </div>
                     </form>
-                </div>
-                <div className="have-questions__preview">
+                </Reveal>
+                <Reveal direction="right" delay={150} className="have-questions__preview">
                     <img src="/uploads/2024/02/have-questions.svg" alt="" className="have-questions__image" />
-                </div>
+                </Reveal>
             </div>
         </section>
     );
@@ -595,7 +617,7 @@ function CallbackSection() {
         <section className="callback">
             <div className="container">
                 <div className="callback__form">
-                    <div className="form__column">
+                    <Reveal direction="left" className="form__column">
                         <span className="form__title">Поможем сохранить память</span>
                         <span className="form__desc">Расскажите, какую историю вы хотите увековечить, — и мы подскажем лучший формат. Или просто напишите нам в удобном мессенджере:</span>
                         <div className="link-buttons link-buttons--white">
@@ -603,8 +625,8 @@ function CallbackSection() {
                             <a className="link-buttons__item" href="https://wa.me/79811269133" style={{ color: '#1A9F49' }}>WhatsApp</a>
                             <a className="link-buttons__item" href="viber://chat?number=%2B79811269133" style={{ color: '#735FF1' }}>Viber</a>
                         </div>
-                    </div>
-                    <div className="form__column">
+                    </Reveal>
+                    <Reveal direction="right" delay={150} className="form__column">
                         <form onSubmit={handleCbSubmit}>
                             <div className="form__fields" style={{ gridTemplateColumns: '1fr' }}>
                                 <label className="form__field"><input type="text" className="text-input" placeholder="Ваше имя" value={cbName} onChange={e => setCbName(e.target.value)} required /></label>
@@ -618,7 +640,7 @@ function CallbackSection() {
                                 </div>
                             </div>
                         </form>
-                    </div>
+                    </Reveal>
                 </div>
             </div>
         </section>
