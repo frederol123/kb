@@ -264,6 +264,14 @@ Route::get('/m/news', function () {
     return response()->json($news);
 });
 
+// Публичные анкеты для карусели на главной (только slug + info)
+Route::get('/memorials', function () {
+    return \App\Models\Anket::where('status', 'published')
+        ->orderByDesc('updated_at')
+        ->limit(12)
+        ->get(['slug', 'info']);
+});
+
 Route::post('/payments/callback', [App\Http\Controllers\Api\PaymentController::class, 'callback'])
     ->middleware(['verify-yookassa', 'throttle:10,1']);
 

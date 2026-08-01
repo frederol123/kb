@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../lib/api';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Reveal from '../components/Reveal';
 
 const tariffSlugs = ['basic', 'extended', 'special', 'pet'];
@@ -33,6 +33,7 @@ export default function HomePage() {
             <HeroSection />
             <FeaturesSection />
             <PricesSection />
+            <MemorialsSection />
             <HowItWorksSection />
             <TimelineSection />
             <TestimonialsSection />
@@ -285,6 +286,116 @@ function PlanCard({ title, price, desc, features, highlighted, badge, index }) {
             </div>
             <span className="plan-card__under-note">После оплаты анкеты сразу появятся в вашем Личном кабинете</span>
         </div>
+    );
+}
+
+/* ======== ПАМЯТЬ О НАШИХ БЛИЗКИХ (карусель публичных анкет) ======== */
+
+function formatDateRu(iso) {
+    if (!iso) return null;
+    const [y, m, d] = String(iso).split('-');
+    if (!y || !m || !d) return null;
+    return `${d}.${m}.${y}`;
+}
+
+function MemorialsSection() {
+    const [memorials, setMemorials] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const scrollerRef = useRef(null);
+    const [canLeft, setCanLeft] = useState(false);
+    const [canRight, setCanRight] = useState(false);
+
+    useEffect(() => {
+        let alive = true;
+        api.get('/memorials')
+            .then(r => { if (alive) setMemorials(r.data || []); })
+            .catch(() => {})
+            .finally(() => { if (alive) setLoading(false); });
+        return () => { alive = false; };
+    }, []);
+
+    const updateArrows = () => {
+        const el = scrollerRef.current;
+        if (!el) return;
+        setCanLeft(el.scrollLeft > 4);
+        setCanRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+    };
+
+    useEffect(() => {
+        updateArrows();
+        const el = scrollerRef.current;
+        if (!el) return;
+        el.addEventListener('scroll', updateArrows, { passive: true });
+        window.addEventListener('resize', updateArrows);
+        return () => {
+            el.removeEventListener('scroll', updateArrows);
+            window.removeEventListener('resize', updateArrows);
+        };
+    }, [memorials]);
+
+    const scrollBy = (dir) => {
+        const el = scrollerRef.current;
+        if (!el) return;
+        const card = el.querySelector('.memorials-card');
+        const step = card ? card.offsetWidth + 24 : 300;
+        el.scrollBy({ left: dir * step, behavior: 'smooth' });
+    };
+
+    if (!loading && memorials.length === 0) return null;
+
+    return (
+        <section className="memorials">
+            <div className="container">
+                <Reveal>
+                    <h2 className="section-title" style={{ textAlign: 'center' }}>Память о наших близких</h2>
+                    <span className="section-desc" style={{ textAlign: 'center', margin: '0 auto 50px auto' }}>
+                        <p>Каждая страница — история жизни, которую бережно сохранили близкие. Нажмите на карточку, чтобы открыть мемориал.</p>
+                    </span>
+                </Reveal>
+                <Reveal delay={100}>
+                    <div className="memorials-carousel">
+                        <button
+                            className="memorials-arrow memorials-arrow--prev"
+                            onClick={() => scrollBy(-1)}
+                            disabled={!canLeft}
+                            aria-label="Назад"
+                        >
+                            ‹
+                        </button>
+                        <div className="memorials-track" ref={scrollerRef}>
+                            {memorials.map((m) => {
+                                const info = m.info || {};
+                                const fio = [info.last_name, info.first_name, info.middle_name].filter(Boolean).join(' ');
+                                const dates = [formatDateRu(info.birth_date), formatDateRu(info.death_date)].filter(Boolean).join(' – ');
+                                return (
+                                    <Link key={m.slug} to={`/m/${m.slug}`} className="memorials-card">
+                                        {info.photo ? (
+                                            <img src={info.photo} alt={fio} loading="lazy" className="memorials-card__photo" />
+                                        ) : (
+                                            <div className="memorials-card__photo memorials-card__photo--placeholder">
+                                                {fio ? fio[0] : 'М'}
+                                            </div>
+                                        )}
+                                        <div className="memorials-card__body">
+                                            <span className="memorials-card__name">{fio || 'Близкий человек'}</span>
+                                            {dates && <span className="memorials-card__dates">{dates}</span>}
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                        <button
+                            className="memorials-arrow memorials-arrow--next"
+                            onClick={() => scrollBy(1)}
+                            disabled={!canRight}
+                            aria-label="Вперёд"
+                        >
+                            ›
+                        </button>
+                    </div>
+                </Reveal>
+            </div>
+        </section>
     );
 }
 

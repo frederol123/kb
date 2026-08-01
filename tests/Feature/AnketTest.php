@@ -448,6 +448,19 @@ class AnketTest extends TestCase
             ->assertJsonValidationErrors('content.gallery');
     }
 
+    public function test_guest_can_list_public_memorials(): void
+    {
+        Anket::factory()->create(['user_id' => $this->user->id, 'status' => 'published']);
+        Anket::factory()->create(['user_id' => $this->user->id, 'status' => 'private']);
+        Anket::factory()->create(['user_id' => $this->user->id, 'status' => 'draft']);
+
+        $response = $this->getJson('/api/memorials');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonStructure([['slug', 'info']]);
+    }
+
     public function test_guest_401_for_protected_routes(): void
     {
         $response = $this->getJson('/api/ankets');

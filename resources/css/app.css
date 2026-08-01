@@ -2508,6 +2508,124 @@
     }
 }
 
+/* ======== MEMORIALS CAROUSEL (главная) ======== */
+.memorials { padding: 80px 0; background: #fff; }
+.memorials-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.memorials-track {
+    flex: 1;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 5 * 24px) / 6);
+    gap: 24px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 4px 2px;
+}
+.memorials-track::-webkit-scrollbar { display: none; }
+.memorials-card {
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 2px solid #e9f0ff;
+    border-radius: 24px;
+    overflow: hidden;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.memorials-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px -10px rgba(25, 128, 223, 0.25);
+}
+.memorials-card__photo {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    display: block;
+    background: #eef4ff;
+}
+.memorials-card__photo--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eef4ff, #dbe7ff);
+    color: #1e79d0;
+    font-size: 42px;
+    font-weight: 700;
+}
+.memorials-card__body {
+    padding: 16px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.memorials-card__name {
+    color: #1c2145;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 21px;
+}
+.memorials-card__dates {
+    color: #6c6d7e;
+    font-size: 14px;
+    line-height: 18px;
+}
+.memorials-arrow {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 2px solid #e9f0ff;
+    background: #fff;
+    color: #1e79d0;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+.memorials-arrow:hover:not(:disabled) {
+    background: #1e79d0;
+    color: #fff;
+    border-color: #1e79d0;
+}
+.memorials-arrow:disabled { opacity: 0.35; cursor: default; }
+
+@media (max-width: 1439px) {
+    .memorials-track {
+        grid-auto-columns: calc((100% - 3 * 20px) / 4);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 1023px) {
+    .memorials-track {
+        grid-auto-columns: calc((100% - 2 * 16px) / 3);
+        gap: 16px;
+    }
+    .memorials-arrow { width: 38px; height: 38px; font-size: 24px; }
+}
+
+@media (max-width: 767px) {
+    .memorials-track {
+        grid-auto-columns: calc((100% - 16px) / 2);
+    }
+}
+
+@media (max-width: 480px) {
+    .memorials-track {
+        grid-auto-columns: calc(100% - 60px);
+    }
+}
+
 /* ======== ANIMATIONS: REVEAL ON SCROLL ======== */
 @layer utilities {
     .reveal {
