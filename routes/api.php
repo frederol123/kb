@@ -264,11 +264,11 @@ Route::get('/m/news', function () {
     return response()->json($news);
 });
 
-// Публичные анкеты для карусели на главной (только slug + info)
+// Публичные анкеты для карусели на главной (до 36 случайных, только slug + info)
 Route::get('/memorials', function () {
     return \App\Models\Anket::where('status', 'published')
-        ->orderByDesc('updated_at')
-        ->limit(12)
+        ->inRandomOrder()
+        ->limit(36)
         ->get(['slug', 'info']);
 });
 
