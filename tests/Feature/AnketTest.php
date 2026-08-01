@@ -386,6 +386,68 @@ class AnketTest extends TestCase
             ->assertJsonPath('message', 'Анкета приватная.');
     }
 
+    public function test_gallery_limit_uses_tariff_limits(): void
+    {
+        $tariff = Tariff::create([
+            'title' => 'Расширенная страница',
+            'slug' => 'extended',
+            'price' => 8250,
+            'description' => 'Тариф с большими лимитами.',
+            'features' => [],
+            'limits' => [
+                'max_qr_codes' => 3,
+                'max_gallery_images' => 30,
+                'max_videos' => 30,
+                'has_installation' => false,
+                'has_privacy' => true,
+                'has_maintenance' => false,
+                'has_family_tree' => false,
+                'has_video_creation' => false,
+            ],
+            'is_active' => true,
+        ]);
+        $this->user->update(['tariff_id' => $tariff->id]);
+
+        $anket = Anket::factory()->create(['user_id' => $this->user->id, 'status' => 'draft']);
+
+        // 20 фото — больше дефолтной колонки (6), но в пределах тарифа (30)
+        $gallery = array_map(
+            fn ($i) => ['url' => "https://example.com/{$i}.webp", 'text' => "Фото {$i}"],
+            range(1, 20)
+        );
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->putJson("/api/ankets/{$anket->id}", [
+                'status' => 'draft',
+                'info' => ['contact' => '+7 999 000-00-00'],
+                'content' => ['gallery' => $gallery, 'videos' => []],
+            ]);
+
+        $response->assertStatus(200)
+            ->assertJsonCount(20, 'content.gallery');
+    }
+
+    public function test_gallery_limit_falls_back_to_user_column_without_tariff(): void
+    {
+        // у пользователя без тарифа лимит из колонки (по умолчанию 6)
+        $anket = Anket::factory()->create(['user_id' => $this->user->id, 'status' => 'draft']);
+
+        $gallery = array_map(
+            fn ($i) => ['url' => "https://example.com/{$i}.webp", 'text' => "Фото {$i}"],
+            range(1, 7)
+        );
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->putJson("/api/ankets/{$anket->id}", [
+                'status' => 'draft',
+                'info' => ['contact' => '+7 999 000-00-00'],
+                'content' => ['gallery' => $gallery, 'videos' => []],
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('content.gallery');
+    }
+
     public function test_guest_401_for_protected_routes(): void
     {
         $response = $this->getJson('/api/ankets');

@@ -44,8 +44,8 @@ class TariffSeeder extends Seeder
             ],
             'limits' => [
                 'max_qr_codes' => 3,
-                'max_gallery_images' => 10,
-                'max_videos' => 10,
+                'max_gallery_images' => 30,
+                'max_videos' => 15,
                 'has_installation' => true,
                 'has_privacy' => true,
                 'has_maintenance' => true,
@@ -64,8 +64,8 @@ class TariffSeeder extends Seeder
             ],
             'limits' => [
                 'max_qr_codes' => 5,
-                'max_gallery_images' => 20,
-                'max_videos' => 20,
+                'max_gallery_images' => 60,
+                'max_videos' => 15,
                 'has_installation' => true,
                 'has_privacy' => true,
                 'has_maintenance' => true,

@@ -142,7 +142,8 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
             if ($anket->user_id !== $request->user()->id) abort(403);
 
             $videos = $anket->content['videos'] ?? [];
-            if (count($videos) >= $request->user()->max_videos) {
+            $maxVideos = (int) ($request->user()->tariff?->limits['max_videos'] ?? $request->user()->max_videos ?? 6);
+            if (count($videos) >= $maxVideos) {
                 abort(422, 'Достигнут лимит видео');
             }
 

@@ -148,14 +148,18 @@ class AnketController extends Controller
             }
         }
 
+        $limits = $request->user()->tariff?->limits ?? [];
+        $maxGallery = (int) ($limits['max_gallery_images'] ?? $request->user()->max_gallery_images ?? 6);
+        $maxVideos = (int) ($limits['max_videos'] ?? $request->user()->max_videos ?? 6);
+
         $request->validate([
             'status' => ['string', 'in:draft,published,private'],
             'info' => ['array'],
             'info.contact' => ['required', 'string', 'max:255'],
             'family' => ['array', 'nullable'],
             'content' => ['nullable', 'array'],
-            'content.gallery' => ['nullable', 'array', 'max:' . $request->user()->max_gallery_images],
-            'content.videos' => ['nullable', 'array', 'max:' . $request->user()->max_videos],
+            'content.gallery' => ['nullable', 'array', 'max:' . $maxGallery],
+            'content.videos' => ['nullable', 'array', 'max:' . $maxVideos],
             'private_pin' => ['nullable', 'string', 'digits_between:4,6'],
         ], [
             'info.contact.required' => 'Заполните контакты для связи',
@@ -191,10 +195,14 @@ class AnketController extends Controller
             }
         }
 
+        $limits = $request->user()->tariff?->limits ?? [];
+        $maxGallery = (int) ($limits['max_gallery_images'] ?? $request->user()->max_gallery_images ?? 6);
+        $maxVideos = (int) ($limits['max_videos'] ?? $request->user()->max_videos ?? 6);
+
         $request->validate([
             'content' => ['required', 'array'],
-            'content.gallery' => ['nullable', 'array', 'max:' . $request->user()->max_gallery_images],
-            'content.videos' => ['nullable', 'array', 'max:' . $request->user()->max_videos],
+            'content.gallery' => ['nullable', 'array', 'max:' . $maxGallery],
+            'content.videos' => ['nullable', 'array', 'max:' . $maxVideos],
         ]);
 
         $anket->update(['content' => $request->input('content')]);
