@@ -11,10 +11,12 @@ const SECTION = 'container mx-auto px-4';
 export default function MemorialPage() {
     const { slug } = useParams();
     const queryClient = useQueryClient();
-    const accessToken = localStorage.getItem(`m_access_${slug}`);
     const { data: card, isLoading, error } = useQuery({
         queryKey: ['memorial', slug],
-        queryFn: () => api.get(`/m/${slug}`, { params: accessToken ? { access_token: accessToken } : {} }).then(r => r.data),
+        queryFn: () => {
+            const token = localStorage.getItem(`m_access_${slug}`);
+            return api.get(`/m/${slug}`, { params: token ? { access_token: token } : {} }).then(r => r.data);
+        },
         retry: false,
     });
 
