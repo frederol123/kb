@@ -81,7 +81,7 @@ class AnketController extends Controller
                 $user = auth('sanctum')->user();
 
                 if (! $user || $anket->user_id !== $user->id) {
-                    abort(404);
+                    abort(403, 'Анкета приватная.');
                 }
             }
         }

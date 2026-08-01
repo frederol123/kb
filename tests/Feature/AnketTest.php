@@ -121,7 +121,8 @@ class AnketTest extends TestCase
 
         $response = $this->getJson("/api/m/{$anket->slug}");
 
-        $response->assertStatus(404);
+        $response->assertStatus(403)
+            ->assertJsonPath('message', 'Просмотр доступен только при статусе «Приватный» или «Опубликованный».');
     }
 
     public function test_public_memorial_page(): void
@@ -146,7 +147,49 @@ class AnketTest extends TestCase
 
         $response = $this->getJson("/api/m/{$anket->slug}");
 
-        $response->assertStatus(404);
+        $response->assertStatus(403)
+            ->assertJsonPath('message', 'Просмотр доступен только при статусе «Приватный» или «Опубликованный».');
+    }
+
+    public function test_guest_cannot_view_private_anket(): void
+    {
+        $anket = Anket::factory()->create([
+            'user_id' => $this->user->id,
+            'status' => 'private',
+        ]);
+
+        $response = $this->getJson("/api/m/{$anket->slug}");
+
+        $response->assertStatus(403)
+            ->assertJsonPath('message', 'Анкета приватная.');
+    }
+
+    public function test_non_owner_cannot_view_private_anket(): void
+    {
+        $anket = Anket::factory()->create([
+            'user_id' => $this->user->id,
+            'status' => 'private',
+        ]);
+
+        $response = $this->actingAs($this->otherUser, 'sanctum')
+            ->getJson("/api/m/{$anket->slug}");
+
+        $response->assertStatus(403)
+            ->assertJsonPath('message', 'Анкета приватная.');
+    }
+
+    public function test_owner_can_view_private_anket(): void
+    {
+        $anket = Anket::factory()->create([
+            'user_id' => $this->user->id,
+            'status' => 'private',
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson("/api/m/{$anket->slug}");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('slug', $anket->slug);
     }
 
     public function test_guest_401_for_protected_routes(): void
