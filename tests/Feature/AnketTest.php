@@ -34,8 +34,8 @@ class AnketTest extends TestCase
             'features' => [],
             'limits' => [
                 'max_qr_codes' => 3,
-                'max_gallery_images' => 10,
-                'max_videos' => 10,
+                'max_gallery_images' => 30,
+                'max_videos' => 15,
                 'has_installation' => false,
                 'has_privacy' => true,
                 'has_maintenance' => false,
