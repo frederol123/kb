@@ -369,13 +369,15 @@ function MemorialsSection() {
                                 const dates = [formatDateRu(info.birth_date), formatDateRu(info.death_date)].filter(Boolean).join(' – ');
                                 return (
                                     <Link key={m.slug} to={`/m/${m.slug}`} className="memorials-card">
-                                        {info.photo ? (
-                                            <img src={info.photo} alt={fio} loading="lazy" className="memorials-card__photo" />
-                                        ) : (
-                                            <div className="memorials-card__photo memorials-card__photo--placeholder">
-                                                {fio ? fio[0] : 'М'}
-                                            </div>
-                                        )}
+                                        <div className="memorials-card__media">
+                                            {info.photo ? (
+                                                <img src={info.photo} alt={fio} loading="lazy" className="memorials-card__photo" />
+                                            ) : (
+                                                <div className="memorials-card__photo memorials-card__photo--placeholder">
+                                                    {fio ? fio[0] : 'М'}
+                                                </div>
+                                            )}
+                                        </div>
                                         <div className="memorials-card__body">
                                             <span className="memorials-card__name">{fio || 'Близкий человек'}</span>
                                             {dates && <span className="memorials-card__dates">{dates}</span>}
