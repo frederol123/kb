@@ -616,7 +616,11 @@ export default function CardEditorPage() {
                                 ))}
                             </div>
                             {(content.gallery || []).length >= maxGallery ? (
-                                <p className="text-sm text-red-500 mb-2">Достигнут лимит ({maxGallery} изображений)</p>
+                                <p className="text-sm text-red-500 mb-2">
+                                    {user?.tariff?.slug === 'basic'
+                                        ? 'Достигнут лимит. Для увеличения лимита купите другой тариф'
+                                        : `Достигнут лимит (${maxGallery} изображений)`}
+                                </p>
                             ) : (
                                 <div className="flex items-center gap-3">
                                     <FileUpload onFile={handleGalleryUpload} disabled={uploading} />
@@ -665,7 +669,11 @@ export default function CardEditorPage() {
                                 </div>
                             )}
                             {(content.videos || []).length >= maxVideos ? (
-                                <p className="text-sm text-red-500 mb-2">Достигнут лимит ({maxVideos} видео)</p>
+                                <p className="text-sm text-red-500 mb-2">
+                                    {user?.tariff?.slug === 'basic'
+                                        ? 'Достигнут лимит. Для увеличения лимита купите другой тариф'
+                                        : `Достигнут лимит (${maxVideos} видео)`}
+                                </p>
                             ) : (
                                 <div className="border border-dashed border-[#cfd9e8] rounded-xl p-5 bg-[#f8faff]">
                                     <div className="flex gap-2 mb-4">
