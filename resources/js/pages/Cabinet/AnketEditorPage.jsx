@@ -217,7 +217,11 @@ export default function CardEditorPage() {
 
     const handleGalleryUpload = (file) => {
         if (!file || !id || isNew) return;
-        if ((content.gallery || []).length >= maxGallery) return toast(`Достигнут лимит (${maxGallery} изображений)`);
+        if ((content.gallery || []).length >= maxGallery) {
+            return user?.tariff?.slug === 'basic'
+                ? toast('Достигнут лимит. Для увеличения лимита купите другой тариф')
+                : toast(`Достигнут лимит (${maxGallery} изображений)`);
+        }
         setCropGalleryFile(file);
     };
 
@@ -270,7 +274,11 @@ export default function CardEditorPage() {
     };
 
     const addVideoItem = () => {
-        if ((content.videos || []).length >= maxVideos) return toast(`Достигнут лимит (${maxVideos} видео)`);
+        if ((content.videos || []).length >= maxVideos) {
+            return user?.tariff?.slug === 'basic'
+                ? toast('Достигнут лимит. Для увеличения лимита купите другой тариф')
+                : toast(`Достигнут лимит (${maxVideos} видео)`);
+        }
         const item = videoMode === 'upload'
             ? { type: 'upload', url: videoForm.url, original_name: videoForm.original_name, mime_type: videoForm.mime_type, description: videoForm.description }
             : { type: 'link', link: videoForm.link, preview: videoForm.preview, description: videoForm.description };
