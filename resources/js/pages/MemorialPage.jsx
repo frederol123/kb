@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { Shield, MapPin, Briefcase, Cross, Share2 } from 'lucide-react';
+import { Shield, MapPin, Briefcase, Cross, Share2, Lock } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useRef, useEffect } from 'react';
 import api from '../lib/api';
@@ -10,17 +10,58 @@ const SECTION = 'container mx-auto px-4';
 
 export default function MemorialPage() {
     const { slug } = useParams();
+    const queryClient = useQueryClient();
+    const accessToken = localStorage.getItem(`m_access_${slug}`);
     const { data: card, isLoading, error } = useQuery({
         queryKey: ['memorial', slug],
-        queryFn: () => api.get(`/m/${slug}`).then(r => r.data),
+        queryFn: () => api.get(`/m/${slug}`, { params: accessToken ? { access_token: accessToken } : {} }).then(r => r.data),
         retry: false,
     });
+
+    const [accessOpen, setAccessOpen] = useState(false);
+    const [pinInput, setPinInput] = useState('');
+    const [pinError, setPinError] = useState('');
+    const [pinLoading, setPinLoading] = useState(false);
+
+    const requestAccess = async () => {
+        setPinLoading(true);
+        setPinError('');
+        try {
+            const { data } = await api.post(`/m/${slug}/access`, { pin: pinInput });
+            localStorage.setItem(`m_access_${slug}`, data.access_token);
+            setAccessOpen(false);
+            setPinInput('');
+            queryClient.invalidateQueries({ queryKey: ['memorial', slug] });
+        } catch (err) {
+            setPinError(err.response?.data?.message || 'Не удалось получить доступ');
+        } finally {
+            setPinLoading(false);
+        }
+    };
 
     if (isLoading) return <MemorialSkeleton />;
 
     if (error) {
         const status = error.response?.status;
         const message = error.response?.data?.message;
+
+        if (status === 403 && message === 'Анкета приватная.') {
+            return (
+                <>
+                    <MemorialNotAvailable message={message} onRequestAccess={() => setAccessOpen(true)} />
+                    {accessOpen && (
+                        <PinAccessModal
+                            value={pinInput}
+                            onChange={setPinInput}
+                            error={pinError}
+                            loading={pinLoading}
+                            onSubmit={requestAccess}
+                            onClose={() => { setAccessOpen(false); setPinError(''); setPinInput(''); }}
+                        />
+                    )}
+                </>
+            );
+        }
 
         if (status === 403 && message) {
             return <MemorialNotAvailable message={message} />;
@@ -901,7 +942,7 @@ function MemorialNotFound() {
     );
 }
 
-function MemorialNotAvailable({ message }) {
+function MemorialNotAvailable({ message, onRequestAccess }) {
     return (
         <div className="memorial-page min-h-screen flex items-center justify-center">
             <div className="text-center py-40 max-w-md mx-auto px-4">
@@ -912,7 +953,61 @@ function MemorialNotAvailable({ message }) {
                 </div>
                 <h2 className="memorial-section__title mb-3">Просмотр недоступен</h2>
                 <p className="text-[#6c6d7e] text-base leading-relaxed mb-8">{message}</p>
-                <Link to="/" className="memorial-bottom__callback">На главную</Link>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Link to="/" className="memorial-bottom__callback">На главную</Link>
+                    {onRequestAccess && (
+                        <button
+                            onClick={onRequestAccess}
+                            className="inline-flex items-center gap-2 px-6 py-3 text-white font-medium text-base rounded-lg shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                            style={{ background: '#63bc18' }}
+                        >
+                            <Lock size={18} />
+                            Запросить доступ
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function PinAccessModal({ value, onChange, error, loading, onSubmit, onClose }) {
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4" role="dialog" aria-modal="true">
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+                <button
+                    onClick={onClose}
+                    className="absolute top-3 right-3 text-[#999] hover:text-[#1c2145] text-2xl leading-none"
+                    aria-label="Закрыть"
+                >
+                    ×
+                </button>
+                <h3 className="memorial-section__title text-xl mb-1">Запросить доступ</h3>
+                <p className="text-[#6c6d7e] text-sm mb-4">
+                    Введите пин-код, чтобы открыть приватную страницу на 4 часа
+                </p>
+                <input
+                    autoFocus
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={6}
+                    value={value}
+                    onChange={e => onChange(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Пин-код"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-center text-lg tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-[#1e79d0] mb-3"
+                    onKeyDown={e => { if (e.key === 'Enter' && !loading) onSubmit(); }}
+                />
+                {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+                <button
+                    onClick={onSubmit}
+                    disabled={loading || !value}
+                    className="w-full py-2.5 rounded-lg text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    style={{ background: '#63bc18' }}
+                >
+                    {loading ? 'Проверка...' : 'Получить доступ'}
+                </button>
             </div>
         </div>
     );

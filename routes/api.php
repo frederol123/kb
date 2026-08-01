@@ -268,6 +268,10 @@ Route::post('/payments/callback', [App\Http\Controllers\Api\PaymentController::c
 
 Route::get('/m/{anket:slug}', [AnketController::class, 'public']);
 
+// Проверка пин-кода приватной анкеты (гость получает токен доступа на 4 часа)
+Route::post('/m/{anket:slug}/access', [AnketController::class, 'requestAccess'])
+    ->middleware('throttle:10,1');
+
 Route::get('/tariffs', function () {
     return \App\Models\Tariff::where('is_active', true)->orderBy('price')->get();
 });

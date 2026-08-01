@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Anket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class AnketController extends Controller
@@ -61,7 +63,7 @@ class AnketController extends Controller
         return response()->json($anket->load('condolences.user:id,name'));
     }
 
-    public function public(string $slug): JsonResponse
+    public function public(Request $request, string $slug): JsonResponse
     {
         $anket = Anket::where('slug', $slug)->first();
 
@@ -76,17 +78,66 @@ class AnketController extends Controller
                 ], 403);
             }
 
-            // private — только авторизованный владелец
+            // private — владелец или гость с действующим пин-токеном (4 часа)
             if ($anket->status === 'private') {
                 $user = auth('sanctum')->user();
+                $isOwner = $user && $anket->user_id === $user->id;
 
-                if (! $user || $anket->user_id !== $user->id) {
+                if (! $isOwner && ! $this->validPrivateAccessToken($anket, $request->query('access_token'))) {
                     abort(403, 'Анкета приватная.');
                 }
             }
         }
 
         return response()->json($anket->load('condolences.user:id,name'));
+    }
+
+    /**
+     * Проверка пин-кода приватной анкеты. При успехе выдаёт подписанный
+     * токен доступа на 4 часа (привязан к хешу пина — смена пина аннулирует токены).
+     */
+    public function requestAccess(Request $request, string $slug): JsonResponse
+    {
+        $anket = Anket::where('slug', $slug)->first();
+
+        if (! $anket || $anket->status !== 'private' || ! $anket->private_pin) {
+            abort(404);
+        }
+
+        $request->validate([
+            'pin' => ['required', 'string'],
+        ]);
+
+        if (! Hash::check($request->input('pin'), $anket->private_pin)) {
+            return response()->json(['message' => 'Неверный пин-код.'], 403);
+        }
+
+        $token = Crypt::encryptString(implode('|', [
+            $anket->id,
+            $anket->private_pin,
+            now()->addHours(4)->getTimestamp(),
+        ]));
+
+        return response()->json(['access_token' => $token]);
+    }
+
+    private function validPrivateAccessToken(Anket $anket, ?string $token): bool
+    {
+        if (! $token) {
+            return false;
+        }
+
+        try {
+            $payload = Crypt::decryptString($token);
+        } catch (\Throwable) {
+            return false;
+        }
+
+        [$anketId, $pinHash, $expiresAt] = array_pad(explode('|', $payload), 3, '');
+
+        return (int) $anketId === $anket->id
+            && hash_equals($anket->private_pin ?? '', $pinHash)
+            && now()->getTimestamp() <= (int) $expiresAt;
     }
 
     public function updateInfo(Request $request, Anket $anket): JsonResponse
@@ -105,8 +156,10 @@ class AnketController extends Controller
             'content' => ['nullable', 'array'],
             'content.gallery' => ['nullable', 'array', 'max:' . $request->user()->max_gallery_images],
             'content.videos' => ['nullable', 'array', 'max:' . $request->user()->max_videos],
+            'private_pin' => ['nullable', 'string', 'digits_between:4,6'],
         ], [
             'info.contact.required' => 'Заполните контакты для связи',
+            'private_pin.digits_between' => 'Пин-код должен содержать от 4 до 6 цифр',
         ]);
 
         if ($request->input('status') === 'private' && !($request->user()->tariff?->limits['has_privacy'] ?? false)) {
@@ -117,6 +170,12 @@ class AnketController extends Controller
 
         if ($request->has('content')) {
             $data['content'] = $request->input('content');
+        }
+
+        // private_pin: null — очистить, строка — захешировать, не передан — не менять
+        if ($request->exists('private_pin')) {
+            $pin = $request->input('private_pin');
+            $data['private_pin'] = $pin === null ? null : Hash::make($pin);
         }
 
         $anket->update($data);

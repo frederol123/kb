@@ -28,6 +28,8 @@ export default function CardEditorPage() {
     const [content, setContent] = useState({ ...emptyContent, gallery: [] });
     const [status, setStatus] = useState('draft');
     const [family, setFamily] = useState({ children: [], spouses: [], parents: [] });
+    const [pinEnabled, setPinEnabled] = useState(false);
+    const [pinValue, setPinValue] = useState('');
     const [uploading, setUploading] = useState(false);
     const [cropFile, setCropFile] = useState(null);
     const [cropOpen, setCropOpen] = useState(false);
@@ -49,6 +51,7 @@ export default function CardEditorPage() {
             setContent({ ...emptyContent, ...card.content, gallery: card.content?.gallery || [], videos: card.content?.videos || [] });
             setStatus(card.status);
             setFamily(card.family || { children: [], spouses: [], parents: [] });
+            setPinEnabled(!!card.has_private_pin);
         }
     }, [card]);
 
@@ -97,7 +100,19 @@ export default function CardEditorPage() {
     });
 
     const saveInfo = () => {
-        saveInfoMut.mutate({ info, content, status, family });
+        const payload = { info, content, status, family };
+
+        // Пин-код для родственников: снят чекбокс → очистить; введён → установить;
+        // включён, но поле пустое (пин уже был) → не трогаем
+        if (status === 'private') {
+            if (!pinEnabled) {
+                payload.private_pin = null;
+            } else if (pinValue) {
+                payload.private_pin = pinValue;
+            }
+        }
+
+        saveInfoMut.mutate(payload);
     };
 
     const saveContentMut = useMutation({
@@ -387,6 +402,34 @@ export default function CardEditorPage() {
                                 Функция «Приватность» недоступна на вашем тарифе. 
                                 <Link to="/tariffs" className="text-[#3476f5] hover:underline ml-1">Выбрать тариф</Link>
                             </p>
+                        )}
+                        {status === 'private' && (
+                            <div className="mt-3">
+                                <label className="flex items-center gap-2 cursor-pointer select-none">
+                                    <input
+                                        type="checkbox"
+                                        checked={pinEnabled}
+                                        onChange={e => setPinEnabled(e.target.checked)}
+                                        className="w-4 h-4 accent-[#1e79d0]"
+                                    />
+                                    <span className="text-base text-[#333]">Пин-код для родственников</span>
+                                </label>
+                                {pinEnabled && (
+                                    <div className="mt-2">
+                                        <label className="block text-base text-[#999] mb-1.5">Пин-код (4–6 цифр)</label>
+                                        <input
+                                            type="text"
+                                            inputMode="numeric"
+                                            pattern="[0-9]*"
+                                            maxLength={6}
+                                            value={pinValue}
+                                            onChange={e => setPinValue(e.target.value.replace(/\D/g, ''))}
+                                            placeholder={card?.has_private_pin ? 'Пин-код уже установлен, введите новый, чтобы сменить' : 'Например, 1234'}
+                                            className="text-input w-auto"
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </div>
                     <button onClick={saveInfo} disabled={saveInfoMut.isPending}
