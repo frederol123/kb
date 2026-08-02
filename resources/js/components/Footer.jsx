@@ -16,8 +16,8 @@ export default function Footer() {
                     </nav>
                     <div className="footer__links">
                         <a href="tel:+795****2182" className="footer__link">7 951 313-21-82</a>
-                        <a href="https://t.me/Kod_bessmertiya" className="footer__link">Telegram</a>
-                        <a href="https://vk.com/" className="footer__link">VK</a>
+                        <a href="https://t.me/+PMzuWh8jHzliYWMy" className="footer__link">Telegram</a>
+                        <a href="https://vk.ru/immortal_code" className="footer__link">VK</a>
                     </div>
                 </div>
                 <div className="footer__copyright">

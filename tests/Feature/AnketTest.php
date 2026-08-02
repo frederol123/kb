@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AnketTest extends TestCase
@@ -176,6 +177,69 @@ class AnketTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJsonPath('message', 'Просмотр доступен только при статусе «Приватный» или «Опубликованный».');
+    }
+
+    public function test_owner_can_view_own_draft_anket(): void
+    {
+        $anket = Anket::factory()->create([
+            'user_id' => $this->user->id,
+            'status' => 'draft',
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson("/api/m/{$anket->slug}");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('slug', $anket->slug);
+    }
+
+    public function test_other_user_cannot_view_draft_anket(): void
+    {
+        $anket = Anket::factory()->create([
+            'user_id' => $this->user->id,
+            'status' => 'draft',
+        ]);
+
+        $response = $this->actingAs($this->otherUser, 'sanctum')
+            ->getJson("/api/m/{$anket->slug}");
+
+        $response->assertStatus(403);
+    }
+
+    public function test_admin_can_view_any_draft_anket(): void
+    {
+        Role::create(['name' => 'admin']);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        $anket = Anket::factory()->create([
+            'user_id' => $this->user->id,
+            'status' => 'draft',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson("/api/m/{$anket->slug}");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('slug', $anket->slug);
+    }
+
+    public function test_manager_can_view_any_draft_anket(): void
+    {
+        Role::create(['name' => 'manager']);
+        $manager = User::factory()->create();
+        $manager->assignRole('manager');
+
+        $anket = Anket::factory()->create([
+            'user_id' => $this->user->id,
+            'status' => 'draft',
+        ]);
+
+        $response = $this->actingAs($manager, 'sanctum')
+            ->getJson("/api/m/{$anket->slug}");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('slug', $anket->slug);
     }
 
     public function test_guest_cannot_view_private_anket(): void

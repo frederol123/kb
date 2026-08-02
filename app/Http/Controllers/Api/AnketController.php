@@ -73,9 +73,16 @@ class AnketController extends Controller
 
         if ($anket->status !== 'published') {
             if ($anket->status === 'draft') {
-                return response()->json([
-                    'message' => 'Просмотр доступен только при статусе «Приватный» или «Опубликованный».',
-                ], 403);
+                // Черновик — только владельцу или сотрудникам (admin/manager)
+                $user = auth('sanctum')->user();
+                $isOwner = $user && $anket->user_id === $user->id;
+                $isStaff = $user && $user->hasAnyRole(['admin', 'manager']);
+
+                if (! $isOwner && ! $isStaff) {
+                    return response()->json([
+                        'message' => 'Просмотр доступен только при статусе «Приватный» или «Опубликованный».',
+                    ], 403);
+                }
             }
 
             // private — владелец или гость с действующим пин-токеном (4 часа)
