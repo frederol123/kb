@@ -303,6 +303,7 @@ function MemorialsSection() {
     const [memorials, setMemorials] = useState([]);
     const [loading, setLoading] = useState(true);
     const scrollerRef = useRef(null);
+    const carouselRef = useRef(null);
     const [canLeft, setCanLeft] = useState(false);
     const [canRight, setCanRight] = useState(false);
 
@@ -342,6 +343,43 @@ function MemorialsSection() {
         el.scrollBy({ left: dir * step, behavior: 'smooth' });
     };
 
+    // Автопрокрутка по кругу (таймер 3 с, пауза при наведении)
+    useEffect(() => {
+        const el = scrollerRef.current;
+        const wrap = carouselRef.current;
+        if (!el || !wrap) return;
+
+        let timer = null;
+
+        const scrollNext = () => {
+            const card = el.querySelector('.memorials-card');
+            const step = card ? card.offsetWidth + 24 : 300;
+            const atEnd = el.scrollLeft >= el.scrollWidth - el.clientWidth - 4;
+            if (atEnd) {
+                el.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                el.scrollBy({ left: step, behavior: 'smooth' });
+            }
+        };
+
+        const stop = () => {
+            if (timer) { clearInterval(timer); timer = null; }
+        };
+        const start = () => {
+            stop();
+            timer = setInterval(scrollNext, 3000);
+        };
+
+        start();
+        wrap.addEventListener('mouseenter', stop);
+        wrap.addEventListener('mouseleave', start);
+        return () => {
+            stop();
+            wrap.removeEventListener('mouseenter', stop);
+            wrap.removeEventListener('mouseleave', start);
+        };
+    }, [memorials]);
+
     if (!loading && memorials.length === 0) return null;
 
     return (
@@ -354,7 +392,7 @@ function MemorialsSection() {
                     </span>
                 </Reveal>
                 <Reveal delay={100}>
-                    <div className="memorials-carousel">
+                    <div className="memorials-carousel" ref={carouselRef}>
                         <button
                             className="memorials-arrow memorials-arrow--prev"
                             onClick={() => scrollBy(-1)}
