@@ -182,7 +182,7 @@ function PricesSection() {
                             features={[
                                 { icon: 'icon-list-qr.svg', text: '1 генерация QR-кода' },
                                 { icon: 'icon-list-note.svg', text: 'Добавление биографии' },
-                                { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
+                                { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио (до 6 фото и 6 видео)' },
                             ]} />
                     </Reveal>
                     <Reveal delay={120} direction="up">
@@ -190,7 +190,7 @@ function PricesSection() {
                             desc='<p>Включает в себя все возможности <strong>базовой страницы,</strong> с учетом генерации <strong>3 QR-кода</strong>. Металлическая табличка с QR-кодом в футляре 1 шт.</p>'
                             features={[
                                 { icon: 'icon-list-qr.svg', text: '1 металлическая табличка с QR-кодом в футляре' },
-                                { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио' },
+                                { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио (до 30 фото и 15 видео)' },
                                 { icon: 'icon-list-qr.svg', text: '3 генерации QR-кода' },
                                 { icon: 'icon-list-privacy.svg', text: 'Приватность' },
                             ]} />
@@ -201,6 +201,7 @@ function PricesSection() {
                             features={[
                                 { icon: 'icon-list-qr.svg', text: '2 металлические таблички с QR-кодом в футляре' },
                                 { icon: 'icon-list-qr.svg', text: '5 генераций QR-кода' },
+                                { icon: 'icon-list-picture.svg', text: 'Добавление фото, видео и аудио (до 60 фото и 15 видео)' },
                                 { icon: 'icon-list-support.svg', text: 'Создание видеоролика' },
                                 { icon: 'icon-list-support.svg', text: 'Приоритетная поддержка 24/7' },
                             ]} />
