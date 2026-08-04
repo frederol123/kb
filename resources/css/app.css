@@ -1487,14 +1487,13 @@
         .number-cards { grid-template-columns: 1fr; gap: 23px; }
 
         /* ======== MEMORIAL PAGE MOBILE ======== */
-        .memorial-page { padding-top: 80px !important; }
-        
+
         /* Hero mobile */
         .memorial-hero {
             min-height: auto;
             flex-direction: column;
             gap: 40px;
-            padding-top: 80px !important;
+            padding-top: 0 !important;
         }
         .memorial-hero__content { order: -1; width: 100%; text-align: center; }
         .memorial-hero__photo { 
@@ -1542,14 +1541,13 @@
 
     /* ======== MEMORIAL PAGE MOBILE ======== */
     @media (max-width: 767px) {
-        .memorial-page { padding-top: 80px !important;padding-top: 100px; }
         
         /* Hero mobile */
         .memorial-hero {
             min-height: auto;
             flex-direction: column;
             gap: 40px;
-            padding-top: 80px !important;
+            padding-top: 0 !important;
         }
         .memorial-hero__content { order: -1; width: 100%; text-align: center; }
         .memorial-hero__photo { 
