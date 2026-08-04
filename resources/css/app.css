@@ -1386,7 +1386,7 @@
             letter-spacing: 0.02em;
         }
         .header__right { gap: 33px; }
-        .hero__inner { grid-template-columns: 1fr; gap: 33px; }
+        .hero__inner { grid-template-columns: 1fr; gap: 33px; padding-top: 32px; }
         .hero__content { padding-top: 0; }
         .hero__preview { align-items: center; }
         .hero__image { width: 100%; max-width: 380px; transform: translate(17px, 8px); margin-top: 85px; }
@@ -1422,7 +1422,7 @@
     @media (max-width: 1023px) {
         .container { padding: 0 18px; }
         .hero__title { font-size: 36px; line-height: 40px; margin-bottom: 8px; padding-right: 0; }
-        .hero__inner { gap: 20px; }
+        .hero__inner { gap: 20px; padding-top: 32px; }
         .tree-introduce__inner { gap: 61px; grid-template-columns: minmax(0, 34fr) minmax(0, 66fr); }
         .tree-introduce__desc { width: calc(100% + 20px); }
         .prices-cards { gap: 16px; grid-template-columns: repeat(2, 1fr); }
@@ -1465,6 +1465,7 @@
 
     @media (max-width: 767px) {
         .container { padding: 0 15px; }
+        .hero__inner { padding-top: 32px; }
         .header__phone { display: none; }
         .header__right { gap: 26px; }
         .header__login { padding: 8px 21px 8px 23px; }
