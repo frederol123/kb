@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
@@ -34,10 +35,29 @@ function EmptyPage({ title }) {
     );
 }
 
+/**
+ * ScrollToTop — при каждой смене маршрута прокручивает страницу наверх,
+ * чтобы страница (например, анкета) открывалась с начала, а не с позиции
+ * скролла предыдущей страницы.
+ */
+function ScrollToTop() {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+}
+
 export default function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
+                <ScrollToTop />
                     <AuthProvider>
                         <ToastProvider>
                     <Routes>
