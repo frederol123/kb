@@ -32,7 +32,7 @@
         font-display: swap;
     }
 
-    html { -webkit-text-size-adjust: 100%; }
+    html { -webkit-text-size-adjust: 100%; overflow-x: hidden; }
     body {
         font-family: 'Vela Sans', sans-serif;
         font-weight: 500;
@@ -42,6 +42,7 @@
         color: #6c6d7e;
         background: #f8f8f8;
         margin: 0;
+        overflow-x: hidden;
     }
 }
 
@@ -1469,7 +1470,7 @@
         .header__phone { display: none; }
         .header__right { gap: 26px; }
         .header__login { padding: 8px 21px 8px 23px; }
-        .hero__title { width: 140%; margin-bottom: 13px; }
+        .hero__title { width: 100%; margin-bottom: 13px; }
         .hero__image { transform: none; width: 100%; max-width: unset; margin-top: 0; }
         .tree-introduce { margin: 40px 0; }
         .tree-introduce__inner { grid-template-columns: 1fr; gap: 40px; }
