@@ -257,7 +257,10 @@ export default function AuthModal({ open, onClose }) {
             try {
                 const VKID = window.VKIDSDK;
                 const data = await VKID.Auth.exchangeCode(payload.code, payload.device_id);
-                const { data: res } = await api.post('/auth/vk/exchange', { token: data.token });
+                const { data: res } = await api.post('/auth/vk/exchange', {
+                    token: data.access_token,
+                    user_id: data.user_id,
+                });
                 localStorage.setItem('token', res.token);
                 await fetchUser();
                 onClose();

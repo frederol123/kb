@@ -126,51 +126,32 @@ class SocialAuthController extends Controller
     }
 
     /**
-     * VK ID SDK: обмен silent-токена (с фронта) на данные пользователя.
-     * Принимает POST { token } — silent token от VKID.Auth.exchangeCode.
+     * VK ID SDK: обмен access_token (с фронта) на данные пользователя.
+     * Принимает POST { token, user_id } — ответ VKID.Auth.exchangeCode
+     * (oauth2/auth, grant_type=authorization_code → access_token).
      */
     public function vkExchange(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'token' => ['required', 'string'],
+            'user_id' => ['required', 'integer'],
         ]);
 
-        $serviceToken = config('services.vkontakte.service_token');
-
-        if (!$serviceToken) {
-            return response()->json(['message' => 'VK не настроен (нет сервисного ключа).'], 500);
-        }
-
-        // 1. Обмениваем silent-токен на обычный access_token
-        $exchange = \Illuminate\Support\Facades\Http::get('https://api.vk.com/method/auth.exchangeSilentToken', [
-            'token' => $request->token,
-            'access_token' => $serviceToken,
-            'token_ttl' => 3600,
+        // 1. Получаем профиль напрямую по access_token (authorization_code flow, не silent)
+        $profile = \Illuminate\Support\Facades\Http::get('https://api.vk.com/method/users.get', [
+            'user_ids' => $request->user_id,
+            'fields' => 'first_name,last_name,email',
+            'access_token' => $request->token,
             'v' => '5.199',
         ])->json();
 
-        if (isset($exchange['error'])) {
-            \Illuminate\Support\Facades\Log::warning('VK exchangeSilentToken failed', [
-                'error' => $exchange['error'],
+        if (isset($profile['error'])) {
+            \Illuminate\Support\Facades\Log::warning('VK users.get failed', [
+                'error' => $profile['error'],
             ]);
 
             return response()->json(['message' => 'Не удалось авторизоваться через VK.'], 422);
         }
-
-        $vkUserId = $exchange['response']['user_id'] ?? null;
-        $accessToken = $exchange['response']['access_token'] ?? null;
-
-        if (!$vkUserId || !$accessToken) {
-            return response()->json(['message' => 'VK не вернул данные пользователя.'], 422);
-        }
-
-        // 2. Получаем профиль
-        $profile = \Illuminate\Support\Facades\Http::get('https://api.vk.com/method/users.get', [
-            'user_ids' => $vkUserId,
-            'fields' => 'first_name,last_name,email',
-            'access_token' => $accessToken,
-            'v' => '5.199',
-        ])->json();
 
         $userData = $profile['response'][0] ?? null;
 
@@ -178,10 +159,16 @@ class SocialAuthController extends Controller
             return response()->json(['message' => 'VK не вернул профиль пользователя.'], 422);
         }
 
+        $vkUserId = $userData['id'] ?? null;
+
+        if (!$vkUserId) {
+            return response()->json(['message' => 'VK не вернул ID пользователя.'], 422);
+        }
+
         $fullName = trim(($userData['first_name'] ?? '') . ' ' . ($userData['last_name'] ?? '')) ?: 'vk-user';
         $email = $userData['email'] ?? null;
 
-        // 3. Находим или создаём пользователя
+        // 2. Находим или создаём пользователя
         $socialUser = new \Laravel\Socialite\Two\User();
         $socialUser->id = $vkUserId;
         $socialUser->name = $fullName;
@@ -189,7 +176,12 @@ class SocialAuthController extends Controller
 
         $user = $this->findOrCreateUser('vkontakte', $socialUser);
 
-        // 4. Выдаём наш токен
+        // Если пользователь не подтвердил email — подтверждаем автоматически (соцсеть уже подтвердила личность)
+        if (is_null($user->email_verified_at) && $user->email) {
+            $user->forceFill(['email_verified_at' => now()])->save();
+        }
+
+        // 3. Выдаём наш токен
         $token = $user->createToken('social-vkontakte')->plainTextToken;
 
         return response()->json([
