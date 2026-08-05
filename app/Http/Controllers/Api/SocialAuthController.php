@@ -126,40 +126,52 @@ class SocialAuthController extends Controller
     }
 
     /**
-     * VK ID SDK: обмен access_token (с фронта) на данные пользователя.
-     * Принимает POST { token, user_id } — ответ VKID.Auth.exchangeCode
-     * (oauth2/auth, grant_type=authorization_code → access_token).
+     * VK ID SDK: обмен токена (с фронта) на данные пользователя.
+     * Принимает POST { token, id_token, user_id } — ответ VKID.Auth.exchangeCode
+     * (oauth2/auth, grant_type=authorization_code).
+     *
+     * access_token от VK привязан к IP браузера и не работает с сервера
+     * в api.vk.com (ошибка 1130), поэтому данные получаем через
+     * id.vk.ru/oauth2/user_info (полный профиль) или public_info (id_token).
      */
     public function vkExchange(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'token' => ['required', 'string'],
-            'user_id' => ['required', 'integer'],
+            'id_token' => ['required', 'string'],
         ]);
 
-        // 1. Получаем профиль напрямую по access_token (authorization_code flow, не silent)
-        $profile = \Illuminate\Support\Facades\Http::get('https://api.vk.com/method/users.get', [
-            'user_ids' => $request->user_id,
-            'fields' => 'first_name,last_name,email',
+        $clientId = config('services.vkontakte.client_id') ?: 54707973;
+
+        // 1. Полный профиль по access_token (id.vk.ru — OAuth-сервер, не api.vk.com)
+        $profile = \Illuminate\Support\Facades\Http::post('https://id.vk.ru/oauth2/user_info', [
             'access_token' => $request->token,
-            'v' => '5.199',
+            'client_id' => $clientId,
         ])->json();
 
-        if (isset($profile['error'])) {
-            \Illuminate\Support\Facades\Log::warning('VK users.get failed', [
-                'error' => $profile['error'],
+        if (!isset($profile['user'])) {
+            \Illuminate\Support\Facades\Log::warning('VK user_info failed', [
+                'response' => $profile,
+            ]);
+
+            // 2. Fallback: публичные данные по id_token (JWT, не привязан к IP)
+            $profile = \Illuminate\Support\Facades\Http::post('https://id.vk.ru/oauth2/public_info', [
+                'id_token' => $request->id_token,
+                'client_id' => $clientId,
+            ])->json();
+        }
+
+        if (!isset($profile['user'])) {
+            \Illuminate\Support\Facades\Log::warning('VK public_info failed too', [
+                'response' => $profile,
             ]);
 
             return response()->json(['message' => 'Не удалось авторизоваться через VK.'], 422);
         }
 
-        $userData = $profile['response'][0] ?? null;
+        $userData = $profile['user'];
 
-        if (!$userData) {
-            return response()->json(['message' => 'VK не вернул профиль пользователя.'], 422);
-        }
-
-        $vkUserId = $userData['id'] ?? null;
+        $vkUserId = $userData['user_id'] ?? null;
 
         if (!$vkUserId) {
             return response()->json(['message' => 'VK не вернул ID пользователя.'], 422);
@@ -168,7 +180,7 @@ class SocialAuthController extends Controller
         $fullName = trim(($userData['first_name'] ?? '') . ' ' . ($userData['last_name'] ?? '')) ?: 'vk-user';
         $email = $userData['email'] ?? null;
 
-        // 2. Находим или создаём пользователя
+        // 3. Находим или создаём пользователя
         $socialUser = new \Laravel\Socialite\Two\User();
         $socialUser->id = $vkUserId;
         $socialUser->name = $fullName;
@@ -181,7 +193,7 @@ class SocialAuthController extends Controller
             $user->forceFill(['email_verified_at' => now()])->save();
         }
 
-        // 3. Выдаём наш токен
+        // 4. Выдаём наш токен
         $token = $user->createToken('social-vkontakte')->plainTextToken;
 
         return response()->json([
