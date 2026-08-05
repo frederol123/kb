@@ -22,6 +22,9 @@ Route::prefix('auth')->middleware('web')->group(function () {
     Route::get('/{provider}/callback', [SocialAuthController::class, 'callback'])->whereIn('provider', ['google', 'vkontakte']);
 });
 
+// VK ID SDK: обмен silent-токена с фронта (без редиректа)
+Route::post('/auth/vk/exchange', [SocialAuthController::class, 'vkExchange'])->middleware('throttle:20,1');
+
 Route::middleware('throttle:30,1')->group(function () {
     Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 

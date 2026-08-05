@@ -2708,3 +2708,17 @@
         transition: none !important;
     }
 }
+
+/* ======== VK ID виджет ======== */
+.vk-id-widget {
+    width: 100%;
+    min-height: 42px;
+    display: flex;
+    justify-content: center;
+}
+.vk-id-widget > div {
+    width: 100%;
+}
+.vk-id-widget iframe {
+    width: 100% !important;
+}

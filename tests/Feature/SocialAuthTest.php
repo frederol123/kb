@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\SocialAccount;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Tests\TestCase;
@@ -98,5 +99,73 @@ class SocialAuthTest extends TestCase
         $this->get('/api/auth/google/callback');
 
         $this->assertDatabaseHas('users', ['login' => 'ivan-petrov2']);
+    }
+
+    // ──────────────────────────────────────────────
+    // VK ID SDK (exchange silent token)
+    // ──────────────────────────────────────────────
+
+    private function fakeVkApi(): void
+    {
+        // ВАЖНО: Http::fake матчит только паттерны со '*' (Str::is).
+        // Последовательность ответов — только через Http::sequence()
+        // (массив из Http::response в этой версии Laravel не работает).
+        $json = ['Content-Type' => 'application/json'];
+
+        Http::fake([
+            '*' => Http::sequence()
+                ->push([
+                    'response' => [
+                        'access_token' => 'vk-access-token',
+                        'user_id' => 123456,
+                    ],
+                ], 200, $json)
+                ->push([
+                    'response' => [
+                        ['id' => 123456, 'first_name' => 'Иван', 'last_name' => 'Петров'],
+                    ],
+                ], 200, $json),
+        ]);
+    }
+
+    public function test_vk_exchange_creates_new_user(): void
+    {
+        $this->fakeVkApi();
+
+        $response = $this->postJson('/api/auth/vk/exchange', ['token' => 'silent-token']);
+
+        $response->assertStatus(201)
+            ->assertJsonStructure(['token', 'user'])
+            ->assertJsonPath('user.name', 'Иван Петров');
+
+        $user = User::where('name', 'Иван Петров')->first();
+        $this->assertNotNull($user);
+        $this->assertDatabaseHas('social_accounts', [
+            'user_id' => $user->id,
+            'provider' => 'vkontakte',
+            'provider_user_id' => '123456',
+        ]);
+    }
+
+    public function test_vk_exchange_requires_token(): void
+    {
+        $response = $this->postJson('/api/auth/vk/exchange', []);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('token');
+    }
+
+    public function test_vk_exchange_handles_vk_error(): void
+    {
+        Http::fake([
+            '*' => Http::response([
+                'error' => ['error_code' => 5, 'error_msg' => 'User authorization failed'],
+            ], 200, ['Content-Type' => 'application/json']),
+        ]);
+
+        $response = $this->postJson('/api/auth/vk/exchange', ['token' => 'bad-token']);
+
+        $response->assertStatus(422)
+            ->assertJsonPath('message', 'Не удалось авторизоваться через VK.');
     }
 }

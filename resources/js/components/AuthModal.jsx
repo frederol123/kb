@@ -227,6 +227,74 @@ export default function AuthModal({ open, onClose }) {
         window.location.href = `/api/auth/${provider}/redirect`;
     };
 
+    // ── VK ID SDK ─────────────────────────────────────────────
+    const vkWidgetRef = useRef(null);
+
+    useEffect(() => {
+        if (!open) return;
+        let cancelled = false;
+
+        const loadVkSdk = () => {
+            if (window.VKIDSDK) return Promise.resolve(window.VKIDSDK);
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js';
+                script.onload = () => {
+                    const VKID = window.VKIDSDK;
+                    VKID.Config.init({
+                        app: Number(import.meta.env.VITE_VK_APP_ID || 54707973),
+                        redirectUrl: import.meta.env.VITE_VK_REDIRECT_URL || 'https://immortal-code.ru/',
+                        responseMode: VKID.ConfigResponseMode.Callback,
+                        source: VKID.ConfigSource.LOWCODE,
+                        scope: 'email',
+                    });
+                    resolve(VKID);
+                };
+                script.onerror = () => reject(new Error('VK SDK load failed'));
+                document.head.appendChild(script);
+            });
+        };
+
+        const handleVkSuccess = async (payload) => {
+            try {
+                const VKID = window.VKIDSDK;
+                const data = await VKID.Auth.exchangeCode(payload.code, payload.device_id);
+                const { data: res } = await api.post('/auth/vk/exchange', { token: data.token });
+                localStorage.setItem('token', res.token);
+                await fetchUser();
+                onClose();
+                navigate('/lk');
+            } catch (err) {
+                setError(err.response?.data?.message || 'Не удалось войти через ВКонтакте. Попробуйте ещё раз.');
+            }
+        };
+
+        loadVkSdk()
+            .then((VKID) => {
+                if (cancelled) return;
+                const container = document.getElementById('vk-id-widget');
+                if (!container) return;
+
+                // Убираем старый виджет при переключении формы
+                if (vkWidgetRef.current?.destroy) {
+                    try { vkWidgetRef.current.destroy(); } catch { /* noop */ }
+                }
+
+                const widget = new VKID.OAuthList();
+                widget.render({ container, oauthList: ['vkid'] })
+                    .on(VKID.WidgetEvents.ERROR, () => {
+                        setError('Не удалось открыть VK ID. Попробуйте ещё раз.');
+                    })
+                    .on(VKID.OAuthListInternalEvents.LOGIN_SUCCESS, handleVkSuccess);
+                vkWidgetRef.current = widget;
+            })
+            .catch(() => {
+                if (!cancelled) setError('Не удалось загрузить VK ID.');
+            });
+
+        return () => { cancelled = true; };
+    }, [open, mode]);
+
     const renderForm = () => {
         switch (mode) {
             case 'register':
@@ -251,13 +319,7 @@ export default function AuthModal({ open, onClose }) {
                                 </svg>
                                 Регистрация через Google
                             </button>
-                            <button type="button" onClick={() => handleSocialLogin('vkontakte')}
-                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-[#e9f0ff] bg-white text-[#1c2145] font-medium hover:bg-[#f7fbff] transition-colors">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#0077FF">
-                                    <path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.576-1.496c.588-.19 1.341 1.26 2.14 1.818.605.422 1.064.33 1.064.33l2.137-.03s1.117-.071.587-.964c-.043-.073-.308-.661-1.588-1.87-1.34-1.264-1.16-1.059.453-3.246.983-1.332 1.376-2.145 1.253-2.493-.117-.332-.84-.244-.84-.244l-2.406.015s-.178-.025-.31.056c-.13.079-.212.262-.212.262s-.382 1.03-.89 1.907c-1.07 1.85-1.499 1.948-1.674 1.832-.407-.267-.305-1.075-.305-1.649 0-1.793.267-2.54-.521-2.733-.262-.065-.454-.107-1.123-.114-.858-.009-1.585.003-1.996.208-.274.136-.485.44-.356.457.159.021.519.099.71.339.246.31.237.1.237 1.577 0 1.847-.386 2.09-.836 2.09-.396 0-.971-.532-1.863-2.048-.304-.52-.533-.946-.533-.946s-.122-.247-.334-.24c-.212.006-.509.006-.509.006s-1.876.03-2.14.09c-.193.043-.334.207-.01.643 1.275 1.71 2.744 3.185 2.744 3.185s.653.687-.29 1.65c-.925.946-2.019 1.835-2.019 1.835s-.34.195.068.41c.66.352 1.83.362 1.83.362s.9.06 1.77-.89c.717-.784 1.254-1.586 1.254-1.586s.151-.27.362-.018c.21.252.843 1.083 1.158 1.364.268.238.474.372.793.39.317.018.556-.023.556-.023z"/>
-                                </svg>
-                                Регистрация ВКонтакте
-                            </button>
+                            <div id="vk-id-widget" className="vk-id-widget"></div>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="flex-1 h-px bg-[#e9f0ff]"></div>
@@ -421,13 +483,7 @@ export default function AuthModal({ open, onClose }) {
                                 </svg>
                                 Войти через Google
                             </button>
-                            <button type="button" onClick={() => handleSocialLogin('vkontakte')}
-                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-[#e9f0ff] bg-white text-[#1c2145] font-medium hover:bg-[#f7fbff] transition-colors">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#0077FF">
-                                    <path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.576-1.496c.588-.19 1.341 1.26 2.14 1.818.605.422 1.064.33 1.064.33l2.137-.03s1.117-.071.587-.964c-.043-.073-.308-.661-1.588-1.87-1.34-1.264-1.16-1.059.453-3.246.983-1.332 1.376-2.145 1.253-2.493-.117-.332-.84-.244-.84-.244l-2.406.015s-.178-.025-.31.056c-.13.079-.212.262-.212.262s-.382 1.03-.89 1.907c-1.07 1.85-1.499 1.948-1.674 1.832-.407-.267-.305-1.075-.305-1.649 0-1.793.267-2.54-.521-2.733-.262-.065-.454-.107-1.123-.114-.858-.009-1.585.003-1.996.208-.274.136-.485.44-.356.457.159.021.519.099.71.339.246.31.237.1.237 1.577 0 1.847-.386 2.09-.836 2.09-.396 0-.971-.532-1.863-2.048-.304-.52-.533-.946-.533-.946s-.122-.247-.334-.24c-.212.006-.509.006-.509.006s-1.876.03-2.14.09c-.193.043-.334.207-.01.643 1.275 1.71 2.744 3.185 2.744 3.185s.653.687-.29 1.65c-.925.946-2.019 1.835-2.019 1.835s-.34.195.068.41c.66.352 1.83.362 1.83.362s.9.06 1.77-.89c.717-.784 1.254-1.586 1.254-1.586s.151-.27.362-.018c.21.252.843 1.083 1.158 1.364.268.238.474.372.793.39.317.018.556-.023.556-.023z"/>
-                                </svg>
-                                Войти ВКонтакте
-                            </button>
+                            <div id="vk-id-widget" className="vk-id-widget"></div>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="flex-1 h-px bg-[#e9f0ff]"></div>
