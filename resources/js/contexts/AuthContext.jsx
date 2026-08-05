@@ -26,6 +26,25 @@ export function AuthProvider({ children }) {
             return;
         }
 
+        // Социальная авторизация (Google/VK): токен приходит в social_token
+        const socialToken = params.get('social_token');
+        if (socialToken) {
+            localStorage.setItem('token', socialToken);
+            window.history.replaceState({}, '', window.location.pathname);
+            api.get('/auth/me')
+                .then(({ data }) => setUser(data))
+                .catch(() => localStorage.removeItem('token'))
+                .finally(() => setLoading(false));
+            return;
+        }
+
+        // Ошибка соц-авторизации — показываем и очищаем URL
+        const socialError = params.get('social_error');
+        if (socialError) {
+            window.history.replaceState({}, '', window.location.pathname);
+            window.dispatchEvent(new CustomEvent('auth:social-error', { detail: socialError }));
+        }
+
         if (token) {
             api.get('/auth/me')
                 .then(({ data }) => setUser(data))

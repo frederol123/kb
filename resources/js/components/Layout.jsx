@@ -13,7 +13,12 @@ export default function Layout() {
     useEffect(() => {
         const handler = () => setAuthOpen(true);
         window.addEventListener('auth:open', handler);
-        return () => window.removeEventListener('auth:open', handler);
+        const socialErrorHandler = () => setAuthOpen(true);
+        window.addEventListener('auth:social-error', socialErrorHandler);
+        return () => {
+            window.removeEventListener('auth:open', handler);
+            window.removeEventListener('auth:social-error', socialErrorHandler);
+        };
     }, []);
 
     return (

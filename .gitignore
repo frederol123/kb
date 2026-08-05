@@ -43,3 +43,6 @@ test_mobileid.php
 test_smtp.php
 /lang/
 freeclaude.sh
+
+# Hermes plans (local only)
+.hermes/

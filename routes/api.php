@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\Api\PhoneVerificationController;
+use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\AnketController;
 use App\Http\Controllers\Api\QrController;
 use Illuminate\Http\Request;
@@ -13,6 +14,12 @@ use Illuminate\Support\Str;
 Route::middleware('throttle:10,1')->group(function () {
     Route::post('/auth/login', [AuthController::class, 'login']);
     Route::post('/auth/register', [AuthController::class, 'register']);
+});
+
+// Социальная авторизация (Google, VK)
+Route::prefix('auth')->middleware('web')->group(function () {
+    Route::get('/{provider}/redirect', [SocialAuthController::class, 'redirect'])->whereIn('provider', ['google', 'vkontakte']);
+    Route::get('/{provider}/callback', [SocialAuthController::class, 'callback'])->whereIn('provider', ['google', 'vkontakte']);
 });
 
 Route::middleware('throttle:30,1')->group(function () {

@@ -54,4 +54,16 @@ return [
         'site_key' => env('YANDEX_CAPTCHA_SITE_KEY'),
         'server_key' => env('YANDEX_CAPTCHA_SERVER_KEY'),
     ],
+
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI'),
+    ],
+
+    'vkontakte' => [
+        'client_id' => env('VK_CLIENT_ID'),
+        'client_secret' => env('VK_CLIENT_SECRET'),
+        'redirect' => env('VK_REDIRECT_URI'),
+    ],
 ];

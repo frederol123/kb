@@ -3,32 +3,34 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 
-const FOREIGN_EMAIL_DOMAINS = [
-    'gmail.com', 'googlemail.com',
-    'yahoo.com', 'yahoo.co.uk', 'yahoo.co.jp', 'yahoo.fr', 'yahoo.de',
-    'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
-    'aol.com', 'aim.com',
-    'protonmail.com', 'proton.me', 'pm.me',
-    'tutanota.com', 'tutanota.de',
-    'gmx.com', 'gmx.de', 'gmx.net',
-    'icloud.com', 'me.com', 'mac.com',
-    'mail.com', 'email.com',
-    'zoho.com',
-    'fastmail.com', 'fastmail.fm',
-    'cock.li', 'riseup.net',
-    'disroot.org',
-    'inbox.com',
-    'hushmail.com',
-    'qq.com', '163.com', '126.com', 'sina.com',
-    'naver.com', 'daum.net',
-    'yandex.com',
-];
+// ВНИМАНИЕ: ограничение на зарубежные email-домены временно отключено.
+// Чтобы вернуть — раскомментируйте FOREIGN_EMAIL_DOMAINS, isForeignEmail и блок проверки в handleSubmit.
+// const FOREIGN_EMAIL_DOMAINS = [
+//     'gmail.com', 'googlemail.com',
+//     'yahoo.com', 'yahoo.co.uk', 'yahoo.co.jp', 'yahoo.fr', 'yahoo.de',
+//     'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
+//     'aol.com', 'aim.com',
+//     'protonmail.com', 'proton.me', 'pm.me',
+//     'tutanota.com', 'tutanota.de',
+//     'gmx.com', 'gmx.de', 'gmx.net',
+//     'icloud.com', 'me.com', 'mac.com',
+//     'mail.com', 'email.com',
+//     'zoho.com',
+//     'fastmail.com', 'fastmail.fm',
+//     'cock.li', 'riseup.net',
+//     'disroot.org',
+//     'inbox.com',
+//     'hushmail.com',
+//     'qq.com', '163.com', '126.com', 'sina.com',
+//     'naver.com', 'daum.net',
+//     'yandex.com',
+// ];
 
-function isForeignEmail(email) {
-    const domain = email.split('@')[1]?.toLowerCase().trim();
-    if (!domain) return false;
-    return FOREIGN_EMAIL_DOMAINS.some(d => domain === d || domain.endsWith('.' + d));
-}
+// function isForeignEmail(email) {
+//     const domain = email.split('@')[1]?.toLowerCase().trim();
+//     if (!domain) return false;
+//     return FOREIGN_EMAIL_DOMAINS.some(d => domain === d || domain.endsWith('.' + d));
+// }
 
 function formatPhone(value) {
     // Убираем всё кроме цифр
@@ -98,6 +100,16 @@ export default function AuthModal({ open, onClose }) {
         };
     }, [mode]);
 
+    // Ошибка соц-авторизации (Google/VK) — показываем в модалке
+    useEffect(() => {
+        const handler = (e) => {
+            setMode('login');
+            setError(e.detail || 'Не удалось войти через соцсеть. Попробуйте ещё раз.');
+        };
+        window.addEventListener('auth:social-error', handler);
+        return () => window.removeEventListener('auth:social-error', handler);
+    }, []);
+
     if (!open) return null;
 
     const handleSubmit = async (e) => {
@@ -105,10 +117,10 @@ export default function AuthModal({ open, onClose }) {
         setError('');
 
         if (mode === 'register' && regType === 'email') {
-            if (isForeignEmail(email)) {
-                setError('Регистрация с зарубежным email-адресом запрещена. Используйте российский почтовый сервис (mail.ru, yandex.ru, rambler.ru и др.)');
-                return;
-            }
+            // if (isForeignEmail(email)) {
+            //     setError('Регистрация с зарубежным email-адресом запрещена. Используйте российский почтовый сервис (mail.ru, yandex.ru, rambler.ru и др.)');
+            //     return;
+            // }
             if (!agreed) {
                 setError('Необходимо принять условия Оферты и согласиться на обработку персональных данных');
                 return;
@@ -211,6 +223,10 @@ export default function AuthModal({ open, onClose }) {
         }
     };
 
+    const handleSocialLogin = (provider) => {
+        window.location.href = `/api/auth/${provider}/redirect`;
+    };
+
     const renderForm = () => {
         switch (mode) {
             case 'register':
@@ -222,6 +238,32 @@ export default function AuthModal({ open, onClose }) {
                                 {error}
                             </p>
                         )}
+
+                        {/* Регистрация через соцсети */}
+                        <div className="space-y-2">
+                            <button type="button" onClick={() => handleSocialLogin('google')}
+                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-[#e9f0ff] bg-white text-[#1c2145] font-medium hover:bg-[#f7fbff] transition-colors">
+                                <svg width="18" height="18" viewBox="0 0 48 48">
+                                    <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+                                    <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+                                    <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+                                    <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+                                </svg>
+                                Регистрация через Google
+                            </button>
+                            <button type="button" onClick={() => handleSocialLogin('vkontakte')}
+                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-[#e9f0ff] bg-white text-[#1c2145] font-medium hover:bg-[#f7fbff] transition-colors">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#0077FF">
+                                    <path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.576-1.496c.588-.19 1.341 1.26 2.14 1.818.605.422 1.064.33 1.064.33l2.137-.03s1.117-.071.587-.964c-.043-.073-.308-.661-1.588-1.87-1.34-1.264-1.16-1.059.453-3.246.983-1.332 1.376-2.145 1.253-2.493-.117-.332-.84-.244-.84-.244l-2.406.015s-.178-.025-.31.056c-.13.079-.212.262-.212.262s-.382 1.03-.89 1.907c-1.07 1.85-1.499 1.948-1.674 1.832-.407-.267-.305-1.075-.305-1.649 0-1.793.267-2.54-.521-2.733-.262-.065-.454-.107-1.123-.114-.858-.009-1.585.003-1.996.208-.274.136-.485.44-.356.457.159.021.519.099.71.339.246.31.237.1.237 1.577 0 1.847-.386 2.09-.836 2.09-.396 0-.971-.532-1.863-2.048-.304-.52-.533-.946-.533-.946s-.122-.247-.334-.24c-.212.006-.509.006-.509.006s-1.876.03-2.14.09c-.193.043-.334.207-.01.643 1.275 1.71 2.744 3.185 2.744 3.185s.653.687-.29 1.65c-.925.946-2.019 1.835-2.019 1.835s-.34.195.068.41c.66.352 1.83.362 1.83.362s.9.06 1.77-.89c.717-.784 1.254-1.586 1.254-1.586s.151-.27.362-.018c.21.252.843 1.083 1.158 1.364.268.238.474.372.793.39.317.018.556-.023.556-.023z"/>
+                                </svg>
+                                Регистрация ВКонтакте
+                            </button>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <div className="flex-1 h-px bg-[#e9f0ff]"></div>
+                            <span className="text-xs text-[#999]">или</span>
+                            <div className="flex-1 h-px bg-[#e9f0ff]"></div>
+                        </div>
 
                         {/* Переключатель Email / Телефон */}
                         <div className="flex rounded-lg border border-[#e9f0ff] overflow-hidden text-sm mt-4">
@@ -243,7 +285,7 @@ export default function AuthModal({ open, onClose }) {
                                     <label className="block text-sm text-[#999] mb-1">Email</label>
                                     <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
                                            className="text-input" placeholder="mail.ru, yandex.ru, rambler.ru..." />
-                                    <p className="text-xs text-[#999] mt-1">Только российские почтовые сервисы</p>
+                                    {/* <p className="text-xs text-[#999] mt-1">Только российские почтовые сервисы</p> */}
                                 </div>
                                 <div>
                                     <label className="block text-sm text-[#999] mb-1">Логин</label>
@@ -366,6 +408,33 @@ export default function AuthModal({ open, onClose }) {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <h2 className="font-extrabold text-2xl text-[#1c2145]">Авторизация</h2>
                         {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
+
+                        {/* Вход через соцсети */}
+                        <div className="space-y-2">
+                            <button type="button" onClick={() => handleSocialLogin('google')}
+                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-[#e9f0ff] bg-white text-[#1c2145] font-medium hover:bg-[#f7fbff] transition-colors">
+                                <svg width="18" height="18" viewBox="0 0 48 48">
+                                    <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+                                    <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+                                    <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+                                    <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+                                </svg>
+                                Войти через Google
+                            </button>
+                            <button type="button" onClick={() => handleSocialLogin('vkontakte')}
+                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-[#e9f0ff] bg-white text-[#1c2145] font-medium hover:bg-[#f7fbff] transition-colors">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#0077FF">
+                                    <path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.576-1.496c.588-.19 1.341 1.26 2.14 1.818.605.422 1.064.33 1.064.33l2.137-.03s1.117-.071.587-.964c-.043-.073-.308-.661-1.588-1.87-1.34-1.264-1.16-1.059.453-3.246.983-1.332 1.376-2.145 1.253-2.493-.117-.332-.84-.244-.84-.244l-2.406.015s-.178-.025-.31.056c-.13.079-.212.262-.212.262s-.382 1.03-.89 1.907c-1.07 1.85-1.499 1.948-1.674 1.832-.407-.267-.305-1.075-.305-1.649 0-1.793.267-2.54-.521-2.733-.262-.065-.454-.107-1.123-.114-.858-.009-1.585.003-1.996.208-.274.136-.485.44-.356.457.159.021.519.099.71.339.246.31.237.1.237 1.577 0 1.847-.386 2.09-.836 2.09-.396 0-.971-.532-1.863-2.048-.304-.52-.533-.946-.533-.946s-.122-.247-.334-.24c-.212.006-.509.006-.509.006s-1.876.03-2.14.09c-.193.043-.334.207-.01.643 1.275 1.71 2.744 3.185 2.744 3.185s.653.687-.29 1.65c-.925.946-2.019 1.835-2.019 1.835s-.34.195.068.41c.66.352 1.83.362 1.83.362s.9.06 1.77-.89c.717-.784 1.254-1.586 1.254-1.586s.151-.27.362-.018c.21.252.843 1.083 1.158 1.364.268.238.474.372.793.39.317.018.556-.023.556-.023z"/>
+                                </svg>
+                                Войти ВКонтакте
+                            </button>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <div className="flex-1 h-px bg-[#e9f0ff]"></div>
+                            <span className="text-xs text-[#999]">или</span>
+                            <div className="flex-1 h-px bg-[#e9f0ff]"></div>
+                        </div>
+
                         <div>
                             <label className="block text-sm text-[#999] mb-1">Логин или Email</label>
                             <input type="text" value={email} onChange={e => setEmail(e.target.value)} required
