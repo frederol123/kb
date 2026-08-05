@@ -110,8 +110,6 @@ export default function AuthModal({ open, onClose }) {
         return () => window.removeEventListener('auth:social-error', handler);
     }, []);
 
-    if (!open) return null;
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -510,6 +508,8 @@ export default function AuthModal({ open, onClose }) {
                 );
         }
     };
+
+    if (!open) return null;
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4"
