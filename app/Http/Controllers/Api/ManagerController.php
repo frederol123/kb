@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Anket;
+use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -32,6 +33,30 @@ class ManagerController extends Controller
         return response()->json([
             'manager_checked' => $anket->fresh()->manager_checked,
         ]);
+    }
+
+    /**
+     * Последние покупки обычных пользователей (все, кроме admin/manager).
+     */
+    public function orders(Request $request): JsonResponse
+    {
+        $transactions = Transaction::query()
+            ->with(['user:id,login,name,phone', 'purchasable'])
+            ->whereDoesntHave('user.roles', fn ($q) => $q->whereIn('name', ['admin', 'manager']))
+            ->orderByDesc('created_at')
+            ->paginate(50)
+            ->through(fn (Transaction $t) => [
+                'id' => $t->id,
+                'login' => $t->user?->login,
+                'name' => $t->user?->name,
+                'phone' => $t->user?->phone,
+                'amount' => (float) $t->amount,
+                'status' => $t->status,
+                'created_at' => $t->created_at?->toISOString(),
+                'tariff_title' => $t->purchasable?->title,
+            ]);
+
+        return response()->json($transactions);
     }
 
     public function users(Request $request): JsonResponse

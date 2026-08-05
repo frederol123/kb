@@ -21,6 +21,7 @@ import SettingsPage from './pages/Cabinet/SettingsPage';
 import ManagerPanel from './pages/Cabinet/ManagerPanel';
 import LogsPage from './pages/Cabinet/LogsPage';
 import UsersPage from './pages/Cabinet/UsersPage';
+import OrdersPage from './pages/Cabinet/OrdersPage';
 
 const queryClient = new QueryClient({
     defaultOptions: { queries: { staleTime: 1000 * 60, retry: 1 } },
@@ -80,6 +81,7 @@ export default function App() {
                                 <Route path="cards/new/edit" element={<CardEditorPage />} />
                                 <Route path="cards/:id/edit" element={<CardEditorPage />} />
                                 <Route path="manager-panel" element={<ManagerPanel />} />
+                                <Route path="orders" element={<OrdersPage />} />
                                 <Route path="logs" element={<LogsPage />} />
                                 <Route path="users" element={<UsersPage />} />
                             </Route>

@@ -230,6 +230,9 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
             ]);
         });
 
+        // Заказы (покупки пользователей с ролью user)
+        Route::get('/orders', [\App\Http\Controllers\Api\ManagerController::class, 'orders']);
+
         // Управление пользователями
         Route::get('/users', [\App\Http\Controllers\Api\ManagerController::class, 'users']);
         Route::put('/users/{user}', [\App\Http\Controllers\Api\ManagerController::class, 'updateUser']);
