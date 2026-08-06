@@ -1,16 +1,12 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import api from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function UsersPage() {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [editUser, setEditUser] = useState(null);
-  const [editForm, setEditForm] = useState({});
-  const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [toast, setToast] = useState(null);
 
   const roles = user?.roles || [];
@@ -31,30 +27,6 @@ export default function UsersPage() {
     placeholderData: (prev) => prev,
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: (userId) => api.delete(`/manager/users/${userId}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['manager-users'] });
-      setDeleteConfirm(null);
-      showToast('Пользователь удалён');
-    },
-    onError: (err) => {
-      showToast(err?.response?.data?.message || 'Ошибка удаления', 'error');
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ userId, data }) => api.put(`/manager/users/${userId}`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['manager-users'] });
-      setEditUser(null);
-      showToast('Пользователь обновлён');
-    },
-    onError: (err) => {
-      showToast(err?.response?.data?.message || 'Ошибка обновления', 'error');
-    },
-  });
-
   const loginAsMutation = useMutation({
     mutationFn: (userId) => api.post(`/manager/users/${userId}/login-as`),
     onSuccess: (res) => {
@@ -67,25 +39,6 @@ export default function UsersPage() {
       showToast(err?.response?.data?.message || 'Ошибка входа', 'error');
     },
   });
-
-  const openEdit = (u) => {
-    setEditUser(u.id);
-    setEditForm({
-      login: u.login || '',
-      name: u.name || '',
-      email: u.email || '',
-      phone: u.phone || '',
-      tariff_id: u.tariff_id ?? '',
-    });
-  };
-
-  const saveEdit = () => {
-    const data = {};
-    Object.entries(editForm).forEach(([k, v]) => {
-      if (v !== '') data[k] = v;
-    });
-    updateMutation.mutate({ userId: editUser, data });
-  };
 
   return (
     <div>
@@ -131,143 +84,43 @@ export default function UsersPage() {
                 <tbody className="divide-y divide-gray-50">
                   {data.data.map((u) => (
                     <tr key={u.id} className="hover:bg-gray-50 transition-colors">
-                      {editUser === u.id ? (
-                        <>
-                          <td className="px-4 py-2.5 text-[#6c6d7e] font-mono text-xs">{u.id}</td>
-                          <td className="px-4 py-2.5">
-                            <input
-                              value={editForm.login}
-                              onChange={(e) => setEditForm(f => ({ ...f, login: e.target.value }))}
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-sm"
-                            />
-                          </td>
-                          <td className="px-4 py-2.5">
-                            <input
-                              value={editForm.name}
-                              onChange={(e) => setEditForm(f => ({ ...f, name: e.target.value }))}
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-sm"
-                            />
-                          </td>
-                          <td className="px-4 py-2.5">
-                            <input
-                              value={editForm.email}
-                              onChange={(e) => setEditForm(f => ({ ...f, email: e.target.value }))}
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-sm"
-                            />
-                          </td>
-                          <td className="px-4 py-2.5">
-                            <input
-                              value={editForm.phone}
-                              onChange={(e) => setEditForm(f => ({ ...f, phone: e.target.value }))}
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-sm"
-                            />
-                          </td>
-                          <td className="px-4 py-2.5 text-xs text-[#6c6d7e]">{u.tariff?.title || '—'}</td>
-                          <td className="px-4 py-2.5 text-xs">
-                            {u.roles?.length > 0 ? (
-                              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                                u.roles.some(r => r.name === 'admin') ? 'bg-red-50 text-red-600' :
-                                u.roles.some(r => r.name === 'manager') ? 'bg-purple-50 text-purple-600' :
-                                'bg-gray-100 text-gray-600'
-                              }`}>
-                                {u.roles.map(r => r.name === 'admin' ? 'admin' : r.name === 'manager' ? 'manager' : r.name).join(', ')}
-                              </span>
-                            ) : (
-                              <span className="text-[#9ca3af]">user</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-2.5 text-center text-xs text-[#6c6d7e]">{u.ankets_count}</td>
-                          <td className="px-4 py-2.5 text-xs text-[#6c6d7e]">{new Date(u.created_at).toLocaleDateString()}</td>
-                          <td className="px-4 py-2.5 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <button
-                                onClick={saveEdit}
-                                disabled={updateMutation.isPending}
-                                className="px-2.5 py-1 text-xs font-bold text-white bg-[#3476f5] rounded-lg hover:bg-[#2866d8] disabled:opacity-50 transition-colors"
-                              >
-                                {updateMutation.isPending ? '...' : 'Сохранить'}
-                              </button>
-                              <button
-                                onClick={() => setEditUser(null)}
-                                className="px-2.5 py-1 text-xs font-bold text-[#6c6d7e] bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                              >
-                                Отмена
-                              </button>
-                            </div>
-                          </td>
-                        </>
-                      ) : (
-                        <>
-                          <td className="px-4 py-2.5 text-[#6c6d7e] font-mono text-xs">{u.id}</td>
-                          <td className="px-4 py-2.5 text-[#1c2145] font-medium">{u.login}</td>
-                          <td className="px-4 py-2.5 text-[#1c2145]">{u.name}</td>
-                          <td className="px-4 py-2.5 text-xs text-[#6c6d7e]">{u.email || '—'}</td>
-                          <td className="px-4 py-2.5 text-xs text-[#6c6d7e]">{u.phone || '—'}</td>
-                          <td className="px-4 py-2.5 text-xs">
-                            <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-[#eff6ff] text-[#2563eb]">
-                              {u.tariff?.title || 'Без тарифа'}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2.5 text-xs">
-                            {u.roles?.length > 0 ? (
-                              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                                u.roles.some(r => r.name === 'admin') ? 'bg-red-50 text-red-600' :
-                                u.roles.some(r => r.name === 'manager') ? 'bg-purple-50 text-purple-600' :
-                                'bg-gray-100 text-gray-600'
-                              }`}>
-                                {u.roles.map(r => r.name === 'admin' ? 'admin' : r.name === 'manager' ? 'manager' : r.name).join(', ')}
-                              </span>
-                            ) : (
-                              <span className="text-[#9ca3af]">user</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-2.5 text-center text-xs text-[#6c6d7e]">{u.ankets_count}</td>
-                          <td className="px-4 py-2.5 text-xs text-[#6c6d7e]">{new Date(u.created_at).toLocaleDateString()}</td>
-                          <td className="px-4 py-2.5 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <button
-                                onClick={() => openEdit(u)}
-                                className="px-2.5 py-1 text-xs font-bold text-[#3476f5] bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                                title="Редактировать"
-                              >
-                                ✎
-                              </button>
-                              {deleteConfirm === u.id ? (
-                                <>
-                                  <button
-                                    onClick={() => deleteMutation.mutate(u.id)}
-                                    className="px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
-                                  >
-                                    Да
-                                  </button>
-                                  <button
-                                    onClick={() => setDeleteConfirm(null)}
-                                    className="px-2 py-1 text-xs font-bold text-[#6c6d7e] bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                                  >
-                                    Нет
-                                  </button>
-                                </>
-                              ) : (
-                                <button
-                                  onClick={() => setDeleteConfirm(u.id)}
-                                  className="px-2.5 py-1 text-xs font-bold text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-                                  title="Удалить"
-                                >
-                                  ✕
-                                </button>
-                              )}
-                              <button
-                                onClick={() => loginAsMutation.mutate(u.id)}
-                                disabled={loginAsMutation.isPending}
-                                className="px-2.5 py-1 text-xs font-bold text-[#7c3aed] bg-purple-50 rounded-lg hover:bg-purple-100 disabled:opacity-50 transition-colors"
-                                title="Войти под пользователем"
-                              >
-                                👤
-                              </button>
-                            </div>
-                          </td>
-                        </>
-                      )}
+                      <td className="px-4 py-2.5 text-[#6c6d7e] font-mono text-xs">{u.id}</td>
+                      <td className="px-4 py-2.5 text-[#1c2145] font-medium">{u.login}</td>
+                      <td className="px-4 py-2.5 text-[#1c2145]">{u.name}</td>
+                      <td className="px-4 py-2.5 text-xs text-[#6c6d7e]">{u.email || '—'}</td>
+                      <td className="px-4 py-2.5 text-xs text-[#6c6d7e]">{u.phone || '—'}</td>
+                      <td className="px-4 py-2.5 text-xs">
+                        <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-[#eff6ff] text-[#2563eb]">
+                          {u.tariff?.title || 'Без тарифа'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5 text-xs">
+                        {u.roles?.length > 0 ? (
+                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                            u.roles.some(r => r.name === 'admin') ? 'bg-red-50 text-red-600' :
+                            u.roles.some(r => r.name === 'manager') ? 'bg-purple-50 text-purple-600' :
+                            'bg-gray-100 text-gray-600'
+                          }`}>
+                            {u.roles.map(r => r.name === 'admin' ? 'admin' : r.name === 'manager' ? 'manager' : r.name).join(', ')}
+                          </span>
+                        ) : (
+                          <span className="text-[#9ca3af]">user</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2.5 text-center text-xs text-[#6c6d7e]">{u.ankets_count}</td>
+                      <td className="px-4 py-2.5 text-xs text-[#6c6d7e]">{new Date(u.created_at).toLocaleDateString()}</td>
+                      <td className="px-4 py-2.5 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => loginAsMutation.mutate(u.id)}
+                            disabled={loginAsMutation.isPending}
+                            className="px-2.5 py-1 text-xs font-bold text-[#7c3aed] bg-purple-50 rounded-lg hover:bg-purple-100 disabled:opacity-50 transition-colors"
+                            title="Войти под пользователем"
+                          >
+                            👤
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
