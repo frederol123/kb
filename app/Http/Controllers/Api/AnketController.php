@@ -43,7 +43,7 @@ class AnketController extends Controller
             'slug' => $slug,
             'status' => $request->input('status', 'draft'),
             'info' => $request->input('info'),
-            'content' => $request->input('content'),
+            'content' => $this->sanitizeContent($request->input('content') ?? []),
             'family' => $request->input('family'),
         ]);
 
@@ -180,7 +180,7 @@ class AnketController extends Controller
         $data = $request->only(['status', 'info', 'family']);
 
         if ($request->has('content')) {
-            $data['content'] = $request->input('content');
+            $data['content'] = $this->sanitizeContent($request->input('content'));
         }
 
         // private_pin: null — очистить, строка — захешировать, не передан — не менять
@@ -212,9 +212,42 @@ class AnketController extends Controller
             'content.videos' => ['nullable', 'array', 'max:' . $maxVideos],
         ]);
 
-        $anket->update(['content' => $request->input('content')]);
+        $anket->update(['content' => $this->sanitizeContent($request->input('content'))]);
 
         return response()->json($anket);
+    }
+
+    /**
+     * Санитизация контента анкеты.
+     *
+     * - biography — HTML от TipTap-редактора: пропускается через HTMLPurifier
+     *   (whitelist тегов в config/purifier.php, img намеренно запрещён).
+     * - timeline — текст: strip_tags как defense-in-depth (React и так экранирует).
+     * - gallery/videos — только URL/текст, React экранирует.
+     */
+    private function sanitizeContent(array $content): array
+    {
+        foreach (['biography'] as $field) {
+            if (isset($content[$field]) && is_string($content[$field])) {
+                $content[$field] = \Mews\Purifier\Facades\Purifier::clean($content[$field]);
+            }
+        }
+
+        if (isset($content['timeline']) && is_array($content['timeline'])) {
+            foreach ($content['timeline'] as &$event) {
+                if (! is_array($event)) {
+                    continue;
+                }
+                foreach (['year', 'title', 'desc'] as $field) {
+                    if (isset($event[$field]) && is_string($event[$field])) {
+                        $event[$field] = strip_tags($event[$field]);
+                    }
+                }
+            }
+            unset($event);
+        }
+
+        return $content;
     }
 
     public function destroy(Request $request, Anket $anket): \Illuminate\Http\Response

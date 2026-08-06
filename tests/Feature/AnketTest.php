@@ -550,4 +550,65 @@ class AnketTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonPath('slug', 'petrov-ivan-1');
     }
+
+    public function test_biography_is_sanitized_from_xss(): void
+    {
+        $payload = '<p>Привет</p><script>alert(document.cookie)</script><img src=x onerror=alert(1)><a href="javascript:alert(1)">ссылка</a>';
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/ankets', [
+                'info' => ['first_name' => 'Иван', 'last_name' => 'Петров'],
+                'content' => ['biography' => $payload],
+            ]);
+
+        $response->assertStatus(201);
+        $saved = $response->json('content.biography');
+
+        $this->assertStringNotContainsString('<script', $saved);
+        $this->assertStringNotContainsString('onerror', $saved);
+        $this->assertStringNotContainsString('javascript:', $saved);
+        // легальный HTML сохраняется
+        $this->assertStringContainsString('<p>', $saved);
+        $this->assertStringContainsString('ссылка', $saved);
+    }
+
+    public function test_biography_is_sanitized_on_update_content(): void
+    {
+        $anket = Anket::factory()->create(['user_id' => $this->user->id]);
+
+        $payload = '<b>текст</b><script>alert(1)</script><iframe src="https://evil.example"></iframe>';
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->putJson("/api/ankets/{$anket->id}/content", [
+                'content' => ['biography' => $payload],
+            ]);
+
+        $response->assertStatus(200);
+        $saved = $anket->fresh()->content['biography'];
+
+        $this->assertStringNotContainsString('<script', $saved);
+        $this->assertStringNotContainsString('<iframe', $saved);
+        $this->assertStringContainsString('<b>текст</b>', $saved);
+    }
+
+    public function test_timeline_text_is_stripped_of_tags(): void
+    {
+        $anket = Anket::factory()->create(['user_id' => $this->user->id]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->putJson("/api/ankets/{$anket->id}/content", [
+                'content' => [
+                    'biography' => 'Биография',
+                    'timeline' => [
+                        ['year' => '1950', 'title' => '<b>Родился</b>', 'desc' => '<script>alert(1)</script>Описание'],
+                    ],
+                ],
+            ]);
+
+        $response->assertStatus(200);
+        $saved = $anket->fresh()->content['timeline'][0];
+
+        $this->assertSame('Родился', $saved['title']);
+        $this->assertSame('alert(1)Описание', $saved['desc']);
+    }
 }

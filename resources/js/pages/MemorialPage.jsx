@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Shield, MapPin, Briefcase, Cross, Share2, Lock } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useRef, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import api from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -373,7 +374,9 @@ function MemorialBiography({ content }) {
                                 className={`memorial-bio__text prose prose-sm max-w-none break-words ${
                                     !expanded ? 'line-clamp-[12] lg:line-clamp-[16]' : ''
                                 }`}
-                                dangerouslySetInnerHTML={{ __html: content.biography }}
+                                // DOMPurify — defense-in-depth: сервер уже чистит biography,
+                                // но старые анкеты могли сохранить HTML до фикса
+                                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.biography || '') }}
                             />
                             {/* Кнопка «Читать далее» для длинных текстов */}
                             {content.biography && content.biography.length > 800 && (
