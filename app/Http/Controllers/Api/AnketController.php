@@ -30,7 +30,7 @@ class AnketController extends Controller
             'info' => ['array'],
             'content' => ['array'],
             'family' => ['array', 'nullable'],
-        ]);
+        ] + $this->infoTextFieldRules(), $this->infoTextFieldMessages());
 
         $status = $request->input('status', 'draft');
         if ($status === 'private' && !($request->user()->tariff?->limits['has_privacy'] ?? false)) {
@@ -168,10 +168,10 @@ class AnketController extends Controller
             'content.gallery' => ['nullable', 'array', 'max:' . $maxGallery],
             'content.videos' => ['nullable', 'array', 'max:' . $maxVideos],
             'private_pin' => ['nullable', 'string', 'digits_between:4,6'],
-        ], [
+        ] + $this->infoTextFieldRules(), array_merge($this->infoTextFieldMessages(), [
             'info.contact.required' => 'Заполните контакты для связи',
             'private_pin.digits_between' => 'Пин-код должен содержать от 4 до 6 цифр',
-        ]);
+        ]));
 
         if ($request->input('status') === 'private' && !($request->user()->tariff?->limits['has_privacy'] ?? false)) {
             abort(403, 'Функция «Приватность» недоступна на вашем тарифе.');
@@ -215,6 +215,32 @@ class AnketController extends Controller
         $anket->update(['content' => $this->sanitizeContent($request->input('content'))]);
 
         return response()->json($anket);
+    }
+
+    /**
+     * Правила валидации текстовых полей первого блока (ФИО, места):
+     * значение не может состоять только из цифр.
+     */
+    private function infoTextFieldRules(): array
+    {
+        return [
+            'info.last_name' => ['nullable', 'string', 'not_regex:/^\d+$/'],
+            'info.first_name' => ['nullable', 'string', 'not_regex:/^\d+$/'],
+            'info.middle_name' => ['nullable', 'string', 'not_regex:/^\d+$/'],
+            'info.birthplace' => ['nullable', 'string', 'not_regex:/^\d+$/'],
+            'info.deathplace' => ['nullable', 'string', 'not_regex:/^\d+$/'],
+        ];
+    }
+
+    private function infoTextFieldMessages(): array
+    {
+        return [
+            'info.last_name.not_regex' => 'Неправильный формат поля "Фамилия"',
+            'info.first_name.not_regex' => 'Неправильный формат поля "Имя"',
+            'info.middle_name.not_regex' => 'Неправильный формат поля "Отчество"',
+            'info.birthplace.not_regex' => 'Неправильный формат поля "Место рождения"',
+            'info.deathplace.not_regex' => 'Неправильный формат поля "Место смерти"',
+        ];
     }
 
     /**

@@ -100,6 +100,22 @@ export default function CardEditorPage() {
     });
 
     const saveInfo = () => {
+        // Валидация текстовых полей: только цифры — недопустимый формат
+        const textFields = [
+            ['last_name', 'Фамилия'],
+            ['first_name', 'Имя'],
+            ['middle_name', 'Отчество'],
+            ['birthplace', 'Место рождения'],
+            ['deathplace', 'Место смерти'],
+        ];
+        for (const [key, label] of textFields) {
+            const val = (info[key] || '').trim();
+            if (val && /^\d+$/.test(val)) {
+                toast(`Неправильный формат поля "${label}"`, 'error');
+                return;
+            }
+        }
+
         const payload = { info, content, status, family };
 
         // Пин-код для родственников: снят чекбокс → очистить; введён → установить;
