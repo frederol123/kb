@@ -57,5 +57,9 @@ done
 # Миграции при старте (если таблиц нет — создаст)
 php /app/artisan migrate --force 2>/dev/null || echo "Migration skipped or already up to date."
 
+# Планировщик Laravel: crond запускает schedule:run каждую минуту
+echo "* * * * * cd /app && php artisan schedule:run >> /dev/null 2>&1" | crontab -
+crond -b 2>/dev/null || crond || echo "crond not available"
+
 # Запуск PHP-FPM
 exec php-fpm

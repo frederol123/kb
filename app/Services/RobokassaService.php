@@ -30,6 +30,15 @@ class RobokassaService
 
         $amount = $discountedAmount ?? (float) $tariff->price;
 
+        // Отменяем предыдущие неоплаченные счета на тот же тариф,
+        // чтобы не плодить «висящие» pending-транзакции
+        Transaction::query()
+            ->where('user_id', $userId)
+            ->where('purchasable_type', Tariff::class)
+            ->where('purchasable_id', $tariff->id)
+            ->where('status', 'pending')
+            ->update(['status' => 'cancelled']);
+
         // Создаём транзакцию
         $transaction = Transaction::create([
             'user_id' => $userId,

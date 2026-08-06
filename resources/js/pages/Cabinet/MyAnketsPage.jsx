@@ -1,10 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 
 export default function MyCardsPage() {
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
+    const toast = useToast();
     const { user } = useAuth();
     const { data, isLoading } = useQuery({
         queryKey: ['my-cards'],
@@ -20,6 +23,16 @@ export default function MyCardsPage() {
 
     const statusText = { published: 'Опубликовано', draft: 'Черновик', private: 'Приватная' };
 
+    // Создание карточки — только с тарифом (исключение — сотрудники)
+    const canCreate = !!user?.tariff || (user?.roles || []).some(r => r === 'admin' || r === 'manager');
+
+    const handleCreateClick = (e) => {
+        if (canCreate) return;
+        e.preventDefault();
+        toast('Для создания карточки необходимо приобрести тариф', 'error');
+        navigate('/tariffs');
+    };
+
     return (
         <div>
             <div className="flex items-center justify-between mb-6">
@@ -27,7 +40,8 @@ export default function MyCardsPage() {
                     Мои карточки ({cards.length})
                 </h1>
                 <div className="flex gap-3">
-                    <Link to="/lk/cards/new/edit" className="btn-filled text-base">Создать карточку</Link>
+                    <Link to={canCreate ? '/lk/cards/new/edit' : '/tariffs'} onClick={handleCreateClick}
+                          className="btn-filled text-base">Создать карточку</Link>
                 </div>
             </div>
 

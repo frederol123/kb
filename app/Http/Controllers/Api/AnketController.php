@@ -25,6 +25,12 @@ class AnketController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        // Создание анкеты доступно только при наличии тарифа
+        // (исключение — сотрудники: admin/manager)
+        if (! $request->user()->tariff && ! $request->user()->hasAnyRole(['admin', 'manager'])) {
+            abort(403, 'Для создания анкеты необходимо приобрести тариф.');
+        }
+
         $request->validate([
             'status' => ['string', 'in:draft,published,private'],
             'info' => ['array'],
