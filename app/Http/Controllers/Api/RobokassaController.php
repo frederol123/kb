@@ -91,6 +91,28 @@ class RobokassaController extends Controller
             return 'OK'; // Уже обработан
         }
 
+        // Повторная защита: сумма из вебхука должна совпадать с суммой транзакции.
+        // Подпись уже подтверждает, что запрос пришёл от Robokassa, но сверка
+        // исключает активацию тарифа при расхождении (например, утечка пароля).
+        if (abs((float) $outSum - (float) $transaction->amount) > 0.01) {
+            Log::warning('Robokassa: amount mismatch', [
+                'transaction_id' => $transaction->id,
+                'expected' => $transaction->amount,
+                'received' => $outSum,
+            ]);
+            return 'AMOUNT_MISMATCH';
+        }
+
+        // Активируем тариф только у транзакций в статусе pending
+        // (failed/cancelled не должны активировать тариф)
+        if ($transaction->status !== 'pending') {
+            Log::warning('Robokassa: invalid transaction status', [
+                'transaction_id' => $transaction->id,
+                'status' => $transaction->status,
+            ]);
+            return 'INVALID_STATUS';
+        }
+
         $transaction->update(['status' => 'succeeded']);
 
         // Назначаем тариф пользователю

@@ -45,6 +45,18 @@ class PhoneVerificationController extends Controller
             ]);
         }
 
+        // Анти-SMS-бомбинг: не отправлять повторный код на тот же номер
+        // чаще одного раза в 2 минуты (независимо от IP-лимита)
+        $recent = PhoneVerification::where('phone', $phone)
+            ->where('created_at', '>', now()->subMinutes(2))
+            ->exists();
+
+        if ($recent) {
+            return response()->json([
+                'message' => 'Код уже отправлен. Повторите запрос через 2 минуты.',
+            ], 429);
+        }
+
         // Удаляем старые коды для этого номера
         PhoneVerification::where('phone', $phone)->delete();
 

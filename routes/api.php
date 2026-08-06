@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-Route::middleware('throttle:10,1')->group(function () {
+// Брутфорс-защита: 10 попыток за 5 минут (login, register)
+Route::middleware('throttle:10,5')->group(function () {
     Route::post('/auth/login', [AuthController::class, 'login']);
     Route::post('/auth/register', [AuthController::class, 'register']);
 });
@@ -45,12 +46,15 @@ Route::middleware('throttle:30,1')->group(function () {
         return redirect('https://immortal-code.ru/lk?verified=1');
     })->name('auth.verify-email');
 
+    // Обратная связь
+    Route::post('/feedback', [FeedbackController::class, 'send']);
+});
+
+// SMS-коды: брутфорс-защита — 10 попыток за 5 минут (отправка и проверка кода)
+Route::middleware('throttle:10,5')->group(function () {
     // Регистрация по телефону
     Route::post('/auth/send-code', [PhoneVerificationController::class, 'sendCode']);
     Route::post('/auth/verify-phone', [PhoneVerificationController::class, 'verifyAndRegister']);
-
-    // Обратная связь
-    Route::post('/feedback', [FeedbackController::class, 'send']);
 });
 
 Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
@@ -300,7 +304,8 @@ Route::get('/tariffs', function () {
 
 // Robokassa — вебхуки и редиректы (без auth, только подпись)
 Route::post('/robokassa/result', [App\Http\Controllers\Api\RobokassaController::class, 'result'])
-    ->name('robokassa.result');
+    ->name('robokassa.result')
+    ->middleware('throttle:60,1');
 Route::get('/robokassa/success', [App\Http\Controllers\Api\RobokassaController::class, 'success'])
     ->name('robokassa.success');
 Route::get('/robokassa/fail', [App\Http\Controllers\Api\RobokassaController::class, 'fail'])
