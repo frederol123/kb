@@ -228,25 +228,50 @@ export default function AuthModal({ open, onClose }) {
         if (!open) return;
         let cancelled = false;
 
+        // SDK v2.6.8 лежит локально (public/vendor/vkid-sdk.js) — unpkg.com
+        // (Cloudflare) у российских провайдеров режется ТСПУ, поэтому грузим
+        // со своего домена, а CDN оставляем только как fallback.
+        const VK_SDK_URLS = [
+            '/vendor/vkid-sdk.js',
+            'https://cdn.jsdelivr.net/npm/@vkid/sdk@2.6.8/dist-sdk/umd/index.js',
+            'https://unpkg.com/@vkid/sdk@2.6.8/dist-sdk/umd/index.js',
+        ];
+
         const loadVkSdk = () => {
             if (window.VKIDSDK) return Promise.resolve(window.VKIDSDK);
-            return new Promise((resolve, reject) => {
+
+            const tryLoad = (i) => new Promise((resolve, reject) => {
                 const script = document.createElement('script');
-                script.src = 'https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js';
+                script.src = VK_SDK_URLS[i];
                 script.onload = () => {
-                    const VKID = window.VKIDSDK;
-                    VKID.Config.init({
-                        app: Number(import.meta.env.VITE_VK_APP_ID || 54707973),
-                        redirectUrl: import.meta.env.VITE_VK_REDIRECT_URL || 'https://immortal-code.ru/',
-                        responseMode: VKID.ConfigResponseMode.Callback,
-                        source: VKID.ConfigSource.LOWCODE,
-                        scope: 'email',
-                    });
-                    resolve(VKID);
+                    if (window.VKIDSDK) {
+                        resolve(window.VKIDSDK);
+                    } else {
+                        reject(new Error('VK SDK loaded without global'));
+                    }
                 };
                 script.onerror = () => reject(new Error('VK SDK load failed'));
                 document.head.appendChild(script);
             });
+
+            const init = (VKID) => {
+                VKID.Config.init({
+                    app: Number(import.meta.env.VITE_VK_APP_ID || 54707973),
+                    redirectUrl: import.meta.env.VITE_VK_REDIRECT_URL || 'https://immortal-code.ru/',
+                    responseMode: VKID.ConfigResponseMode.Callback,
+                    source: VKID.ConfigSource.LOWCODE,
+                    scope: 'email',
+                });
+                return VKID;
+            };
+
+            const tryAll = (i) =>
+                tryLoad(i).then(init).catch((err) => {
+                    if (i + 1 < VK_SDK_URLS.length) return tryAll(i + 1);
+                    throw err;
+                });
+
+            return tryAll(0);
         };
 
         const handleVkSuccess = async (payload) => {
